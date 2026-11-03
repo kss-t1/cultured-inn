@@ -67,7 +67,7 @@ function Paragraphs({ text }: { text: string }) {
 
 function hostname(url: string): string {
   try {
-    return new URL(url).hostname;
+    return new URL(url).hostname.replace(/^www\./, "");
   } catch {
     return url;
   }
@@ -129,6 +129,9 @@ export function EventPage({ e, url }: { e: EventDetail; url: string }) {
           )}
           <p className="actions">
             {e.ticket_url && <a className="btn primary" href={e.ticket_url} rel="noopener">{t.event.tickets}</a>}
+            {e.source_url && e.source_url !== e.ticket_url && (
+              <a className="btn" href={e.source_url} rel="noopener nofollow">{t.event.sourceLink(hostname(e.source_url))}</a>
+            )}
             <a className="btn" href={`/events/${e.slug}.ics`} download>{t.event.addToCalendar}</a>
             <button className="btn" type="button" id="share" data-url={url} data-title={e.title} data-copied={t.event.linkCopied}>
               {t.event.share}
@@ -143,7 +146,6 @@ export function EventPage({ e, url }: { e: EventDetail; url: string }) {
             </section>
           )}
           <footer className="meta muted">
-            {e.source_url && <>{t.event.source}: <a href={e.source_url} rel="noopener nofollow">{hostname(e.source_url)}</a> · </>}
             {t.event.updated}: {fmtDay(e.updated_at)}
           </footer>
         </article>
