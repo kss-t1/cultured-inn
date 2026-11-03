@@ -1,12 +1,18 @@
+import type { IconName } from "./icons.ts";
+
 export const CATEGORIES = ["LARP", "IMPRO", "RPG", "BOARDGAMES"] as const;
 export type Category = (typeof CATEGORIES)[number];
 
-/** URL slug, color and icon per category. Display labels live in i18n (t.categories). */
-export const CATEGORY_INFO: Record<Category, { slug: string; color: string; icon: string }> = {
-  LARP: { slug: "larp", color: "#8e44ad", icon: "⚔️" },
-  IMPRO: { slug: "impro", color: "#d35400", icon: "🎭" },
-  RPG: { slug: "rpg", color: "#c0392b", icon: "🐉" },
-  BOARDGAMES: { slug: "boardgames", color: "#16897b", icon: "🎲" },
+/**
+ * URL slug, icon and colour per category. Display labels live in i18n (t.categories). The public
+ * site styles categories with the .cat-<slug> classes in src/site/styles.css (light and dark);
+ * `color` is the light-theme colour, for places without those classes (admin).
+ */
+export const CATEGORY_INFO: Record<Category, { slug: string; color: string; icon: IconName }> = {
+  LARP: { slug: "larp", color: "#6a3fa8", icon: "larp" },
+  IMPRO: { slug: "impro", color: "#a8480c", icon: "impro" },
+  RPG: { slug: "rpg", color: "#9e1f33", icon: "rpg" },
+  BOARDGAMES: { slug: "boardgames", color: "#0d6e63", icon: "boardgames" },
 };
 
 export function categoryFromSlug(slug: string): Category | null {

@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Kulturalna Karczma · strona główna</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./kk.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&amp;family=Source+Sans+3:ital,wght@0,400..700;1,400..700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="kk kk-app" data-theme="{{theme}}">
+
+<svg width="0" height="0" style="position: absolute" aria-hidden="true">
+<symbol id="i-logo" viewBox="0 0 48 48"><path d="M38.6 25L45.4 4" style="fill: none; stroke: currentColor; stroke-width: 4.8; stroke-linecap: round"></path><path d="M38.6 25L45.4 4" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 2.8; stroke-linecap: round"></path><path d="M18 23l-6.5 2.2c-1.8.6-2.6 2.4-1.9 4 .6 1.4 2.2 2.1 3.7 1.6l3.7-1.2-3.8 11c-.5 1.5.6 3 2.2 3h4.4L24 37l4.2 6.6h4.4c1.6 0 2.7-1.5 2.2-3L31 29.6l3.7 1.2c1.5.5 3.1-.2 3.7-1.6.7-1.6-.1-3.4-1.9-4L30 23z" style="fill: var(--sign-ink, #f6e9cf); stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round"></path><circle cx="24" cy="15.2" r="6.6" style="fill: var(--sign-ink, #f6e9cf); stroke: currentColor; stroke-width: 1.4"></circle><path d="M17.6 13.4c2-.9 4.4-1 6.4.2 2-1.2 4.4-1.1 6.4-.2l-.6 3.6c-1.8 1.4-4.2 1.3-5.8-.4-1.6 1.7-4 1.8-5.8.4z" style="fill: var(--sign-gold, #f2b84f); stroke: none"></path><ellipse cx="21" cy="15" rx="1.35" ry=".9" style="fill: var(--sign-bg, #2a1c10)"></ellipse><ellipse cx="27" cy="15" rx="1.35" ry=".9" style="fill: var(--sign-bg, #2a1c10)"></ellipse><path d="M34.6 24.6l7.6 2.5" style="fill: none; stroke: currentColor; stroke-width: 4.4; stroke-linecap: round"></path><path d="M34.6 24.6l7.6 2.5" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 2.4; stroke-linecap: round"></path><path d="M38.4 25.8l-1.2 3.6" style="fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round"></path><path d="M12 22.5l7.4 4.25v8.5L12 39.5l-7.4-4.25v-8.5z" style="fill: var(--sign-bg, #2a1c10); stroke: var(--sign-gold, #f2b84f); stroke-width: 2; stroke-linejoin: round"></path><path d="M12 26l4.5 7.8h-9z" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round"></path></symbol>
+<symbol id="i-larp" viewBox="0 0 24 24"><path d="M4 4l11 11M13 17l4-4M15 15l4 4M20 4L9 15M11 17l-4-4M9 15l-4 4"></path></symbol>
+<symbol id="i-impro" viewBox="0 0 24 24"><path d="M4 4.5c2.6 1 5.4 1.5 8 1.5s5.4-.5 8-1.5v7a8 8 0 0 1-16 0z"></path><path d="M7.8 10.6c.7-.7 1.8-.7 2.4 0M13.8 10.6c.7-.7 1.8-.7 2.4 0M8.5 14.5c1.9 2 5.1 2 7 0"></path></symbol>
+<symbol id="i-rpg" viewBox="0 0 24 24"><path d="M12 2.5l8.5 4.75v9.5L12 21.5l-8.5-4.75v-9.5z"></path><path d="M12 7.5l4.5 7.5h-9zM12 2.5v5M7.5 15l-4 1.75M16.5 15l4 1.75"></path></symbol>
+<symbol id="i-plansz" viewBox="0 0 24 24"><path d="M12 3a2.6 2.6 0 0 1 2.6 2.6c0 .9-.4 1.6-1 2.1l4.9 2.1c.9.4 1.3 1.3 1 2.2-.3.8-1.2 1.2-2 1l-2.1-.6 2.6 6.4c.3.8-.3 1.7-1.2 1.7h-2.4L12 16.5l-2.4 4H7.2c-.9 0-1.5-.9-1.2-1.7l2.6-6.4-2.1.6c-.8.2-1.7-.2-2-1-.3-.9.1-1.8 1-2.2l4.9-2.1c-.6-.5-1-1.2-1-2.1A2.6 2.6 0 0 1 12 3z"></path></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5"></path></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"></path><circle cx="12" cy="10" r="2.3"></circle></symbol>
+<symbol id="i-pinq" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"></path><path d="M10.2 8.6a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.4M12 13.9v.1"></path></symbol>
+<symbol id="i-locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1.2"></circle><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"></path></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"></path></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></symbol>
+<symbol id="i-chevl" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></symbol>
+<symbol id="i-chevr" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"></path></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></symbol>
+<symbol id="i-map" viewBox="0 0 24 24"><path d="M3.5 6.5L9 4l6 2.5L20.5 4v13.5L15 20l-6-2.5-5.5 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></symbol>
+<symbol id="i-repeat" viewBox="0 0 24 24"><path d="M17 3.5l3 3-3 3M4 11.5v-1a4 4 0 0 1 4-4h12M7 20.5l-3-3 3-3M20 12.5v1a4 4 0 0 1-4 4H4"></path></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M3.5 12h17M12 3.5c2.5 2.6 3.5 5.4 3.5 8.5s-1 5.9-3.5 8.5c-2.5-2.6-3.5-5.4-3.5-8.5s1-5.9 3.5-8.5z"></path></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></symbol>
+<symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M14.6 9.3c-.5-.8-1.4-1.3-2.6-1.3-1.5 0-2.5.8-2.5 1.9 0 2.6 5 1.4 5 4.2 0 1.1-1 1.9-2.5 1.9-1.2 0-2.1-.5-2.6-1.3M12 6.5V8M12 16v1.5"></path></symbol>
+<symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 20v-8M12 12c0-3.5-2.5-6-6.5-6 0 3.8 2.6 6 6.5 6zM12 13.5c0-3 2.2-5.5 6.5-5.5 0 3.5-2.6 5.5-6.5 5.5z"></path></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 11v5M12 8h.01"></path></symbol>
+</svg>
+
+<header class="sign">
+<div class="wrap sign__in">
+<a class="brand" href="#" aria-label="Kulturalna Karczma — strona główna">
+<svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true"><use href="#i-logo"></use></svg>
+<span class="brand__text"><span class="brand__name">Kulturalna Karczma</span><span class="brand__tag">gdzie gra się kulturalnie</span></span>
+</a>
+<span class="sign__aside"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-pin"></use></svg>Poznań</span>
+</div>
+</header>
+
+<main class="kk-page" data-view="{{view}}">
+<div class="wrap">
+
+<section class="filters" aria-label="Filtry wydarzeń">
+<div class="fgroup">
+<span class="eyebrow" id="lbl-when">Kiedy</span>
+<div class="fgroup__row">
+<div class="scroller" role="group" aria-labelledby="lbl-when">
+<sc-for list="{{times}}" as="t" hint-placeholder-count="5">
+<button type="button" class="chip" aria-pressed="{{t.on}}" onClick="{{t.pick}}"><svg class="ico ico--sm chip__check" aria-hidden="true"><use href="#i-check"></use></svg>{{t.label}}</button>
+</sc-for>
+</div>
+<div class="dates">
+<label class="field"><span class="field__label">Od</span><span class="input-icon"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-cal"></use></svg><input class="input" type="text" inputmode="numeric" placeholder="dd.mm.rrrr" autocomplete="off"></span></label>
+<label class="field"><span class="field__label">Do</span><span class="input-icon"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-cal"></use></svg><input class="input" type="text" inputmode="numeric" placeholder="dd.mm.rrrr" autocomplete="off"></span></label>
+</div>
+</div>
+</div>
+
+<div class="fgroup">
+<span class="eyebrow" id="lbl-what">Co</span>
+<div class="scroller" role="group" aria-labelledby="lbl-what">
+<sc-for list="{{catChips}}" as="c" hint-placeholder-count="4">
+<button type="button" class="{{c.cls}}" aria-pressed="{{c.on}}" onClick="{{c.toggle}}"><svg class="ico" aria-hidden="true"><use href="{{c.icon}}"></use></svg>{{c.label}}<svg class="ico ico--sm chip__check" aria-hidden="true"><use href="#i-check"></use></svg></button>
+</sc-for>
+</div>
+</div>
+
+<div class="fgroup">
+<label class="eyebrow" for="kk-q">Szukaj</label>
+<div class="searchrow">
+<span class="input-icon"><svg class="ico" aria-hidden="true"><use href="#i-search"></use></svg><input id="kk-q" class="input" type="search" placeholder="Szukaj: tytuł, miejsce, organizator…" value="{{q}}" onChange="{{onQ}}"></span>
+<div class="searchrow__actions">
+<button type="button" class="btn btn--secondary" aria-expanded="{{more}}" aria-controls="kk-more" onClick="{{toggleMore}}"><svg class="ico" aria-hidden="true"><use href="#i-sliders"></use></svg>Więcej filtrów<sc-if value="{{hasMoreActive}}" hint-placeholder-val="{{false}}"><span class="count-dot">{{moreActive}}</span></sc-if><svg class="ico ico--sm chev" aria-hidden="true"><use href="#i-chev"></use></svg></button>
+<button type="button" class="linkbtn" onClick="{{clear}}">Wyczyść filtry</button>
+</div>
+</div>
+</div>
+
+<sc-if value="{{more}}" hint-placeholder-val="{{false}}">
+<div class="more" id="kk-more">
+<div class="more__toggles" role="group" aria-label="Dodatkowe filtry">
+<sc-for list="{{flagChips}}" as="f" hint-placeholder-count="6">
+<button type="button" class="chip chip--opt" aria-pressed="{{f.on}}" onClick="{{f.toggle}}"><svg class="ico ico--sm chip__check" aria-hidden="true"><use href="#i-check"></use></svg>{{f.label}}</button>
+</sc-for>
+</div>
+<div class="range">
+<div class="range__head"><label for="kk-price">Cena maks.</label><span class="range__val">{{priceLabel}}</span></div>
+<input id="kk-price" class="slider" type="range" min="0" max="150" step="5" value="{{maxPrice}}" onChange="{{onPrice}}" aria-valuetext="{{priceLabel}}">
+<div class="range__scale"><span>0 zł</span><span>150 zł = dowolna</span></div>
+</div>
+</div>
+</sc-if>
+</section>
+
+<div class="toolbar">
+<div class="tabs tabs--m" role="tablist" aria-label="Widok">
+<sc-for list="{{tabsM}}" as="t" hint-placeholder-count="3">
+<button type="button" class="tab" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}"><svg class="ico" aria-hidden="true"><use href="{{t.icon}}"></use></svg>{{t.label}}</button>
+</sc-for>
+</div>
+<div class="tabs tabs--d" role="tablist" aria-label="Widok">
+<sc-for list="{{tabsD}}" as="t" hint-placeholder-count="2">
+<button type="button" class="tab" role="tab" aria-selected="{{t.on}}" onClick="{{t.pick}}"><svg class="ico" aria-hidden="true"><use href="{{t.icon}}"></use></svg>{{t.label}}</button>
+</sc-for>
+</div>
+<p class="count" aria-live="polite"><span class="count__n">{{countLabel}}</span><span class="count__range">{{rangeLabel}}</span></p>
+</div>
+
+<div class="views">
+
+<sc-if value="{{loading}}" hint-placeholder-val="{{false}}">
+<div role="status" aria-busy="true">
+<p class="loading-line"><svg class="ico ico--lg" aria-hidden="true"><use href="#i-rpg"></use></svg>Rozstawiamy pionki… wczytujemy wydarzenia</p>
+<div class="split">
+<div class="split__list">
+<div style="display: grid; gap: 12px">
+<span class="sk" style="width: 220px; height: 24px; margin: 4px 0 6px"></span>
+<sc-for list="{{skeletons}}" as="s" hint-placeholder-count="4">
+<div class="sk-card"><span class="sk-card__stub"></span><span class="sk-card__body"><span class="sk" style="width: 30%; height: 12px"></span><span class="sk" style="width: {{s.w}}; height: 18px"></span><span class="sk" style="width: 48%; height: 14px"></span><span class="sk" style="width: 38%; height: 22px"></span></span></div>
+</sc-for>
+</div>
+</div>
+<div class="split__map"><div class="map sk" style="border-color: var(--line)" aria-hidden="true"></div></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{isEmpty}}" hint-placeholder-val="{{false}}">
+<div class="empty" role="status">
+<svg class="empty__art" viewBox="0 0 200 132" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="53" cy="56" r="24" style="fill: var(--gold); opacity: .16; stroke: none"></circle>
+<path d="M53 40c5 6 7 10 7 14a7 7 0 0 1-14 0c0-3 2-6 4-8 .5 2 1.5 3 2.5 3.5 0-3.5 0-6 .5-9.5z" style="fill: var(--gold); stroke: none"></path>
+<path d="M53 64v6"></path>
+<rect x="44" y="70" width="18" height="42" rx="3"></rect>
+<path d="M44 80c3 0 3 6 6 6"></path>
+<g transform="rotate(-12 112 92)"><rect x="96" y="76" width="32" height="32" rx="7"></rect><circle cx="112" cy="92" r="3" fill="currentColor"></circle></g>
+<path d="M104 40a7 7 0 1 1 9 6.7c-1.5.5-2.5 1.6-2.5 3.3v1M110.5 58v.5"></path>
+<path d="M146 80h24v28a4 4 0 0 1-4 4h-16a4 4 0 0 1-4-4z"></path>
+<path d="M170 86h5a6 6 0 0 1 0 12h-5M152 88v16M158 88v16M164 88v16"></path>
+<path d="M12 112h176M30 112v14M170 112v14"></path>
+</svg>
+<h2 class="empty__title">Brak wydarzeń dla wybranych filtrów.</h2>
+<p class="empty__hint">Spróbuj szerszego zakresu, np. „Ten miesiąc”, albo wyczyść filtry — w karczmie zawsze coś się dzieje.</p>
+<div class="empty__actions">
+<button type="button" class="btn btn--primary" onClick="{{clear}}">Wyczyść filtry</button>
+<button type="button" class="btn btn--secondary" onClick="{{wholeMonth}}"><svg class="ico" aria-hidden="true"><use href="#i-cal"></use></svg>Pokaż cały miesiąc</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{hasResults}}" hint-placeholder-val="{{true}}">
+<div class="split">
+
+<div class="split__list">
+<sc-for list="{{days}}" as="day" hint-placeholder-count="3">
+<section class="day" aria-label="{{day.title}}">
+<div class="day__head"><h2 class="day__name">{{day.title}}</h2><sc-if value="{{day.hasRel}}" hint-placeholder-val="{{false}}"><span class="day__rel">{{day.rel}}</span></sc-if><span class="day__rule"></span></div>
+<sc-for list="{{day.events}}" as="ev" hint-placeholder-count="2">
+<a class="{{ev.cls}}" href="#">
+<span class="card__stub"><span class="card__time">{{ev.stubTop}}</span><span class="card__end">{{ev.stubBottom}}</span><svg class="ico" aria-hidden="true"><use href="{{ev.icon}}"></use></svg></span>
+<span class="card__body">
+<span class="card__cat">{{ev.catLabel}}</span>
+<span class="card__title">{{ev.t}}</span>
+<sc-if value="{{ev.hasWhen}}" hint-placeholder-val="{{false}}"><span class="card__when">{{ev.when}}</span></sc-if>
+<span class="{{ev.venueCls}}"><svg class="ico ico--sm" aria-hidden="true"><use href="{{ev.venueIcon}}"></use></svg>{{ev.venue}}</span>
+<span class="card__meta">
+<sc-if value="{{ev.isFree}}" hint-placeholder-val="{{false}}"><span class="badge badge--free"><svg class="ico" aria-hidden="true"><use href="#i-coin"></use></svg>Za darmo</span></sc-if>
+<sc-if value="{{ev.notFree}}" hint-placeholder-val="{{true}}"><span class="price">{{ev.p}}</span></sc-if>
+<sc-for list="{{ev.tags}}" as="tg" hint-placeholder-count="1"><span class="{{tg.cls}}"><svg class="ico" aria-hidden="true"><use href="{{tg.icon}}"></use></svg>{{tg.label}}</span></sc-for>
+</span>
+</span>
+</a>
+</sc-for>
+</section>
+</sc-for>
+<sc-if value="{{hasMoreDays}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; justify-content: center; padding-top: 24px"><button type="button" class="btn btn--secondary">Pokaż kolejne dni · {{moreDaysLabel}}</button></div>
+</sc-if>
+</div>
+
+<div class="split__map">
+<div class="map" role="region" aria-label="Mapa wydarzeń">
+<svg class="map__tiles" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<rect width="1000" height="1000" fill="#f2efe9"></rect>
+<path d="M-20-20h1040v120c-140 40-260-20-400 20s-260 10-380-20-200 20-260 0z" fill="#d6e9c6"></path>
+<path d="M-20 640c90-20 160 10 210 60s40 140 0 200l-40 120H-20z" fill="#d6e9c6"></path>
+<rect x="300" y="290" width="150" height="110" rx="8" fill="#c8facc"></rect>
+<rect x="440" y="820" width="110" height="80" rx="8" fill="#c8facc"></rect>
+<path d="M700-20c-30 120 50 200 10 320s-70 200-20 320 40 220 20 400" fill="none" stroke="#aad3df" stroke-width="44"></path>
+<path d="M810 430c50-40 150-30 180 20 15 50-70 90-140 70-40-12-70-55-40-90z" fill="#aad3df"></path>
+<g fill="#e3dad0">
+<rect x="30" y="285" width="130" height="60" rx="3"></rect><rect x="30" y="360" width="60" height="40" rx="3"></rect><rect x="200" y="285" width="80" height="110" rx="3"></rect><rect x="440" y="130" width="100" height="100" rx="3"></rect><rect x="580" y="140" width="70" height="90" rx="3"></rect><rect x="440" y="560" width="100" height="70" rx="3"></rect><rect x="200" y="560" width="70" height="80" rx="3"></rect><rect x="760" y="560" width="80" height="60" rx="3"></rect><rect x="600" y="800" width="80" height="80" rx="3"></rect><rect x="40" y="130" width="110" height="100" rx="3"></rect><rect x="200" y="130" width="90" height="100" rx="3"></rect>
+</g>
+<g fill="none" stroke-linecap="round">
+<path d="M-20 260h1040M-20 530h1040M-20 780h720M180-20v1040M420-20v1040M570 110v900M880 520v500M300 660l260-120" stroke="#d6cfc4" stroke-width="13"></path>
+<path d="M-20 260h1040M-20 530h1040M-20 780h720M180-20v1040M420-20v1040M570 110v900M880 520v500M300 660l260-120" stroke="#ffffff" stroke-width="9"></path>
+<path d="M300-20c20 300-40 600 40 1040" stroke="#c9c47a" stroke-width="16"></path>
+<path d="M300-20c20 300-40 600 40 1040" stroke="#f7fabf" stroke-width="12"></path>
+<path d="M-20 430c240-40 480 30 640-20s260-40 400-20" stroke="#c9a46a" stroke-width="20"></path>
+<path d="M-20 430c240-40 480 30 640-20s260-40 400-20" stroke="#fcd6a4" stroke-width="15"></path>
+<path d="M-20 930l1040-200" stroke="#9b9b9b" stroke-width="5"></path>
+<path d="M-20 930l1040-200" stroke="#ffffff" stroke-width="3" stroke-dasharray="14 14"></path>
+</g>
+</svg>
+<div class="map__ctl"><button type="button" aria-label="Przybliż"><svg class="ico" aria-hidden="true"><use href="#i-plus"></use></svg></button><button type="button" aria-label="Oddal"><svg class="ico" aria-hidden="true"><use href="#i-minus"></use></svg></button></div>
+<button type="button" class="btn btn--secondary map__near"><svg class="ico" aria-hidden="true"><use href="#i-locate"></use></svg>Blisko mnie</button>
+<sc-for list="{{pins}}" as="p" hint-placeholder-count="6">
+<button type="button" class="{{p.cls}}" style="left: {{p.x}}%; top: {{p.y}}%" aria-label="{{p.aria}}" aria-expanded="{{p.open}}" onClick="{{p.toggle}}"><span class="pin__head" style="background: {{p.bg}}"><sc-if value="{{p.single}}" hint-placeholder-val="{{true}}"><svg class="ico" aria-hidden="true"><use href="{{p.icon}}"></use></svg></sc-if><sc-if value="{{p.multi}}" hint-placeholder-val="{{false}}"><span class="pin__count">{{p.count}}</span></sc-if></span></button>
+</sc-for>
+<sc-if value="{{hasPopup}}" hint-placeholder-val="{{false}}">
+<div class="popup" style="left: {{pop.x}}%; top: {{pop.y}}%" role="dialog" aria-label="{{pop.name}}">
+<div class="popup__head"><div><p class="popup__title">{{pop.name}}</p><p class="popup__addr">[ulica i numer], Poznań · {{pop.countLabel}}</p></div><button type="button" class="popup__close" aria-label="Zamknij" onClick="{{closePop}}"><svg class="ico" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+<ul class="popup__list">
+<sc-for list="{{pop.events}}" as="pe" hint-placeholder-count="3">
+<li><a class="{{pe.cls}}" href="#"><span class="popup__ico"><svg class="ico" aria-hidden="true"><use href="{{pe.icon}}"></use></svg></span><span><span class="popup__when">{{pe.when}}</span><span class="popup__t">{{pe.t}}</span></span></a></li>
+</sc-for>
+</ul>
+<div class="popup__foot"><sc-if value="{{pop.hasMore}}" hint-placeholder-val="{{false}}"><button type="button" class="linkbtn" onClick="{{showList}}">{{pop.moreLabel}}</button></sc-if></div>
+</div>
+</sc-if>
+<sc-if value="{{hasNoLoc}}" hint-placeholder-val="{{true}}">
+<div class="map__note"><svg class="ico" aria-hidden="true"><use href="#i-info"></use></svg><span>{{noLocLabel}}</span><button type="button" class="linkbtn" onClick="{{showList}}">Pokaż</button></div>
+</sc-if>
+<div class="map__attr">Leaflet | © <a href="#">OpenStreetMap</a></div>
+</div>
+</div>
+
+</div>
+
+<div class="calview">
+<div class="cal">
+<div class="cal__head">
+<h2 class="cal__month">Listopad 2026</h2>
+<button type="button" class="btn btn--ghost btn--icon" aria-label="Poprzedni miesiąc"><svg class="ico" aria-hidden="true"><use href="#i-chevl"></use></svg></button>
+<button type="button" class="btn btn--secondary">Dziś</button>
+<button type="button" class="btn btn--ghost btn--icon" aria-label="Następny miesiąc"><svg class="ico" aria-hidden="true"><use href="#i-chevr"></use></svg></button>
+</div>
+<div class="cal__dow" aria-hidden="true"><span>Pn</span><span>Wt</span><span>Śr</span><span>Cz</span><span>Pt</span><span>So</span><span>Nd</span></div>
+<div class="cal__grid">
+<sc-for list="{{cells}}" as="c" hint-placeholder-count="42">
+<div class="{{c.cls}}">
+<span class="cal__date">{{c.num}}</span>
+<sc-for list="{{c.evs}}" as="e" hint-placeholder-count="1"><a class="{{e.cls}}" href="#" title="{{e.full}}"><svg class="ico" aria-hidden="true"><use href="{{e.icon}}"></use></svg><sc-if value="{{e.hasTime}}" hint-placeholder-val="{{true}}"><b>{{e.time}}</b></sc-if><span>{{e.label}}</span></a></sc-for>
+<sc-if value="{{c.hasMore}}" hint-placeholder-val="{{false}}"><a class="cal__more" href="#">{{c.more}}</a></sc-if>
+</div>
+</sc-for>
+</div>
+<ol class="agenda">
+<sc-for list="{{agenda}}" as="a" hint-placeholder-count="6">
+<li class="{{a.cls}}">
+<div class="agenda__date"><span class="agenda__num">{{a.num}}</span><span class="agenda__dow">{{a.dow}}</span></div>
+<div class="agenda__evs">
+<sc-for list="{{a.evs}}" as="e" hint-placeholder-count="1"><a class="{{e.cls}}" href="#"><svg class="ico" aria-hidden="true"><use href="{{e.icon}}"></use></svg><span><b>{{e.time}}</b> {{e.full}}</span></a></sc-for>
+</div>
+</li>
+</sc-for>
+</ol>
+</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+</main>
+
+<footer class="wrap foot">
+<p><strong>Kulturalna Karczma</strong> — darmowy, niekomercyjny przewodnik po wydarzeniach hobbystycznych w Poznaniu.</p>
+<p>Zbieramy wydarzenia ze stron na Facebooku, kalendarzy klubów i miejskiego kalendarza kultury. Szczegóły zawsze potwierdzaj u organizatora.</p>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"view":{"editor":"enum","options":["list","map","cal"],"default":"list"},"state":{"editor":"enum","options":["ok","loading"],"default":"ok"},"time":{"editor":"enum","options":["dzis","jutro","weekend","tydzien","miesiac"],"default":"miesiac"},"cats":{"editor":"text","default":""},"q":{"editor":null},"flags":{"editor":null},"more":{"editor":"boolean","default":false},"popup":{"editor":"enum","options":["","era","podz","orbita","lipy","wilda","latarnia","twierdza"],"default":"era"},"$preview":{"width":1280,"height":2500}}'>
+const KK_CATS = { larp: 'LARP', impro: 'Impro', rpg: 'RPG', plansz: 'Planszówki' };
+const KK_ORDER = ['larp', 'impro', 'rpg', 'plansz'];
+const KK_VENUES = {
+  era: { name: 'Klub Fantastyki Druga Era', x: 47, y: 60 },
+  podz: { name: 'Podziemie', x: 64, y: 40 },
+  orbita: { name: 'ODK Orbita', x: 24, y: 32 },
+  lipy: { name: 'ODK „Pod Lipami”', x: 80, y: 20 },
+  wilda: { name: 'Pracownia Ruchu Wilda', x: 58, y: 86 },
+  latarnia: { name: 'Bar Zielona Latarnia', x: 30, y: 74 },
+  twierdza: { name: 'Twierdza Gier', x: 14, y: 54 }
+};
+const KK_EVENTS = [
+  { d: 3, cat: 'impro', t: 'Warsztaty impro dla początkujących: „Tak, i…”', s: '18:30', e: '21:00', v: 'wilda', p: '30 zł', tags: ['cykliczne', 'dla początkujących'] },
+  { d: 4, cat: 'rpg', t: 'Zew Cthulhu: Maski Nyarlathotepa – wolne miejsca w kampanii', s: '19:00', e: '23:00', v: 'podz', p: 'Za darmo', tags: ['cykliczne'] },
+  { d: 5, cat: 'plansz', t: 'Wieczór planszówkowy w Drugiej Erze', s: '18:00', e: '22:00', v: 'era', p: 'Za darmo', tags: ['cykliczne', 'dla początkujących'] },
+  { d: 5, cat: 'rpg', t: 'Warhammer Fantasy Roleplay – nauka gry', s: '18:00', e: '21:00', v: 'era', p: '15 zł', tags: ['dla początkujących'] },
+  { d: 5, cat: 'plansz', t: 'Dwudziesty pierwszy Wieczór Gier Planszowych w Osiedlowym Domu Kultury „Pod Lipami”', s: '19:00', e: '21:30', v: 'lipy', p: 'Za darmo', tags: ['cykliczne'] },
+  { d: 5, cat: 'impro', t: 'Wieczór komedii impro', s: '20:00', e: '21:30', v: 'orbita', p: 'Za darmo', tags: [] },
+  { d: 6, days: 3, cat: 'larp', t: 'Zimowa Brama – weekendowy konwent larpowy', s: '18:00', e: '21:00', v: null, p: '400–480 zł', tags: ['wielodniowe'], when: 'pt., 6 lis 18:00 – niedz., 8 lis 21:00' },
+  { d: 6, cat: 'rpg', t: 'One-shot D&D: Klątwa młyna nad Wartą', s: '18:30', e: '23:00', v: 'podz', p: '25 zł', tags: ['dla początkujących'] },
+  { d: 6, cat: 'impro', t: 'Improv Jam in English', s: '20:00', e: '22:00', v: 'latarnia', p: '20 zł', tags: ['EN'] },
+  { d: 7, cat: 'larp', t: 'Drugi Run – Larp Gwiezdny Horyzont', s: '10:00', e: '20:00', v: 'era', p: '120 zł', tags: ['dla początkujących'] },
+  { d: 7, cat: 'plansz', t: 'Turniej Warhammer 40k: Jesienna Krucjata', s: '11:00', e: '20:00', v: 'twierdza', p: '60 zł', tags: [] },
+  { d: 8, cat: 'rpg', t: 'Sesje pokazowe RPG dla nowych graczy', s: '15:00', e: '19:00', v: 'podz', p: 'Za darmo', tags: ['dla początkujących'] },
+  { d: 10, cat: 'impro', t: 'Warsztaty impro dla początkujących: „Tak, i…”', s: '18:30', e: '21:00', v: 'wilda', p: '30 zł', tags: ['cykliczne', 'dla początkujących'] },
+  { d: 12, cat: 'plansz', t: 'Wieczór planszówkowy w Drugiej Erze', s: '18:00', e: '22:00', v: 'era', p: 'Za darmo', tags: ['cykliczne'] },
+  { d: 14, cat: 'larp', t: 'Ostatnia kolacja – larp kameralny', s: '17:00', e: '22:00', v: null, p: '90 zł', tags: [] },
+  { d: 18, cat: 'rpg', t: 'Zew Cthulhu: Maski Nyarlathotepa', s: '19:00', e: '23:00', v: 'podz', p: 'Za darmo', tags: ['cykliczne'] },
+  { d: 19, cat: 'plansz', t: 'Wieczór planszówkowy w Drugiej Erze', s: '18:00', e: '22:00', v: 'era', p: 'Za darmo', tags: ['cykliczne'] },
+  { d: 20, cat: 'impro', t: 'Impro Battle: Poznań kontra Wrocław', s: '19:30', e: '22:00', v: 'orbita', p: '35 zł', tags: [] },
+  { d: 21, cat: 'plansz', t: 'Planszówkowy maraton charytatywny', s: '10:00', e: '22:00', v: null, p: 'Za darmo', tags: [] },
+  { d: 26, cat: 'plansz', t: 'Wieczór planszówkowy w Drugiej Erze', s: '18:00', e: '22:00', v: 'era', p: 'Za darmo', tags: ['cykliczne'] },
+  { d: 28, cat: 'larp', t: 'Bal na dworze Sarmatów – larp kostiumowy', s: '18:00', e: '23:30', v: 'twierdza', p: '150 zł', tags: [] }
+];
+const KK_DOW = ['niedziela', 'poniedziałek', 'wtorek', 'środa', 'czwartek', 'piątek', 'sobota'];
+const KK_DOWS = ['ndz.', 'pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.'];
+const KK_TODAY = 3;
+const KK_TIMES = [
+  { k: 'dzis', label: 'Dziś', from: 3, to: 3, range: 'wtorek, 3 listopada' },
+  { k: 'jutro', label: 'Jutro', from: 4, to: 4, range: 'środa, 4 listopada' },
+  { k: 'weekend', label: 'Ten weekend', from: 7, to: 8, range: '7–8 listopada' },
+  { k: 'tydzien', label: 'Ten tydzień', from: 3, to: 8, range: '3–8 listopada' },
+  { k: 'miesiac', label: 'Ten miesiąc', from: 3, to: 30, range: '3–30 listopada' }
+];
+const KK_FLAGS = [['wieczor', 'Wieczorem (od 17)'], ['dzien', 'W dzień'], ['free', 'Za darmo'], ['beg', 'Dla początkujących'], ['en', 'Po angielsku'], ['multi', 'Wielodniowe']];
+const KK_LIMIT = 11;
+function kkDow(d) { return (d - 1 + 70) % 7; }
+function kkPlural(n) {
+  if (n === 1) return 'wydarzenie';
+  const a = n % 10, b = n % 100;
+  return (a >= 2 && a <= 4 && !(b >= 12 && b <= 14)) ? 'wydarzenia' : 'wydarzeń';
+}
+function kkPrice(p) { if (p === 'Za darmo') return 0; const m = p.match(/\d+/); return m ? +m[0] : 0; }
+function kkCap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+class Component extends DCLogic {
+  st() {
+    const s = this.state || {};
+    const p = this.props;
+    const split = (v) => (v ? String(v).split(',').filter(Boolean) : []);
+    return {
+      view: s.view ?? p.view ?? 'list',
+      time: s.time ?? p.time ?? 'miesiac',
+      cats: s.cats ?? split(p.cats),
+      q: s.q ?? p.q ?? '',
+      more: s.more ?? !!p.more,
+      flags: s.flags ?? split(p.flags),
+      maxPrice: s.maxPrice ?? 150,
+      popup: s.popup ?? p.popup ?? 'era'
+    };
+  }
+  renderVals() {
+    const S = this.st();
+    const set = (o) => this.setState(o);
+    const loading = (this.props.state ?? 'ok') === 'loading';
+    const T = KK_TIMES.find(t => t.k === S.time) || KK_TIMES[4];
+    const q = S.q.trim().toLowerCase();
+    const f = S.flags;
+
+    const filtered = KK_EVENTS.filter(e => {
+      const end = e.d + (e.days || 1) - 1;
+      if (end < T.from || e.d > T.to) return false;
+      if (S.cats.length && !S.cats.includes(e.cat)) return false;
+      if (q) {
+        const hay = (e.t + ' ' + (e.v ? KK_VENUES[e.v].name : '') + ' ' + KK_CATS[e.cat]).toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      if (f.includes('wieczor') && !(e.s >= '17:00')) return false;
+      if (f.includes('dzien') && !(e.s < '17:00')) return false;
+      if (f.includes('free') && e.p !== 'Za darmo') return false;
+      if (f.includes('beg') && !e.tags.includes('dla początkujących')) return false;
+      if (f.includes('en') && !e.tags.includes('EN')) return false;
+      if (f.includes('multi') && !e.days) return false;
+      if (S.maxPrice < 150 && kkPrice(e.p) > S.maxPrice) return false;
+      return true;
+    });
+
+    const tagVm = (t) => ({
+      label: t,
+      cls: t === 'EN' ? 'badge badge--en' : 'badge',
+      icon: t === 'cykliczne' ? '#i-repeat' : t === 'dla początkujących' ? '#i-sprout' : t === 'EN' ? '#i-globe' : '#i-cal'
+    });
+    const cardVm = (e) => {
+      const v = e.v ? KK_VENUES[e.v] : null;
+      return {
+        cls: 'card cat-' + e.cat + (e.days ? ' card--multi' : ''),
+        icon: '#i-' + e.cat,
+        catLabel: KK_CATS[e.cat],
+        t: e.t,
+        stubTop: e.days ? String(e.days) : e.s,
+        stubBottom: e.days ? 'dni' : '–' + e.e,
+        hasWhen: !!e.days,
+        when: e.when || '',
+        venue: v ? v.name : 'Miejsce do potwierdzenia',
+        venueCls: v ? 'card__venue' : 'card__venue is-unknown',
+        venueIcon: v ? '#i-pin' : '#i-pinq',
+        isFree: e.p === 'Za darmo',
+        notFree: e.p !== 'Za darmo',
+        p: e.p,
+        tags: e.tags.map(tagVm)
+      };
+    };
+
+    // list, grouped by day
+    const shown = filtered.slice(0, KK_LIMIT);
+    const groups = [];
+    shown.forEach(e => {
+      const day = Math.max(e.d, T.from);
+      let g = groups.find(x => x.d === day);
+      if (!g) {
+        const rel = day === KK_TODAY ? 'Dziś' : day === KK_TODAY + 1 ? 'Jutro' : '';
+        g = { d: day, title: kkCap(KK_DOW[kkDow(day)]) + ', ' + day + ' listopada', rel, hasRel: !!rel, events: [] };
+        groups.push(g);
+      }
+      g.events.push(cardVm(e));
+    });
+    const rest = filtered.length - shown.length;
+
+    // map
+    const byV = {};
+    filtered.forEach(e => { if (e.v) (byV[e.v] = byV[e.v] || []).push(e); });
+    const pins = Object.keys(byV).map(k => {
+      const evs = byV[k];
+      const v = KK_VENUES[k];
+      const cs = KK_ORDER.filter(c => evs.some(e => e.cat === c));
+      const n = cs.length;
+      const bg = n === 1 ? 'var(--pin-' + cs[0] + ')' :
+        'conic-gradient(' + cs.map((c, i) => 'var(--pin-' + c + ') ' + Math.round(i * 360 / n) + 'deg ' + Math.round((i + 1) * 360 / n) + 'deg').join(', ') + ')';
+      const open = S.popup === k;
+      return {
+        cls: 'pin' + (n === 1 ? ' cat-' + cs[0] : ''),
+        x: v.x, y: v.y, bg,
+        single: evs.length === 1, multi: evs.length > 1, count: evs.length,
+        icon: '#i-' + evs[0].cat,
+        aria: v.name + ': ' + evs.length + ' ' + kkPlural(evs.length),
+        open,
+        toggle: () => set({ popup: open ? '' : k })
+      };
+    });
+    const pv = byV[S.popup];
+    const pop = pv ? {
+      name: KK_VENUES[S.popup].name,
+      x: KK_VENUES[S.popup].x, y: KK_VENUES[S.popup].y,
+      countLabel: pv.length + ' ' + kkPlural(pv.length),
+      events: pv.slice(0, 3).map(e => ({
+        cls: 'popup__item cat-' + e.cat, icon: '#i-' + e.cat, t: e.t,
+        when: KK_DOWS[kkDow(e.d)] + ' ' + e.d + ' lis · ' + e.s
+      })),
+      hasMore: pv.length > 3,
+      moreLabel: 'Pokaż wszystkie (' + pv.length + ') na liście'
+    } : { name: '', x: 0, y: 0, countLabel: '', events: [], hasMore: false, moreLabel: '' };
+    const noLoc = filtered.filter(e => !e.v).length;
+
+    // calendar
+    const onDay = (d) => filtered.filter(e => d >= e.d && d <= e.d + (e.days || 1) - 1);
+    const calEv = (e, d, compact) => ({
+      cls: 'cal-ev cat-' + e.cat + (e.days ? ' cal-ev--span' : ''),
+      icon: '#i-' + e.cat,
+      hasTime: !e.days || d === e.d,
+      time: e.days ? (d === e.d ? e.s : '') : e.s,
+      label: e.days && d !== e.d ? 'cd. ' + e.t.split(' – ')[0] : (compact ? e.t.split(' – ')[0].split(': ')[0] : e.t),
+      full: e.t
+    });
+    const cells = [];
+    for (let i = 0; i < 42; i++) {
+      const d = i - 5;
+      const out = d < 1 || d > 30;
+      const num = d < 1 ? 31 + d : d > 30 ? d - 30 : d;
+      const evs = out ? [] : onDay(d);
+      cells.push({
+        cls: 'cal__cell' + (out ? ' is-out' : '') + (d === KK_TODAY ? ' is-today' : '') + (i % 7 >= 5 ? ' is-we' : ''),
+        num,
+        evs: evs.slice(0, 3).map(e => calEv(e, d, true)),
+        hasMore: evs.length > 3,
+        more: '+' + (evs.length - 3) + ' więcej'
+      });
+    }
+    const agenda = [];
+    for (let d = KK_TODAY; d <= 30; d++) {
+      const evs = onDay(d);
+      if (!evs.length) continue;
+      agenda.push({
+        cls: d === KK_TODAY ? 'is-today' : '',
+        num: d, dow: KK_DOWS[kkDow(d)],
+        evs: evs.map(e => calEv(e, d, false))
+      });
+    }
+
+    const moreActive = f.length + (S.maxPrice < 150 ? 1 : 0);
+    const isEmpty = !loading && filtered.length === 0;
+    return {
+      theme: this.props.theme ?? 'light',
+      view: S.view,
+      q: S.q,
+      more: S.more,
+      maxPrice: S.maxPrice,
+      priceLabel: S.maxPrice >= 150 ? 'dowolna' : S.maxPrice + ' zł',
+      loading,
+      isEmpty,
+      hasResults: !loading && !isEmpty,
+      times: KK_TIMES.map(t => ({ label: t.label, on: S.time === t.k, pick: () => set({ time: t.k }) })),
+      catChips: KK_ORDER.map(k => {
+        const on = S.cats.includes(k);
+        return { cls: 'chip chip--cat cat-' + k, icon: '#i-' + k, label: KK_CATS[k], on,
+          toggle: () => set({ cats: on ? S.cats.filter(c => c !== k) : S.cats.concat(k) }) };
+      }),
+      flagChips: KK_FLAGS.map(([k, label]) => {
+        const on = f.includes(k);
+        return { label, on, toggle: () => set({ flags: on ? f.filter(x => x !== k) : f.concat(k) }) };
+      }),
+      moreActive, hasMoreActive: moreActive > 0,
+      tabsM: [['list', 'Lista', '#i-list'], ['map', 'Mapa', '#i-map'], ['cal', 'Kalendarz', '#i-cal']].map(([k, label, icon]) => ({ label, icon, on: S.view === k, pick: () => set({ view: k }) })),
+      tabsD: [['list', 'Lista i mapa', '#i-map'], ['cal', 'Kalendarz', '#i-cal']].map(([k, label, icon]) => ({ label, icon, on: k === 'cal' ? S.view === 'cal' : S.view !== 'cal', pick: () => set({ view: k }) })),
+      countLabel: loading ? 'Wczytywanie…' : filtered.length + ' ' + kkPlural(filtered.length),
+      rangeLabel: T.range,
+      days: groups,
+      hasMoreDays: rest > 0,
+      moreDaysLabel: rest + ' ' + kkPlural(rest),
+      skeletons: [{ w: '86%' }, { w: '64%' }, { w: '78%' }, { w: '58%' }],
+      pins, pop, hasPopup: !!pv,
+      hasNoLoc: noLoc > 0,
+      noLocLabel: noLoc + ' ' + kkPlural(noLoc) + ' bez lokalizacji na mapie',
+      cells, agenda,
+      onQ: (e) => set({ q: e.target.value }),
+      onPrice: (e) => set({ maxPrice: +e.target.value }),
+      toggleMore: () => set({ more: !S.more }),
+      clear: () => set({ time: 'miesiac', cats: [], q: '', flags: [], maxPrice: 150 }),
+      wholeMonth: () => set({ time: 'miesiac' }),
+      closePop: () => set({ popup: '' }),
+      showList: () => set({ view: 'list', popup: '' })
+    };
+  }
+}
+</script>
+</body>
+</html>

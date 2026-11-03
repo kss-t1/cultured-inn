@@ -37,7 +37,7 @@ Status: draft v0.1 (2026-11-03)
 | View | Contents |
 |---|---|
 | **Mapa** | Leaflet with OpenStreetMap tiles. Pins are colored by category and cluster when zoomed out. "Near me" uses browser geolocation. Several events at one venue share one pin, and the popup lists them. |
-| **Kalendarz** | FullCalendar with month, week and day modes and category colors. It shows the same events as the list (the selected **Kiedy** window and filters) and opens at the start of an `Od`–`Do` range. On mobile the default is a **list-by-day** mode, because a month grid is unreadable on a phone. |
+| **Kalendarz** | A month grid with category colors; multi-day events appear on every day they cover. It shows the same events as the list (the selected **Kiedy** window and filters) and opens on the window's first month. On mobile it is a **list-by-day**, because a month grid is unreadable on a phone. |
 | **Lista** | Events grouped by day and sorted by start time. This is the fastest view for "what's on tonight". |
 | **Event detail** | Title, category, date and time, venue with a small map, price, organizer, description, tags, ticket link, source link, and "last updated". Includes schema.org `Event` JSON-LD for SEO. |
 
@@ -231,7 +231,6 @@ A small React app at `/admin`, served by the same Bun server and talking to a JS
 |---|---|
 | `react`, `react-dom` | public site and admin UI; `react-dom/server` also renders the event detail pages on the server for SEO |
 | `leaflet` + `leaflet.markercluster` | the map |
-| `@fullcalendar/react` (+ daygrid, timegrid, list) | the calendar |
 | `zod` | one schema for scraper output, LLM JSON, the submit form and admin forms |
 | `rrule` | expanding recurring series (RFC 5545 rules are easy to get wrong by hand) |
 | `node-ical` | parsing external ICS feeds (timezones and recurrence inside ICS are tricky). Exporting ICS is simple text and is hand-written. |

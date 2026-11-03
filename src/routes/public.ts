@@ -8,7 +8,8 @@ import { error, escapeHtml, handleError, json } from "../lib/http.ts";
 import { parseFilters } from "../shared/filters.ts";
 import { t } from "../shared/i18n/index.ts";
 import { EventPage, eventJsonLd, safeJson } from "./EventPage.tsx";
-import pageCss from "./event-page.css" with { type: "text" };
+import { SiteHeader } from "../shared/ui.tsx";
+import siteCss from "../site/styles.css" with { type: "text" };
 
 export const baseUrl = () => (process.env.PUBLIC_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 
@@ -25,11 +26,17 @@ async function apiEvents(req: Request) {
 // Share button: Web Share API, falling back to copying the link.
 const SHARE_JS = `document.getElementById("share")?.addEventListener("click",async e=>{const b=e.currentTarget,u=b.dataset.url;try{if(navigator.share){await navigator.share({title:b.dataset.title,url:u})}else{await navigator.clipboard.writeText(u);b.textContent=b.dataset.copied}}catch{}});`;
 
+// Head links shared with src/site/index.html: colour scheme, favicon, the design fonts.
+const HEAD_LINKS =
+  `<meta name="color-scheme" content="light dark"><link rel="icon" href="/favicon.svg" type="image/svg+xml">` +
+  `<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>` +
+  `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&amp;family=Source+Sans+3:ital,wght@0,400..700;1,400..700&amp;display=swap">`;
+
 function htmlPage(title: string, head: string, body: string, status = 200) {
   return new Response(
-    `<!doctype html><html lang="${t.htmlLang}"><head><meta charset="utf-8">` +
+    `<!doctype html><html lang="${t.htmlLang}" class="kk"><head><meta charset="utf-8">` +
       `<meta name="viewport" content="width=device-width,initial-scale=1">` +
-      `<title>${escapeHtml(title)}</title>${head}<style>${pageCss}</style></head><body>${body}</body></html>`,
+      `<title>${escapeHtml(title)}</title>${head}${HEAD_LINKS}<style>${siteCss}</style></head><body>${body}</body></html>`,
     { status, headers: { "Content-Type": "text/html; charset=utf-8" } },
   );
 }
@@ -44,8 +51,9 @@ async function eventPage(req: BunRequest<"/events/:slug">) {
       return htmlPage(
         `${t.event.notFoundPageTitle} – ${t.brand.name}`,
         `<meta name="robots" content="noindex">`,
-        `<main class="notfound"><h1>${escapeHtml(t.event.notFoundTitle)}</h1>` +
-          `<p><a href="/">${escapeHtml(t.event.notFoundBack)}</a></p></main>`,
+        renderToString(createElement(SiteHeader)) +
+          `<main class="wrap views"><div class="empty"><h1 class="empty__title">${escapeHtml(t.event.notFoundTitle)}</h1>` +
+          `<a class="btn btn--primary" href="/">${escapeHtml(t.event.notFoundBack)}</a></div></main>`,
         404,
       );
     }

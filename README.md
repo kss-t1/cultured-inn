@@ -10,7 +10,7 @@ The stack is **Bun** and **PostgreSQL**, with few dependencies:
 
 - **Bun:** HTTP server, bundler (HTML imports), Postgres client (`Bun.sql`), password hashing, tests.
 - **Postgres:** time zones, `pg_trgm` and `unaccent` for search, plain SQL migrations.
-- **Frontend:** React, Leaflet with markercluster, FullCalendar v7, plain CSS.
+- **Frontend:** React, Leaflet with markercluster, plain CSS. The visual design ("Karczma przy świecy") is in `design/`; its tokens and components are `src/site/styles.css`.
 - **Validation:** zod.
 
 The code, API and URLs are in English. The UI is in Polish, and every user-facing string lives in `src/shared/i18n/pl.ts`, so an English locale can be added later.

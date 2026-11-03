@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
-import { parseFilters, serializeFilters, type Filters } from "../shared/filters.ts";
+import { DEFAULT_FILTERS, parseFilters, serializeFilters, type Filters } from "../shared/filters.ts";
+import { fmtDays, windowDays } from "../shared/format.ts";
 import { t } from "../shared/i18n/index.ts";
+import type { IconName } from "../shared/icons.ts";
 import type { PublicEvent } from "../shared/types.ts";
+import { Icon, SiteFooter, SiteHeader } from "../shared/ui.tsx";
 import { fetchEvents } from "./api.ts";
 import { EventCalendar } from "./components/EventCalendar.tsx";
-import { EventList } from "./components/EventList.tsx";
+import { EventList, ListError, ListLoading, NoEvents } from "./components/EventList.tsx";
 import { EventMap } from "./components/EventMap.tsx";
 import { FilterBar } from "./components/FilterBar.tsx";
 import { useDebounced, useMediaQuery } from "./hooks.ts";
 
 type View = "list" | "map" | "calendar";
-const VIEWS: View[] = ["map", "list", "calendar"];
+const VIEWS: View[] = ["list", "map", "calendar"];
+const VIEW_ICONS: Record<View, IconName> = { list: "list", map: "map", calendar: "cal" };
 
 function readUrl(): { filters: Filters; view: View } {
   const params = new URLSearchParams(location.search);
@@ -30,7 +34,7 @@ type LoadState = { status: "loading" } | { status: "error" } | { status: "ok"; e
 
 export function App() {
   const [{ filters, view }, setState] = useState(readUrl);
-  const isDesktop = useMediaQuery("(min-width: 960px)");
+  const isDesktop = useMediaQuery("(min-width: 1000px)");
   const [load, setLoad] = useState<LoadState>({ status: "loading" });
 
   const setFilters = (f: Filters) => setState((s) => ({ ...s, filters: f }));
@@ -49,7 +53,6 @@ export function App() {
   const key = serializeFilters(queryFilters).toString();
 
   useEffect(() => {
-    if (view === "calendar") return; // EventCalendar fetches its own events
     const ctrl = new AbortController();
     setLoad((l) => (l.status === "ok" ? l : { status: "loading" }));
     fetchEvents(queryFilters, ctrl.signal)
@@ -59,62 +62,68 @@ export function App() {
       });
     return () => ctrl.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, view === "calendar"]);
+  }, [key]);
 
   const events = load.status === "ok" ? load.events : [];
-  const tabs: { id: View; label: string }[] = isDesktop
-    ? [{ id: "list", label: t.views.listAndMap }, { id: "calendar", label: t.views.calendar }]
-    : VIEWS.map((id) => ({ id, label: t.views[id] }));
+  const days = windowDays(queryFilters);
+  const tabs: { id: View; label: string; icon: IconName }[] = isDesktop
+    ? [{ id: "list", label: t.views.listAndMap, icon: "map" }, { id: "calendar", label: t.views.calendar, icon: "cal" }]
+    : VIEWS.map((id) => ({ id, label: t.views[id], icon: VIEW_ICONS[id] }));
   const activeTab = isDesktop && view === "map" ? "list" : view;
 
-  const list = <EventList state={load} />;
-  const map = <EventMap events={events} />;
+  const clear = () => setFilters(DEFAULT_FILTERS);
+  const wholeMonth = () => setFilters({ ...filters, when: "month", from: null, to: null });
+  const showDay = (day: string) => setState({ filters: { ...filters, from: day, to: null }, view: "list" });
+
+  const results =
+    load.status === "loading" ? <ListLoading /> :
+    load.status === "error" ? <ListError /> :
+    events.length === 0 ? <NoEvents onClear={clear} onWholeMonth={wholeMonth} /> :
+    null;
+  const map = <EventMap events={events} onShowList={isDesktop ? undefined : () => setView("list")} />;
 
   return (
-    <div className="app">
-      <header className="site-header">
-        <a href="/" className="brand">
-          <span className="brand-name">{t.brand.nameFirst} <b>{t.brand.nameSecond}</b></span>
-          <span className="tagline">{t.brand.tagline}</span>
-        </a>
-        <a href="/submit" className="header-link">{t.submit.headerLink}</a>
-      </header>
+    <>
+      <SiteHeader aside={
+        <a className="sign__link" href="/submit"><Icon name="plus" />
+        <span className="sign__label">{t.submit.headerLink}</span></a>
+      } />
 
-      <FilterBar filters={filters} onChange={setFilters} />
+      <main className="wrap">
+        <FilterBar filters={filters} onChange={setFilters} />
 
-      <div className="view-bar">
-        <div className="tabs" role="tablist" aria-label={t.filters.label}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              role="tab"
-              aria-selected={activeTab === tab.id}
-              className="tab"
-              onClick={() => setView(tab.id)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        {load.status === "ok" && view !== "calendar" && (
-          <span className="count" aria-live="polite">{t.list.count(events.length)}</span>
-        )}
-      </div>
-
-      <main className={`content view-${activeTab}${isDesktop ? " desktop" : ""}`}>
-        {activeTab === "calendar" ? (
-          <EventCalendar filters={queryFilters} isDesktop={isDesktop} />
-        ) : isDesktop ? (
-          <div className="split">
-            <section className="split-list">{list}</section>
-            <section className="split-map">{map}</section>
+        <div className="toolbar">
+          <div className={isDesktop ? "tabs tabs--d" : "tabs tabs--m"} role="tablist" aria-label={t.views.label}>
+            {tabs.map((tab) => (
+              <button key={tab.id} type="button" role="tab" className="tab" aria-selected={activeTab === tab.id}
+                onClick={() => setView(tab.id)}>
+                <Icon name={tab.icon} />{tab.label}
+              </button>
+            ))}
           </div>
-        ) : activeTab === "map" ? (
-          map
-        ) : (
-          list
-        )}
+          <p className="count" aria-live="polite">
+            <span className="count__n">{load.status === "ok" ? t.list.count(events.length) : t.list.counting}</span>
+            <span className="count__range">{fmtDays(days)}</span>
+          </p>
+        </div>
+
+        <div className="views">
+          {activeTab === "calendar" ? (
+            results ?? <EventCalendar key={days[0]} events={events} days={days} onShowDay={showDay} />
+          ) : isDesktop ? (
+            <div className="split">
+              <section className="split__list">{results ?? <EventList events={events} />}</section>
+              <section className="split__map">{map}</section>
+            </div>
+          ) : activeTab === "map" ? (
+            map
+          ) : (
+            results ?? <EventList events={events} />
+          )}
+        </div>
       </main>
-    </div>
+
+      <SiteFooter note={t.brand.sources} />
+    </>
   );
 }

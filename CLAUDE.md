@@ -52,7 +52,7 @@ Before a DELETE, an UPDATE that hides or deactivates rows, or removing files or 
 - No sideways scroll at 320 px; tap targets at least 44 px (links inside a sentence are exempt); `env(safe-area-inset-*)` on fixed or bottom-anchored bars.
 
 ### Design tokens in one place
-- Colours, radii, spacing, shadows, fonts and z-indices are CSS custom properties on `:root` (with dark-mode overrides) in `src/site/styles.css` and `src/admin/admin.css`. Category colours and icons live in `src/shared/categories.ts`.
+- Colours, radii, spacing, shadows, fonts and z-indices are CSS custom properties on `:root` (with dark-mode overrides) in `src/site/styles.css` and `src/admin/admin.css`. Category colours are the `--c-*` (text, fills) and `--pin-*` (map) tokens with `.cat-<slug>` classes in `styles.css`; each category's icon and slug are in `src/shared/categories.ts`, the icon set in `src/shared/icons.ts`. The source design is `design/kulturalna-karczma-design/`.
 - Check for an existing token before writing a literal; never add a near-duplicate (`9px` when `--radius` is 12px, a slightly different brown). If nothing fits, add one token and use it everywhere.
 
 ### Layout traps

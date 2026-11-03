@@ -3,6 +3,7 @@ import { useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { CATEGORIES } from "../shared/categories.ts";
 import { t } from "../shared/i18n/index.ts";
+import { Icon, SiteFooter, SiteHeader } from "../shared/ui.tsx";
 
 const S = t.submit;
 const F = S.fields;
@@ -52,38 +53,35 @@ function SubmitPage() {
     <div className="field">
       <label htmlFor={name}>{label}</label>
       {input}
-      {hint && <small className="muted">{hint}</small>}
+      {hint && <small className="muted small">{hint}</small>}
       {fields[name] && <small className="field-error" id={`${name}-error`}>{t.fieldErrors[fields[name]] ?? t.fieldErrors.invalid}</small>}
     </div>
   );
   const text = (name: keyof Form, type = "text", extra: Record<string, unknown> = {}) => (
-    <input id={name} name={name} type={type} value={f[name] as string} onChange={(e) => set(name, e.target.value)}
+    <input id={name} name={name} type={type} className="input" value={f[name] as string} onChange={(e) => set(name, e.target.value)}
       aria-invalid={fields[name] ? true : undefined} aria-describedby={fields[name] ? `${name}-error` : undefined} {...extra} />
   );
 
   return (
-    <div className="app">
-      <header className="site-header">
-        <a href="/" className="brand">
-          <span className="brand-name">{t.brand.nameFirst} <b>{t.brand.nameSecond}</b></span>
-          <span className="tagline">{t.brand.tagline}</span>
-        </a>
-        <a href="/" className="header-link">{t.event.back}</a>
-      </header>
-      <main className="submit-page">
+    <>
+      <SiteHeader aside={<a className="sign__link" href="/"><Icon name="back" /><span className="sign__label">{t.event.back}</span></a>} />
+      <main className="wrap submit-page">
         <h1>{S.title}</h1>
         {done ? (
           <div className="notice" role="status">
-            <h2>{S.thanksTitle}</h2>
-            <p>{S.thanks}</p>
-            <button type="button" className="btn" onClick={() => setDone(false)}>{S.another}</button>
+            <Icon name="check" />
+            <div className="notice__body">
+              <h2 className="notice__t">{S.thanksTitle}</h2>
+              <p>{S.thanks}</p>
+              <button type="button" className="btn btn--secondary" onClick={() => setDone(false)}>{S.another}</button>
+            </div>
           </div>
         ) : (
           <form className="submit-form" onSubmit={send} noValidate>
             <p className="muted">{S.intro}</p>
             {field("title", F.title, text("title", "text", { required: true, maxLength: 200 }))}
             {field("category", F.category, (
-              <select id="category" value={f.category} onChange={(e) => set("category", e.target.value)} required
+              <select id="category" className="input" value={f.category} onChange={(e) => set("category", e.target.value)} required
                 aria-invalid={fields.category ? true : undefined}>
                 <option value="">{F.categoryPick}</option>
                 {CATEGORIES.map((c) => <option key={c} value={c}>{t.categories[c]}</option>)}
@@ -96,7 +94,7 @@ function SubmitPage() {
             {field("location", F.location, text("location", "text", { required: true, maxLength: 300 }))}
             {field("link", F.link, text("link", "url", { inputMode: "url", placeholder: "https://" }))}
             {field("description", F.description, (
-              <textarea id="description" rows={5} maxLength={5000} value={f.description}
+              <textarea id="description" className="input" rows={5} maxLength={5000} value={f.description}
                 onChange={(e) => set("description", e.target.value)} />
             ))}
             <label className="check">
@@ -119,11 +117,12 @@ function SubmitPage() {
                 onChange={(e) => set("website", e.target.value)} />
             </div>
             {err && <p className="field-error" role="alert">{err}</p>}
-            <button className="btn primary" disabled={busy}>{busy ? S.sending : S.send}</button>
+            <button className="btn btn--primary" disabled={busy}>{busy ? S.sending : S.send}</button>
           </form>
         )}
       </main>
-    </div>
+      <SiteFooter note={t.brand.sources} />
+    </>
   );
 }
 

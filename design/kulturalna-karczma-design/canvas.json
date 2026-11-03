@@ -1,0 +1,261 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "D-Ladowanie.dc.html": {
+      "expand": "fill",
+      "h": 1300,
+      "title": "Desktop · Wczytywanie",
+      "w": 1280,
+      "x": 2300,
+      "y": 12680
+    },
+    "D-Pusto.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "Desktop · Brak wyników · ciemny",
+      "w": 1280,
+      "x": 940,
+      "y": 12680
+    },
+    "Event-Ciemny.dc.html": {
+      "expand": "fill",
+      "h": 1700,
+      "title": "Wydarzenie · desktop · ciemny, bez okładki",
+      "w": 1280,
+      "x": 1360,
+      "y": 14540
+    },
+    "Event-Minione.dc.html": {
+      "expand": "fill",
+      "h": 1700,
+      "title": "Wydarzenie · desktop · minione",
+      "w": 1280,
+      "x": 2720,
+      "y": 14540
+    },
+    "Event.dc.html": {
+      "expand": "fill",
+      "h": 1800,
+      "title": "Wydarzenie · desktop · jasny, z okładką",
+      "w": 1280,
+      "x": 0,
+      "y": 14540
+    },
+    "Home-Ciemny.dc.html": {
+      "expand": "fill",
+      "h": 2500,
+      "is_interactive": true,
+      "title": "Desktop · Lista i mapa · ciemny",
+      "w": 1280,
+      "x": 1360,
+      "y": 9820
+    },
+    "Home-Kalendarz.dc.html": {
+      "expand": "fill",
+      "h": 1500,
+      "is_interactive": true,
+      "title": "Desktop · Kalendarz · jasny",
+      "w": 1280,
+      "x": 2720,
+      "y": 9820
+    },
+    "Home.dc.html": {
+      "expand": "fill",
+      "h": 2500,
+      "is_interactive": true,
+      "title": "Desktop · Lista i mapa · jasny",
+      "w": 1280,
+      "x": 0,
+      "y": 9820
+    },
+    "M-Kalendarz.dc.html": {
+      "h": 2100,
+      "is_interactive": true,
+      "title": "Telefon · Kalendarz (lista dni) · ciemny",
+      "w": 390,
+      "x": 1410,
+      "y": 6460
+    },
+    "M-Ladowanie.dc.html": {
+      "h": 1500,
+      "title": "Telefon · Wczytywanie",
+      "w": 390,
+      "x": 470,
+      "y": 12680
+    },
+    "M-Lista-Ciemny.dc.html": {
+      "h": 2600,
+      "is_interactive": true,
+      "title": "Telefon · Lista + więcej filtrów · ciemny",
+      "w": 390,
+      "x": 470,
+      "y": 6460
+    },
+    "M-Lista.dc.html": {
+      "h": 3000,
+      "is_interactive": true,
+      "title": "Telefon · Lista · jasny",
+      "w": 390,
+      "x": 0,
+      "y": 6460
+    },
+    "M-Mapa.dc.html": {
+      "h": 1300,
+      "is_interactive": true,
+      "title": "Telefon · Mapa z dymkiem · jasny",
+      "w": 390,
+      "x": 940,
+      "y": 6460
+    },
+    "M-Pusto.dc.html": {
+      "h": 1200,
+      "is_interactive": true,
+      "title": "Telefon · Brak wyników",
+      "w": 390,
+      "x": 0,
+      "y": 12680
+    },
+    "M-Wydarzenie-Ciemny.dc.html": {
+      "h": 2300,
+      "title": "Wydarzenie · telefon · ciemny",
+      "w": 390,
+      "x": 4550,
+      "y": 14540
+    },
+    "M-Wydarzenie-Odwolane.dc.html": {
+      "h": 2400,
+      "title": "Wydarzenie · telefon · odwołane",
+      "w": 390,
+      "x": 5020,
+      "y": 14540
+    },
+    "M-Wydarzenie.dc.html": {
+      "h": 2600,
+      "title": "Wydarzenie · telefon · jasny",
+      "w": 390,
+      "x": 4080,
+      "y": 14540
+    },
+    "Logo.dc.html": {
+      "h": 900,
+      "title": "1b · Znak — Drużyna",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "Main.dc.html": {
+      "h": 1040,
+      "title": "1 · Trzy kierunki (moodboard)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "System.dc.html": {
+      "h": 4700,
+      "title": "2 · System wizualny: tokeny i komponenty",
+      "w": 1440,
+      "x": 0,
+      "y": 1400
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-11-03T12:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "noteOrder": [
+    "t1",
+    "t2",
+    "t3",
+    "t4",
+    "t5",
+    "t6",
+    "s1"
+  ],
+  "notes": {
+    "s1": {
+      "fill": "orange",
+      "text": "Ekrany są klikalne (Play): chipy filtrują, zakładki przełączają widok, pinezki otwierają dymek.\n\nMapa to szkic zastępczy w kolorach OSM — w aplikacji kafelki OpenStreetMap; stylujemy tylko pinezki, dymek i przyciski.",
+      "w": 360,
+      "x": 1880,
+      "y": 6460
+    },
+    "t1": {
+      "kind": "title1",
+      "maxW": 1440,
+      "text": "1 · Kierunki wizualne",
+      "w": 240,
+      "x": 0,
+      "y": -260
+    },
+    "t2": {
+      "kind": "title1",
+      "maxW": 1440,
+      "text": "2 · System wizualny „Karczma przy świecy”",
+      "w": 240,
+      "x": 0,
+      "y": 1140
+    },
+    "t3": {
+      "kind": "title1",
+      "maxW": 1800,
+      "text": "3 · Strona główna — telefon 390 px",
+      "w": 240,
+      "x": 0,
+      "y": 6200
+    },
+    "t4": {
+      "kind": "title1",
+      "maxW": 4000,
+      "text": "4 · Strona główna — desktop 1280 px",
+      "w": 240,
+      "x": 0,
+      "y": 9560
+    },
+    "t5": {
+      "kind": "title1",
+      "maxW": 3580,
+      "text": "5 · Stany: brak wyników i wczytywanie",
+      "w": 240,
+      "x": 0,
+      "y": 12420
+    },
+    "t6": {
+      "kind": "title1",
+      "maxW": 5410,
+      "text": "6 · Strona wydarzenia /wydarzenia/:slug",
+      "w": 240,
+      "x": 0,
+      "y": 14280
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Logo.dc.html",
+    "System.dc.html",
+    "M-Lista.dc.html",
+    "M-Lista-Ciemny.dc.html",
+    "M-Mapa.dc.html",
+    "M-Kalendarz.dc.html",
+    "Home.dc.html",
+    "Home-Ciemny.dc.html",
+    "Home-Kalendarz.dc.html",
+    "M-Pusto.dc.html",
+    "M-Ladowanie.dc.html",
+    "D-Pusto.dc.html",
+    "D-Ladowanie.dc.html",
+    "Event.dc.html",
+    "Event-Ciemny.dc.html",
+    "Event-Minione.dc.html",
+    "M-Wydarzenie.dc.html",
+    "M-Wydarzenie-Ciemny.dc.html",
+    "M-Wydarzenie-Odwolane.dc.html"
+  ],
+  "pages": [],
+  "title": "Kulturalna Karczma — redesign"
+}
