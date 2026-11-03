@@ -140,11 +140,21 @@ export async function fetchFacebookEvent(id: string): Promise<EventCandidate | n
   return parseFacebookEvent(await res.text(), id);
 }
 
-function pageEventsUrl(pageUrl: string): string {
+/**
+ * URL of a Page's events tab. Pages have either a handle (facebook.com/<handle>) or only a numeric
+ * profile id (facebook.com/profile.php?id=<id>), where tabs are selected with `sk`.
+ * `tab` is "upcoming_hosted_events" (logged-out list) or "events" (what the Apify actor accepts).
+ */
+export function pageEventsUrl(pageUrl: string, tab: "upcoming_hosted_events" | "events" = "upcoming_hosted_events"): string {
   const u = new URL(pageUrl);
-  const handle = u.pathname.split("/").filter(Boolean)[0];
-  if (!handle) throw new Error(`Not a Facebook Page URL: ${pageUrl}`);
-  return `https://www.facebook.com/${handle}/upcoming_hosted_events`;
+  const first = u.pathname.split("/").filter(Boolean)[0];
+  if (first === "profile.php") {
+    const id = u.searchParams.get("id");
+    if (!id || !/^\d+$/.test(id)) throw new Error(`Not a Facebook Page URL: ${pageUrl}`);
+    return `https://www.facebook.com/profile.php?id=${id}&sk=${tab}`;
+  }
+  if (!first) throw new Error(`Not a Facebook Page URL: ${pageUrl}`);
+  return `https://www.facebook.com/${first}/${tab}`;
 }
 
 async function direct(pageUrl: string): Promise<{ candidates: EventCandidate[]; blocked: boolean; warnings: string[] }> {
@@ -168,57 +178,81 @@ async function direct(pageUrl: string): Promise<{ candidates: EventCandidate[]; 
 // ---------- Apify (paid fallback) ----------
 
 const APIFY_ACTOR = "apify~facebook-events-scraper";
+/** Apify bills per event and returns past events too (newest first), so keep this small. */
+const APIFY_MAX_EVENTS = 10;
 
-/** Maps an item of the apify/facebook-events-scraper dataset. */
-export function apifyToCandidate(it: Record<string, any>): EventCandidate | null {
+/**
+ * Maps an item of the apify/facebook-events-scraper dataset. A recurring event comes as one item
+ * with `childEvents` (one per occurrence, each with its own id and times); those become separate
+ * candidates sharing the series' details.
+ */
+export function apifyToCandidates(it: Record<string, any>): EventCandidate[] {
   const id = String(it.id ?? facebookEventId(String(it.url ?? "")) ?? "");
-  const start = it.utcStartDate ? new Date(it.utcStartDate) : null;
-  if (!id || !it.name || !start || Number.isNaN(start.getTime())) return null;
-  const end = it.utcEndDate ? new Date(it.utcEndDate) : null;
+  if (!id || !it.name) return [];
   const loc = it.location ?? {};
-  return {
-    externalId: id,
+  const base = {
     title: String(it.name).trim(),
     description: excerpt(String(it.description ?? "")),
-    start,
-    end: end && !Number.isNaN(end.getTime()) && end > start ? end : null,
     locationName: loc.name ?? loc.contextualName ?? null,
     address: it.address ?? loc.streetAddress ?? null,
     lat: typeof loc.latitude === "number" ? loc.latitude : null,
     lon: typeof loc.longitude === "number" ? loc.longitude : null,
-    url: facebookEventUrl(id),
     ticketUrl: it.ticketsInfo?.buyUrl ?? null,
     imageUrl: it.imageUrl ?? null,
     organizerName: it.organizators?.[0]?.name ?? null,
     cancelled: it.isCanceled === true,
     raw: it,
   };
+  const occurrences: { id: string; start: unknown; end: unknown }[] =
+    Array.isArray(it.childEvents) && it.childEvents.length > 0
+      ? it.childEvents.map((c: Record<string, any>) => ({ id: String(c.id ?? ""), start: c.utcStartDate, end: c.utcEndDate }))
+      : [{ id, start: it.utcStartDate, end: it.utcEndDate }];
+  const out: EventCandidate[] = [];
+  for (const o of occurrences) {
+    const start = o.start ? new Date(String(o.start)) : null;
+    if (!o.id || !start || Number.isNaN(start.getTime())) continue;
+    const end = o.end ? new Date(String(o.end)) : null;
+    out.push({
+      ...base,
+      externalId: o.id,
+      start,
+      end: end && !Number.isNaN(end.getTime()) && end > start ? end : null,
+      url: facebookEventUrl(o.id),
+    });
+  }
+  return out;
 }
 
-async function apify(pageUrl: string): Promise<EventCandidate[]> {
+async function apify(pageUrl: string, maxEvents: number): Promise<EventCandidate[]> {
   const token = process.env.APIFY_TOKEN;
   if (!token) throw new Error("APIFY_TOKEN is not set");
   const res = await fetch(`https://api.apify.com/v2/acts/${APIFY_ACTOR}/run-sync-get-dataset-items?format=json`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ startUrls: [{ url: pageEventsUrl(pageUrl) }], maxEvents: 30 }),
+    body: JSON.stringify({ startUrls: [{ url: pageEventsUrl(pageUrl, "events") }] /* the actor rejects upcoming_hosted_events */, maxEvents }),
     signal: AbortSignal.timeout(300_000),
   });
   if (!res.ok) throw new Error(`Apify HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);
   const items = (await res.json()) as Record<string, any>[];
-  return items.map(apifyToCandidate).filter((c): c is EventCandidate => c !== null);
+  // The actor reports problems (e.g. a Page without an events tab) as dataset items with `error`.
+  const failed = items.find((it) => it.error);
+  if (failed && items.every((it) => it.error)) {
+    throw new Error(`Apify: ${failed.error}: ${failed.errorDescription ?? ""}`.trim());
+  }
+  return items.filter((it) => !it.error).flatMap(apifyToCandidates);
 }
 
 /** FB_PAGE source: sources.url is the Page URL (https://www.facebook.com/<handle>). */
 export const facebookPageAdapter: Adapter = async (source) => {
   if (!source.url) throw new Error("FB_PAGE source has no URL");
   const provider = source.config.provider ?? "auto";
-  if (provider === "apify") return { candidates: await apify(source.url), complete: false };
+  const maxEvents = source.config.maxEvents ?? APIFY_MAX_EVENTS;
+  if (provider === "apify") return { candidates: await apify(source.url, maxEvents), complete: false };
 
   const r = await direct(source.url);
   if (r.blocked) {
     if (provider === "auto" && process.env.APIFY_TOKEN) {
-      return { candidates: await apify(source.url), complete: false, warnings: ["direct fetch blocked; used Apify"] };
+      return { candidates: await apify(source.url, maxEvents), complete: false, warnings: ["direct fetch blocked; used Apify"] };
     }
     throw new Error("Facebook did not return the events list (login wall). Set APIFY_TOKEN to use the Apify fallback.");
   }

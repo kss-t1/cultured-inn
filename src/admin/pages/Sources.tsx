@@ -138,7 +138,7 @@ interface FormState {
 
 const EMPTY: FormState = {
   name: "", key: "", kind: "ICS", url: "", adapter_name: "", config: "{}", default_category: "",
-  default_venue_id: null, default_organizer_id: null, trust: "REVIEW", enabled: true, schedule_hours: "24",
+  default_venue_id: null, default_organizer_id: null, trust: "AUTO_PUBLISH", enabled: true, schedule_hours: "24",
 };
 
 const fromApi = (s: Source): FormState => ({

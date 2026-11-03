@@ -193,14 +193,15 @@ export class ImportUrlError extends Error {
 async function manualSource(): Promise<SourceRow> {
   await sql`
     INSERT INTO sources (key, name, kind, trust, schedule)
-    VALUES (${MANUAL_SOURCE_KEY}, 'Manual URL imports', 'MANUAL_URL', 'REVIEW', '1 day')
+    VALUES (${MANUAL_SOURCE_KEY}, 'Manual URL imports', 'MANUAL_URL', 'AUTO_PUBLISH', '1 day')
     ON CONFLICT (key) DO NOTHING`;
   return (await loadSource(MANUAL_SOURCE_KEY))!;
 }
 
 /**
  * Admin "import from URL": a Facebook event link or any page with schema.org Event data becomes
- * a DRAFT (or links to an existing duplicate). Returns the event id to open in the editor.
+ * an event, published unless the manual source is set to REVIEW (or links to an existing
+ * duplicate). Returns the event id to open in the editor.
  */
 export async function importFromUrl(rawUrl: string): Promise<{ eventId: number; created: boolean }> {
   let url: URL;

@@ -315,7 +315,8 @@ export async function processCandidates(
         ...(venueId === null && locationText ? ["needs_venue"] : []),
         ...(d.guessed ? ["check_category"] : []),
       ];
-      const publish = source.trust === "AUTO_PUBLISH" && venueId !== null && !d.guessed && !opts.manual;
+      // Flagged events (no venue, guessed category) are published too; the flags put them on the review page.
+      const publish = source.trust === "AUTO_PUBLISH";
       const slug = await uniqueSlug(f.title, localDate(f.start));
       const seriesId = await upsertSeries(source, c);
       const [row] = await sql`

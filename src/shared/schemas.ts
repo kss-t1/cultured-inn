@@ -112,7 +112,7 @@ export const SourceInput = z
     default_category: z.enum(CATEGORIES).nullish().transform((v) => v ?? null),
     default_venue_id: optId,
     default_organizer_id: optId,
-    trust: z.enum(TRUST_LEVELS).default("REVIEW"),
+    trust: z.enum(TRUST_LEVELS).default("AUTO_PUBLISH"),
     enabled: z.boolean().default(true),
     schedule_hours: z.number().int().min(1).max(24 * 7).default(24),
   })

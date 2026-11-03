@@ -231,7 +231,7 @@ const pl = {
     },
     review: {
       title: "Do przejrzenia",
-      intro: "Szkice z importu i wydarzenia, które wymagają uwagi. Zaznacz kilka, aby opublikować lub ukryć je naraz.",
+      intro: "Zaimportowane wydarzenia są publikowane od razu. Tu widać te dodane w ostatnich 7 dniach (najpierw te z uwagami): popraw błędy, scal duplikaty albo ukryj to, co nie pasuje.",
       importUrl: "Importuj z linku",
       importUrlPlaceholder: "Link do wydarzenia na Facebooku lub strony z biletami…",
       importing: "Importuję…",
@@ -246,7 +246,7 @@ const pl = {
       duplicates: "Możliwe duplikaty:",
       location: "Lokalizacja w źródle",
       source: "Źródło",
-      empty: "Nic do przejrzenia. 🎉",
+      empty: "Brak nowych wydarzeń z importu. 🎉",
       flags: {
         needs_venue: "brak miejsca",
         missing_from_source: "zniknęło ze źródła",

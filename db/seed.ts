@@ -1,17 +1,16 @@
 // Idempotent seed of known venues, organizers and import sources
 // (venue coordinates verified via Nominatim/OSM on 2026-11-03).
-// Usage: bun run db:seed            venues only
-//        bun run db:seed --demo     also adds sample PUBLISHED events for local development
-import { sql, TZ } from "../src/db.ts";
+// Usage: bun run db:seed
+import { sql } from "../src/db.ts";
 
 const VENUES = [
   {
-    name: "GOSU – Planszówkowa Kawiarnia",
+    name: "Podziemie",
     address: "Rybaki 22, 61-884 Poznań",
     district: "Stare Miasto",
     lat: 52.4018568,
     lon: 16.930201,
-    aliases: ["Gosu", "Gosu Pub", "GOSU"],
+    aliases: ["Podziemie Poznań", "Gosu", "Gosu Pub", "GOSU"],
   },
   {
     name: "Kosteczka",
@@ -45,6 +44,14 @@ const VENUES = [
     lon: 16.9403773,
     aliases: ["Osiedlowy Dom Kultury Pod Lipami", "Pod Lipami"],
   },
+  {
+    name: "ODK Orbita",
+    address: "os. Kosmonautów 118, 61-641 Poznań",
+    district: "Winogrady",
+    lat: 52.4368988,
+    lon: 16.9457598,
+    aliases: ["Osiedlowy Dom Kultury Orbita", "Orbita", "Kosmonautów 118"],
+  },
   // ParaDice: address not verified yet (not in OSM); add it in the admin panel.
 ];
 
@@ -55,6 +62,14 @@ const ORGANIZERS = [
   { name: "Larpowy Ogród", website: null, facebook_url: "https://www.facebook.com/larpowyogrod" },
   { name: "Wargamer Poznań", website: "https://poznan.wargamer.pl", facebook_url: "https://www.facebook.com/wargamer.poznan" },
   { name: "Cooliozum", website: null, facebook_url: "https://www.facebook.com/cooliozum" },
+  { name: "Podziemie", website: null, facebook_url: "https://www.facebook.com/podziemiepoznan" },
+  // Poznań impro groups (list from the project owner, 2026-11-03).
+  { name: "Drukała Poprawa Ratajczak", website: null, facebook_url: "https://www.facebook.com/DPRimpro" },
+  { name: "Improsi", website: null, facebook_url: "https://www.facebook.com/profile.php?id=61582069984035" },
+  { name: "Leniwe Raz", website: null, facebook_url: "https://www.facebook.com/leniwerazimpro" },
+  { name: "Czwórka na Szynach", website: null, facebook_url: "https://www.facebook.com/profile.php?id=61574240152074" },
+  { name: "Improłaki", website: null, facebook_url: "https://www.facebook.com/profile.php?id=61589955491168" },
+  { name: "Rymparzyści – teatr improwizacji", website: null, facebook_url: "https://www.facebook.com/profile.php?id=61572191894828" },
 ];
 
 type Rule = { match: string; category?: string; tags?: string[]; skip?: boolean };
@@ -92,7 +107,6 @@ const SOURCES: SourceSeed[] = [
     },
     venue: "Klub Fantastyki Druga Era",
     organizer: "Klub Fantastyki Druga Era",
-    trust: "AUTO_PUBLISH",
     hours: 6,
   },
   {
@@ -124,9 +138,18 @@ const SOURCES: SourceSeed[] = [
   },
   { key: "fb-larpunk", name: "Facebook – Stowarzyszenie Larpunk", kind: "FB_PAGE", url: "https://www.facebook.com/stowarzyszenielarpunk", category: "LARP", organizer: "Stowarzyszenie Larpunk", hours: 24 },
   { key: "fb-lavida-impro", name: "Facebook – La Vida Impro", kind: "FB_PAGE", url: "https://www.facebook.com/LaVidaImpro", category: "IMPRO", organizer: "La Vida Impro", hours: 24 },
-  { key: "fb-larpowy-ogrod", name: "Facebook – Larpowy Ogród", kind: "FB_PAGE", url: "https://www.facebook.com/larpowyogrod", category: "LARP", organizer: "Larpowy Ogród", hours: 24 },
-  { key: "fb-wargamer", name: "Facebook – Wargamer Poznań", kind: "FB_PAGE", url: "https://www.facebook.com/wargamer.poznan", category: "BOARDGAMES", organizer: "Wargamer Poznań", config: { tags: ["gry bitewne"] }, hours: 24 },
-  { key: "fb-cooliozum", name: "Facebook – Cooliozum", kind: "FB_PAGE", url: "https://www.facebook.com/cooliozum", category: "BOARDGAMES", organizer: "Cooliozum", hours: 24 },
+  // Larpowy Ogród, Wargamer and Cooliozum show a login wall and go through Apify (billed per event): every 3 days.
+  { key: "fb-larpowy-ogrod", name: "Facebook – Larpowy Ogród", kind: "FB_PAGE", url: "https://www.facebook.com/larpowyogrod", category: "LARP", organizer: "Larpowy Ogród", hours: 72 },
+  { key: "fb-wargamer", name: "Facebook – Wargamer Poznań", kind: "FB_PAGE", url: "https://www.facebook.com/wargamer.poznan", category: "BOARDGAMES", organizer: "Wargamer Poznań", config: { tags: ["gry bitewne"] }, hours: 72 },
+  { key: "fb-cooliozum", name: "Facebook – Cooliozum", kind: "FB_PAGE", url: "https://www.facebook.com/cooliozum", category: "BOARDGAMES", organizer: "Cooliozum", hours: 72 },
+  { key: "fb-podziemie", name: "Facebook – Podziemie", kind: "FB_PAGE", url: "https://www.facebook.com/podziemiepoznan", category: "BOARDGAMES", venue: "Podziemie", organizer: "Podziemie", hours: 24 },
+  // Poznań impro groups. DPR and Improsi are readable logged out; the others need Apify (every 3 days).
+  { key: "fb-dpr-impro", name: "Facebook – Drukała Poprawa Ratajczak", kind: "FB_PAGE", url: "https://www.facebook.com/DPRimpro", category: "IMPRO", organizer: "Drukała Poprawa Ratajczak", hours: 24 },
+  { key: "fb-improsi", name: "Facebook – Improsi", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61582069984035", category: "IMPRO", organizer: "Improsi", hours: 24 },
+  { key: "fb-leniwe-raz", name: "Facebook – Leniwe Raz", kind: "FB_PAGE", url: "https://www.facebook.com/leniwerazimpro", category: "IMPRO", organizer: "Leniwe Raz", hours: 72 },
+  { key: "fb-czworka-na-szynach", name: "Facebook – Czwórka na Szynach", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61574240152074", category: "IMPRO", organizer: "Czwórka na Szynach", hours: 72 },
+  { key: "fb-improlaki", name: "Facebook – Improłaki", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61589955491168", category: "IMPRO", organizer: "Improłaki", hours: 72 },
+  { key: "fb-rymparzysci", name: "Facebook – Rymparzyści – teatr improwizacji", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61572191894828", category: "IMPRO", organizer: "Rymparzyści – teatr improwizacji", hours: 72 },
 ];
 
 export async function seedOrganizers() {
@@ -150,7 +173,7 @@ export async function seedSources() {
                            default_organizer_id, trust, schedule)
       VALUES (${s.key}, ${s.name}, ${s.kind}::source_kind, ${s.url ?? null}, ${s.adapter ?? null},
               ${s.config ?? {}}::jsonb, ${s.category ?? null}::category, ${venue?.id ?? null},
-              ${organizer?.id ?? null}, ${s.trust ?? "REVIEW"}::source_trust, make_interval(hours => ${s.hours}))`;
+              ${organizer?.id ?? null}, ${s.trust ?? "AUTO_PUBLISH"}::source_trust, make_interval(hours => ${s.hours}))`;
     console.log(`source: ${s.name}`);
   }
 }
@@ -167,38 +190,9 @@ export async function seedVenues() {
   }
 }
 
-/** Sample events relative to today, so every quick filter has something to show. */
-async function seedDemo() {
-  const [city] = await sql`SELECT id FROM cities WHERE slug = 'poznan'`;
-  const venues = await sql`SELECT id, name FROM venues ORDER BY id`;
-  const gosu = venues.find((v: { name: string }) => v.name.startsWith("GOSU"))?.id ?? null;
-  const kost = venues.find((v: { name: string }) => v.name === "Kosteczka")?.id ?? null;
-  const demo: [string, string, number, string, number | null, number, boolean, boolean][] = [
-    // title, category, day offset, start time, venue, duration h, free, beginner
-    ["[DEMO] Wieczór planszówkowy", "BOARDGAMES", 0, "18:00", gosu, 5, true, true],
-    ["[DEMO] Impro jam", "IMPRO", 0, "19:30", kost, 2, false, true],
-    ["[DEMO] One-shot D&D dla początkujących", "RPG", 1, "17:00", gosu, 4, false, true],
-    ["[DEMO] Turniej Carcassonne", "BOARDGAMES", 3, "12:00", kost, 6, false, false],
-    ["[DEMO] Larp kameralny „Ostatnia karczma”", "LARP", 5, "16:00", null, 6, false, false],
-  ];
-  for (const [title, category, day, time, venueId, hours, free, beginner] of demo) {
-    const slug = `demo-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
-    await sql`
-      INSERT INTO events (city_id, title, slug, description, category, start_at, end_at, venue_id,
-                          is_free, price_min, beginner_friendly, status, origin)
-      VALUES (${city.id}, ${title}, ${slug}, 'Demo event for local development.', ${category}::category,
-              (((now() AT TIME ZONE ${TZ})::date + ${day}::int)::timestamp + ${time}::time) AT TIME ZONE ${TZ},
-              (((now() AT TIME ZONE ${TZ})::date + ${day}::int)::timestamp + ${time}::time) AT TIME ZONE ${TZ} + make_interval(hours => ${hours}),
-              ${venueId}, ${free}, ${free ? null : 20}, ${beginner}, 'PUBLISHED', 'MANUAL')
-      ON CONFLICT (slug) DO UPDATE SET start_at = EXCLUDED.start_at, end_at = EXCLUDED.end_at`;
-  }
-  console.log(`demo events: ${demo.length}`);
-}
-
 if (import.meta.main) {
   await seedVenues();
   await seedOrganizers();
   await seedSources();
-  if (process.argv.includes("--demo")) await seedDemo();
   await sql.close();
 }

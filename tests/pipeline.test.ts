@@ -95,12 +95,12 @@ describe("processCandidates", () => {
     expect(await events()).toHaveLength(1);
   });
 
-  test("AUTO_PUBLISH sources publish events that have a venue", async () => {
+  test("AUTO_PUBLISH sources publish everything; events without a venue are flagged", async () => {
     const s = await makeSource({ trust: "AUTO_PUBLISH" });
     await run(s, [cand(), cand({ externalId: "ext-2", title: "Planszówki gdzieś", locationName: "Nieznane miejsce" })]);
     const [a, b] = await events();
     expect(a.status).toBe("PUBLISHED");
-    expect(b.status).toBe("DRAFT");
+    expect(b.status).toBe("PUBLISHED");
     expect(b.review_flags).toEqual(["needs_venue"]);
   });
 
