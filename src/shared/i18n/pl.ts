@@ -71,6 +71,7 @@ const pl = {
     emptyHint: "Spróbuj szerszego zakresu, np. „Ten miesiąc”, albo wyczyść filtry — w karczmie zawsze coś się dzieje.",
     showMonth: "Pokaż cały miesiąc",
     days: "dni",
+    allDay: "cały dzień",
     count: (n: number) => `${n} ${plural(n, "wydarzenie", "wydarzenia", "wydarzeń")}`,
     venueTbd: "Miejsce do potwierdzenia",
   },

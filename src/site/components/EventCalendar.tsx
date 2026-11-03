@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { CATEGORY_INFO } from "../../shared/categories.ts";
 import {
-  addDays, eventDays, fmtMonth, fmtTime, fmtWeekdayShort, isMultiday, localDateKey, monthEnd, weekdayIndex,
+  addDays, eventDays, fmtMonth, fmtTime, fmtWeekdayShort, isAllDay, localDateKey, monthEnd, spansDays, weekdayIndex,
 } from "../../shared/format.ts";
 import { t } from "../../shared/i18n/index.ts";
 import type { PublicEvent } from "../../shared/types.ts";
@@ -31,28 +30,32 @@ function eventsByDay(events: PublicEvent[]): Map<string, PublicEvent[]> {
 
 function CalEvent({ e, day }: { e: PublicEvent; day: string }) {
   const cat = CATEGORY_INFO[e.category];
-  const multi = isMultiday(e);
+  const multi = spansDays(e);
   const isFirst = localDateKey(e.start_at) === day;
   return (
     <a className={`cal-ev cat-${cat.slug}${multi ? " cal-ev--span" : ""}`} href={`/events/${e.slug}`} title={e.title}>
       <Icon name={cat.icon} />
-      {isFirst && <b>{fmtTime(e.start_at)}</b>}
+      {isFirst && !isAllDay(e) && <b>{fmtTime(e.start_at)}</b>}
       <span>{isFirst ? e.title : `${t.calendar.continued} ${e.title}`}</span>
     </a>
   );
 }
 
 /**
- * Month grid (desktop) and list of days (phones, via CSS) of the events already loaded for the
- * selected window. Opens on the window's first month; "+N więcej" opens that day in the list.
+ * Month grid (desktop) and list of days (phones, via CSS) of the events loaded for the selected
+ * window, shown on the window's first month. The arrows set the window to the previous or next
+ * month (`onMonth`), so a month never shows as empty only because it lies outside the window;
+ * "Dziś" goes back to this month's default window. "+N więcej" opens that day in the list.
  */
-export function EventCalendar({ events, days, onShowDay }: {
+export function EventCalendar({ events, days, onMonth, onThisMonth, onShowDay }: {
   events: PublicEvent[];
   days: [string, string];
+  onMonth: (first: string) => void;
+  onThisMonth: () => void;
   onShowDay: (day: string) => void;
 }) {
   const today = localDateKey(new Date());
-  const [month, setMonth] = useState(() => monthStart(days[0]));
+  const month = monthStart(days[0]);
   const byDay = eventsByDay(events);
   const last = monthEnd(month);
   const gridStart = addDays(month, -weekdayIndex(month));
@@ -65,11 +68,11 @@ export function EventCalendar({ events, days, onShowDay }: {
     <div className="cal">
       <div className="cal__head">
         <h2 className="cal__month">{fmtMonth(month)}</h2>
-        <button type="button" className="btn btn--ghost btn--icon" aria-label={t.calendar.prev} onClick={() => setMonth(shiftMonth(month, -1))}>
+        <button type="button" className="btn btn--ghost btn--icon" aria-label={t.calendar.prev} onClick={() => onMonth(shiftMonth(month, -1))}>
           <Icon name="chevl" />
         </button>
-        <button type="button" className="btn btn--secondary" onClick={() => setMonth(monthStart(today))}>{t.calendar.today}</button>
-        <button type="button" className="btn btn--ghost btn--icon" aria-label={t.calendar.next} onClick={() => setMonth(shiftMonth(month, 1))}>
+        <button type="button" className="btn btn--secondary" onClick={onThisMonth}>{t.calendar.today}</button>
+        <button type="button" className="btn btn--ghost btn--icon" aria-label={t.calendar.next} onClick={() => onMonth(shiftMonth(month, 1))}>
           <Icon name="chevr" />
         </button>
       </div>

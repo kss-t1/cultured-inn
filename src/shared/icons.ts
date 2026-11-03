@@ -34,8 +34,8 @@ export const ICONS = {
 } as const;
 export type IconName = keyof typeof ICONS;
 
-export const iconSvg = (name: IconName, cls = "ico") =>
-  `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
+export const iconSvg = (name: IconName) =>
+  `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
 
 /** The logo ("Drużyna"), 48×48. Drawn for the dark header: currentColor strokes, --sign-* fills. */
 export const LOGO_PATHS = '<path d="M38.6 25L45.4 4" style="fill: none; stroke: currentColor; stroke-width: 4.8; stroke-linecap: round"/><path d="M38.6 25L45.4 4" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 2.8; stroke-linecap: round"/><path d="M18 23l-6.5 2.2c-1.8.6-2.6 2.4-1.9 4 .6 1.4 2.2 2.1 3.7 1.6l3.7-1.2-3.8 11c-.5 1.5.6 3 2.2 3h4.4L24 37l4.2 6.6h4.4c1.6 0 2.7-1.5 2.2-3L31 29.6l3.7 1.2c1.5.5 3.1-.2 3.7-1.6.7-1.6-.1-3.4-1.9-4L30 23z" style="fill: var(--sign-ink, #f6e9cf); stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round"/><circle cx="24" cy="15.2" r="6.6" style="fill: var(--sign-ink, #f6e9cf); stroke: currentColor; stroke-width: 1.4"/><path d="M17.6 13.4c2-.9 4.4-1 6.4.2 2-1.2 4.4-1.1 6.4-.2l-.6 3.6c-1.8 1.4-4.2 1.3-5.8-.4-1.6 1.7-4 1.8-5.8.4z" style="fill: var(--sign-gold, #f2b84f); stroke: none"/><ellipse cx="21" cy="15" rx="1.35" ry=".9" style="fill: var(--sign-bg, #2a1c10)"/><ellipse cx="27" cy="15" rx="1.35" ry=".9" style="fill: var(--sign-bg, #2a1c10)"/><path d="M34.6 24.6l7.6 2.5" style="fill: none; stroke: currentColor; stroke-width: 4.4; stroke-linecap: round"/><path d="M34.6 24.6l7.6 2.5" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 2.4; stroke-linecap: round"/><path d="M38.4 25.8l-1.2 3.6" style="fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round"/><path d="M12 22.5l7.4 4.25v8.5L12 39.5l-7.4-4.25v-8.5z" style="fill: var(--sign-bg, #2a1c10); stroke: var(--sign-gold, #f2b84f); stroke-width: 2; stroke-linejoin: round"/><path d="M12 26l4.5 7.8h-9z" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round"/>';

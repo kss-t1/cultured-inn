@@ -50,6 +50,22 @@ export function eventDays(e: { start_at: string; end_at: string | null }): [stri
   return [first, last > first ? last : first];
 }
 
+/** Number of local dates an event covers (2 for Fri 20:00 – Sat 02:00). */
+export function dayCount(e: { start_at: string; end_at: string | null }): number {
+  const [first, last] = eventDays(e);
+  return Math.round((Date.parse(last) - Date.parse(first)) / 86_400_000) + 1;
+}
+
+/**
+ * Shown as spanning days (day count on the card, a bar in the calendar): long and covering more
+ * than one date. An all-day event (00:00 to 00:00 the next day) is long but covers one date.
+ */
+export const spansDays = (e: { start_at: string; end_at: string | null }) => isMultiday(e) && dayCount(e) > 1;
+
+/** Starts and ends at local midnight on a single date: an ICS all-day event. */
+export const isAllDay = (e: { start_at: string; end_at: string | null }) =>
+  e.end_at !== null && fmtTime(e.start_at) === "00:00" && fmtTime(e.end_at) === "00:00" && dayCount(e) === 1;
+
 // Date keys (YYYY-MM-DD) as UTC midnights: calendar arithmetic without time-zone shifts.
 const keyDate = (k: string) => new Date(k + "T00:00:00Z");
 const keyMonthFmt = new Intl.DateTimeFormat(t.locale, { timeZone: "UTC", month: "long", year: "numeric" });

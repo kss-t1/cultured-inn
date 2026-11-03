@@ -1,5 +1,5 @@
 import { CATEGORY_INFO } from "../../shared/categories.ts";
-import { addDays, eventDays, fmtDay, fmtPrice, fmtRange, fmtTime, isMultiday, localDateKey } from "../../shared/format.ts";
+import { addDays, dayCount, eventDays, fmtDay, fmtPrice, fmtRange, fmtTime, isAllDay, localDateKey, spansDays } from "../../shared/format.ts";
 import { t } from "../../shared/i18n/index.ts";
 import type { IconName } from "../../shared/icons.ts";
 import type { PublicEvent } from "../../shared/types.ts";
@@ -16,12 +16,6 @@ function groupByDay(events: PublicEvent[]) {
   return [...groups.entries()];
 }
 
-/** Number of local dates an event covers (2 for Fri evening–Sat). */
-function dayCount(e: PublicEvent): number {
-  const [first, last] = eventDays(e);
-  return Math.round((Date.parse(last) - Date.parse(first)) / 86_400_000) + 1;
-}
-
 function Badge({ icon, label, en }: { icon: IconName; label: string; en?: boolean }) {
   return <span className={en ? "badge badge--en" : "badge"}><Icon name={icon} />{label}</span>;
 }
@@ -29,20 +23,23 @@ function Badge({ icon, label, en }: { icon: IconName; label: string; en?: boolea
 /** A "ticket": stub with the time and category icon, body with the details. */
 export function EventCard({ e }: { e: PublicEvent }) {
   const cat = CATEGORY_INFO[e.category];
-  const multi = isMultiday(e);
-  const sameDayEnd = e.end_at && localDateKey(e.end_at) === localDateKey(e.start_at);
+  const multi = spansDays(e);
+  const allDay = isAllDay(e);
+  const [first, last] = eventDays(e);
+  const sameDayEnd = e.end_at !== null && first === last;
   return (
     <a className={`card cat-${cat.slug}${multi ? " card--multi" : ""}`} href={`/events/${e.slug}`}>
       <span className="card__stub">
-        <span className="card__time">{multi ? dayCount(e) : fmtTime(e.start_at)}</span>
-        {multi ? <span className="card__end">{t.list.days}</span>
-          : sameDayEnd ? <span className="card__end">–{fmtTime(e.end_at!)}</span> : null}
+        {multi ? (<><span className="card__time">{dayCount(e)}</span><span className="card__end">{t.list.days}</span></>)
+          : allDay ? <span className="card__end">{t.list.allDay}</span>
+          : (<><span className="card__time">{fmtTime(e.start_at)}</span>
+            {sameDayEnd && <span className="card__end">–{fmtTime(e.end_at!)}</span>}</>)}
         <Icon name={cat.icon} />
       </span>
       <span className="card__body">
         <span className="card__cat">{t.categories[e.category]}</span>
         <span className="card__title">{e.title}</span>
-        {(multi || (e.end_at && !sameDayEnd)) && <span className="card__when">{fmtRange(e.start_at, e.end_at)}</span>}
+        {(multi || (e.end_at !== null && !sameDayEnd)) && <span className="card__when">{fmtRange(e.start_at, e.end_at)}</span>}
         {e.venue
           ? <span className="card__venue"><Icon name="pin" size="sm" />{e.venue.name}</span>
           : <span className="card__venue is-unknown"><Icon name="pinq" size="sm" />{t.list.venueTbd}</span>}
@@ -86,7 +83,7 @@ export function ListLoading() {
   return (
     <div role="status" aria-busy="true">
       <p className="loading-line"><Icon name="rpg" size="lg" />{t.list.loading}</p>
-      <div style={{ display: "grid", gap: 12 }}>
+      <div className="sk-list">
         {SKELETON_WIDTHS.map((w) => (
           <div key={w} className="sk-card">
             <span className="sk-card__stub" />
@@ -112,7 +109,8 @@ export function ListError() {
   );
 }
 
-export function NoEvents({ onClear, onWholeMonth }: { onClear: () => void; onWholeMonth: () => void }) {
+/** Each action is offered only when it would change something. */
+export function NoEvents({ onClear, onWholeMonth }: { onClear?: () => void; onWholeMonth?: () => void }) {
   return (
     <div className="empty" role="status">
       <svg className="empty__art" viewBox="0 0 200 132" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2"
@@ -130,10 +128,12 @@ export function NoEvents({ onClear, onWholeMonth }: { onClear: () => void; onWho
       </svg>
       <h2 className="empty__title">{t.list.empty}</h2>
       <p className="empty__hint">{t.list.emptyHint}</p>
-      <div className="empty__actions">
-        <button type="button" className="btn btn--primary" onClick={onClear}>{t.filters.clear}</button>
-        <button type="button" className="btn btn--secondary" onClick={onWholeMonth}><Icon name="cal" />{t.list.showMonth}</button>
-      </div>
+      {(onClear || onWholeMonth) && (
+        <div className="empty__actions">
+          {onClear && <button type="button" className="btn btn--primary" onClick={onClear}>{t.filters.clear}</button>}
+          {onWholeMonth && <button type="button" className="btn btn--secondary" onClick={onWholeMonth}><Icon name="cal" />{t.list.showMonth}</button>}
+        </div>
+      )}
     </div>
   );
 }

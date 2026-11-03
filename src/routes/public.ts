@@ -26,6 +26,9 @@ async function apiEvents(req: Request) {
 // Share button: Web Share API, falling back to copying the link.
 const SHARE_JS = `document.getElementById("share")?.addEventListener("click",async e=>{const b=e.currentTarget,u=b.dataset.url;try{if(navigator.share){await navigator.share({title:b.dataset.title,url:u})}else{await navigator.clipboard.writeText(u);b.textContent=b.dataset.copied}}catch{}});`;
 
+// The site stylesheet under a content-hashed URL, so event pages share one cached copy.
+const SITE_CSS_PATH = `/assets/site-${Bun.hash(siteCss).toString(36)}.css`;
+
 // Head links shared with src/site/index.html: colour scheme, favicon, the design fonts.
 const HEAD_LINKS =
   `<meta name="color-scheme" content="light dark"><link rel="icon" href="/favicon.svg" type="image/svg+xml">` +
@@ -36,7 +39,8 @@ function htmlPage(title: string, head: string, body: string, status = 200) {
   return new Response(
     `<!doctype html><html lang="${t.htmlLang}" class="kk"><head><meta charset="utf-8">` +
       `<meta name="viewport" content="width=device-width,initial-scale=1">` +
-      `<title>${escapeHtml(title)}</title>${head}${HEAD_LINKS}<style>${siteCss}</style></head><body>${body}</body></html>`,
+      `<title>${escapeHtml(title)}</title>${head}${HEAD_LINKS}<link rel="stylesheet" href="${SITE_CSS_PATH}"></head>` +
+      `<body>${body}</body></html>`,
     { status, headers: { "Content-Type": "text/html; charset=utf-8" } },
   );
 }
@@ -105,4 +109,8 @@ export const publicRoutes = {
   "/api/events": { GET: apiEvents },
   "/api/*": () => error(404, "not_found"),
   "/events/:slug": { GET: eventPage },
+  [SITE_CSS_PATH]: () =>
+    new Response(siteCss, {
+      headers: { "Content-Type": "text/css; charset=utf-8", "Cache-Control": "public, max-age=31536000, immutable" },
+    }),
 };

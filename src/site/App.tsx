@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { DEFAULT_FILTERS, parseFilters, serializeFilters, type Filters } from "../shared/filters.ts";
-import { fmtDays, windowDays } from "../shared/format.ts";
+import { fmtDays, monthEnd, windowDays } from "../shared/format.ts";
 import { t } from "../shared/i18n/index.ts";
 import type { IconName } from "../shared/icons.ts";
 import type { PublicEvent } from "../shared/types.ts";
@@ -73,13 +73,16 @@ export function App() {
 
   const clear = () => setFilters(DEFAULT_FILTERS);
   const wholeMonth = () => setFilters({ ...filters, when: "month", from: null, to: null });
+  const showMonth = (first: string) => setFilters({ ...filters, from: first, to: monthEnd(first) });
   const showDay = (day: string) => setState({ filters: { ...filters, from: day, to: null }, view: "list" });
 
-  const results =
-    load.status === "loading" ? <ListLoading /> :
-    load.status === "error" ? <ListError /> :
-    events.length === 0 ? <NoEvents onClear={clear} onWholeMonth={wholeMonth} /> :
-    null;
+  const notReady = load.status === "loading" ? <ListLoading /> : load.status === "error" ? <ListError /> : null;
+  const isDefault = serializeFilters(queryFilters).toString() === "";
+  const isMonth = !filters.from && filters.when === "month";
+  // The calendar shows an empty month itself, keeping its month navigation.
+  const results = notReady ?? (events.length === 0 && (
+    <NoEvents onClear={isDefault ? undefined : clear} onWholeMonth={isMonth ? undefined : wholeMonth} />
+  ));
   const map = <EventMap events={events} onShowList={isDesktop ? undefined : () => setView("list")} />;
 
   return (
@@ -109,16 +112,16 @@ export function App() {
 
         <div className="views">
           {activeTab === "calendar" ? (
-            results ?? <EventCalendar key={days[0]} events={events} days={days} onShowDay={showDay} />
+            notReady ?? <EventCalendar events={events} days={days} onMonth={showMonth} onThisMonth={wholeMonth} onShowDay={showDay} />
           ) : isDesktop ? (
             <div className="split">
-              <section className="split__list">{results ?? <EventList events={events} />}</section>
+              <section className="split__list">{results || <EventList events={events} />}</section>
               <section className="split__map">{map}</section>
             </div>
           ) : activeTab === "map" ? (
             map
           ) : (
-            results ?? <EventList events={events} />
+            results || <EventList events={events} />
           )}
         </div>
       </main>
