@@ -41,6 +41,7 @@ bun run dev                     # http://localhost:3000, admin at /admin
 | `bun test` | Tests against `TEST_DATABASE_URL`, which must be a `*_test` database because tests wipe it |
 | `bun run typecheck` | `tsc --noEmit` |
 | `bun run db:migrate` | Apply `db/migrations/*.sql` in order |
+| `bun run verify` | Typecheck, tests and build in one chain. The pre-push hook in `.githooks/` runs it; `bun install` enables the hook |
 | `bun run db:seed` | Seed venues, organizers and import sources. Existing rows are left alone |
 | `bun run jobs:imports [--all \| <key>…]` | Run import sources: the due ones, all of them, or the named ones (e.g. `druga-era-ics`) |
 | `bun run admin:create <email>` | Create an admin, or reset their password. The password comes from `ADMIN_PASSWORD` or a prompt |
