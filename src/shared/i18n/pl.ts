@@ -1,0 +1,240 @@
+// Polish UI strings. This is the only place user-facing text lives; add an `en.ts` with the
+// same shape (type Messages) to localize. Keys and code stay English.
+import type { Category } from "../categories.ts";
+
+const pl = {
+  locale: "pl-PL",
+  htmlLang: "pl",
+
+  brand: {
+    name: "Kulturalna Karczma",
+    nameFirst: "Kulturalna",
+    nameSecond: "Karczma",
+    tagline: "gdzie gra się kulturalnie",
+    pageTitle: "Kulturalna Karczma – LARP, impro, RPG i planszówki w Poznaniu",
+    description: "Wszystkie wydarzenia LARP, impro, RPG i planszówkowe w Poznaniu na jednej mapie i w jednym kalendarzu.",
+  },
+
+  categories: {
+    LARP: "LARP",
+    IMPRO: "Impro",
+    RPG: "RPG",
+    BOARDGAMES: "Planszówki",
+  } satisfies Record<Category, string>,
+
+  when: {
+    today: "Dziś",
+    tomorrow: "Jutro",
+    weekend: "Ten weekend",
+    week: "Ten tydzień",
+    pickDay: "Wybierz dzień",
+  },
+
+  filters: {
+    label: "Filtry",
+    categories: "Kategorie",
+    when: "Kiedy",
+    more: "Więcej filtrów",
+    evening: "Wieczorem (od 17)",
+    daytime: "W dzień",
+    free: "Za darmo",
+    beginner: "Dla początkujących",
+    english: "Po angielsku",
+    multiday: "Wielodniowe",
+    priceMax: "Cena maks.",
+    priceAny: "dowolna",
+    search: "Szukaj",
+    searchPlaceholder: "Szukaj: tytuł, miejsce, organizator…",
+    clear: "Wyczyść filtry",
+  },
+
+  views: {
+    map: "Mapa",
+    list: "Lista",
+    calendar: "Kalendarz",
+    listAndMap: "Lista i mapa",
+  },
+
+  list: {
+    loading: "Ładowanie…",
+    loadError: "Nie udało się pobrać wydarzeń. Spróbuj odświeżyć stronę.",
+    empty: "Brak wydarzeń dla wybranych filtrów.",
+    emptyHint: "Spróbuj szerszego zakresu, np. „Ten tydzień”.",
+    count: (n: number) => `${n} ${plural(n, "wydarzenie", "wydarzenia", "wydarzeń")}`,
+    venueTbd: "Miejsce do potwierdzenia",
+  },
+
+  map: {
+    nearMe: "Blisko mnie",
+    locationError: "Nie udało się ustalić lokalizacji.",
+    noLocation: (n: number) => `${n} ${plural(n, "wydarzenie", "wydarzenia", "wydarzeń")} bez lokalizacji na mapie`,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  },
+
+  calendar: {
+    title: "Kalendarz wydarzeń",
+  },
+
+  event: {
+    when: "Kiedy",
+    where: "Gdzie",
+    price: "Cena",
+    organizer: "Organizator",
+    language: "Język",
+    languages: { pl: "po polsku", en: "po angielsku", both: "po polsku i angielsku" },
+    free: "za darmo",
+    currencyPLN: "zł",
+    recurring: "cykliczne",
+    beginner: "Dla początkujących",
+    english: "EN",
+    cancelled: "Odwołane",
+    cancelledBanner: "To wydarzenie zostało odwołane.",
+    tickets: "Bilety / zapisy",
+    addToCalendar: "Dodaj do kalendarza",
+    share: "Udostępnij",
+    linkCopied: "Skopiowano link",
+    bigMap: "Otwórz większą mapę",
+    mapTitle: (venue: string) => `Mapa: ${venue}`,
+    source: "Źródło",
+    updated: "Ostatnia aktualizacja",
+    back: "← Wszystkie wydarzenia",
+    notFoundTitle: "Nie znaleziono wydarzenia",
+    notFoundBack: "Wróć do listy wydarzeń",
+    notFoundPageTitle: "Nie znaleziono",
+  },
+
+  errors: {
+    // Keyed by API error codes (see src/lib/http.ts).
+    generic: "Coś poszło nie tak. Spróbuj ponownie.",
+    network: "Brak połączenia z serwerem.",
+    not_found: "Nie znaleziono.",
+    bad_json: "Nieprawidłowe dane.",
+    validation_failed: "Popraw zaznaczone pola.",
+    unauthorized: "Zaloguj się.",
+    forbidden_origin: "Żądanie odrzucone (nieprawidłowe pochodzenie).",
+    invalid_credentials: "Nieprawidłowy e-mail lub hasło.",
+    locked_out: "Zbyt wiele nieudanych prób. Spróbuj ponownie za 15 minut.",
+    conflict: "Taki rekord już istnieje.",
+    in_use: "Rekord jest używany przez inne dane.",
+    venue_has_events: "To miejsce ma przypisane wydarzenia. Najpierw je przenieś lub usuń.",
+    geocode_failed: "Geokodowanie nie powiodło się.",
+    geocode_query_too_short: "Podaj adres.",
+    server_error: "Błąd serwera.",
+  } as Record<string, string>,
+
+  fieldErrors: {
+    // Keyed by validation codes (see src/shared/schemas.ts).
+    required: "To pole jest wymagane.",
+    invalid_url: "Nieprawidłowy adres URL.",
+    invalid_email: "Nieprawidłowy adres e-mail.",
+    invalid_datetime: "Podaj datę i godzinę.",
+    end_before_start: "Koniec nie może być przed początkiem.",
+    price_max_below_min: "Cena maksymalna jest mniejsza niż minimalna.",
+    coordinates_pair: "Podaj obie współrzędne albo żadnej.",
+    invalid: "Nieprawidłowa wartość.",
+  } as Record<string, string>,
+
+  admin: {
+    title: "Panel administracyjny",
+    login: "Zaloguj się",
+    logout: "Wyloguj",
+    email: "E-mail",
+    password: "Hasło",
+    loggingIn: "Logowanie…",
+    nav: { events: "Wydarzenia", venues: "Miejsca", organizers: "Organizatorzy", site: "Strona publiczna" },
+    save: "Zapisz",
+    saving: "Zapisywanie…",
+    saved: "Zapisano.",
+    cancel: "Anuluj",
+    delete: "Usuń",
+    confirmDelete: "Na pewno usunąć?",
+    edit: "Edytuj",
+    actions: "Akcje",
+    add: "Dodaj",
+    none: "— brak —",
+    search: "Szukaj…",
+    loading: "Ładowanie…",
+    empty: "Brak wyników.",
+    preview: "Podgląd",
+    statuses: { DRAFT: "Szkic", PUBLISHED: "Opublikowane", HIDDEN: "Ukryte", CANCELLED: "Odwołane" },
+    statusAll: "Wszystkie statusy",
+    scopes: { upcoming: "Nadchodzące", past: "Minione", all: "Wszystkie" },
+    events: {
+      title: "Wydarzenia",
+      new: "Nowe wydarzenie",
+      edit: "Edytuj wydarzenie",
+      publish: "Opublikuj",
+      hide: "Ukryj",
+      cancelEvent: "Odwołaj",
+      columns: { start: "Początek", title: "Tytuł", category: "Kategoria", venue: "Miejsce", status: "Status" },
+      fields: {
+        title: "Tytuł",
+        category: "Kategoria",
+        start: "Początek",
+        end: "Koniec (opcjonalnie)",
+        venue: "Miejsce",
+        organizer: "Organizator",
+        description: "Opis",
+        tags: "Tagi (oddzielone przecinkami)",
+        priceMin: "Cena od",
+        priceMax: "Cena do",
+        isFree: "Wstęp wolny",
+        language: "Język",
+        beginner: "Dla początkujących",
+        ticketUrl: "Link do biletów / zapisów",
+        sourceUrl: "Link do źródła",
+        imageUrl: "Link do obrazka",
+        status: "Status",
+      },
+      newVenue: "+ nowe miejsce",
+      newOrganizer: "+ nowy organizator",
+      timesNote: "Godziny w czasie lokalnym (Poznań).",
+    },
+    venues: {
+      title: "Miejsca",
+      new: "Nowe miejsce",
+      edit: "Edytuj miejsce",
+      geocode: "Ustal współrzędne z adresu",
+      geocoding: "Szukam…",
+      pickResult: "Wybierz wynik:",
+      noResults: "Nic nie znaleziono.",
+      mapHint: "Możesz przeciągnąć pinezkę, aby poprawić położenie.",
+      eventCount: "Wydarzenia",
+      fields: {
+        name: "Nazwa",
+        address: "Adres",
+        district: "Dzielnica",
+        lat: "Szerokość (lat)",
+        lon: "Długość (lon)",
+        website: "Strona WWW",
+        facebook: "Facebook",
+        approximate: "Lokalizacja przybliżona (np. prywatne mieszkanie)",
+        aliases: "Inne nazwy (oddzielone przecinkami)",
+      },
+    },
+    organizers: {
+      title: "Organizatorzy",
+      new: "Nowy organizator",
+      edit: "Edytuj organizatora",
+      fields: {
+        name: "Nazwa",
+        website: "Strona WWW",
+        facebook: "Facebook",
+        instagram: "Instagram",
+        email: "E-mail kontaktowy (tylko dla adminów)",
+        notes: "Notatki",
+      },
+    },
+  },
+};
+
+/** Polish plural forms: 1 wydarzenie, 2–4 wydarzenia, 5+ wydarzeń (12–14 use the "many" form). */
+export function plural(n: number, one: string, few: string, many: string): string {
+  if (n === 1) return one;
+  const d = n % 10;
+  const dd = n % 100;
+  return d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14) ? few : many;
+}
+
+export default pl;
+export type Messages = typeof pl;

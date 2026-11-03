@@ -1,0 +1,32 @@
+{
+  "name": "cultured-inn",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot src/server.ts",
+    "build": "bun build --compile --minify --sourcemap src/server.ts --outfile dist/karczma",
+    "start": "NODE_ENV=production bun src/server.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "bun db/migrate.ts",
+    "db:seed": "bun db/seed.ts",
+    "admin:create": "bun scripts/createAdmin.ts"
+  },
+  "dependencies": {
+    "@fullcalendar/react": "^7.1.3",
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "temporal-polyfill": "^1.0.6",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "@types/leaflet": "^1.9.22",
+    "@types/leaflet.markercluster": "^1.5.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}
