@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Desktop · wczytywanie</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./kk.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&amp;family=Source+Sans+3:ital,wght@0,400..700;1,400..700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="kk" data-theme="light" style="min-height: 100vh; background: var(--bg)">
+<dc-import name="Home" theme="light" view="list" state="loading" popup="" hint-size="100%,1300px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,51 +1,115 @@
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/react/daygrid";
-import listPlugin from "@fullcalendar/react/list";
-import plLocale from "@fullcalendar/react/locales/pl";
-import classicTheme from "@fullcalendar/react/themes/classic";
-import timeGridPlugin from "@fullcalendar/react/timegrid";
-import "@fullcalendar/react/skeleton.css";
-import "@fullcalendar/react/themes/classic/theme.css";
-import "@fullcalendar/react/themes/classic/palette.css";
-import type { EventSourceFuncInfo } from "@fullcalendar/react";
 import { CATEGORY_INFO } from "../../shared/categories.ts";
-import type { Filters } from "../../shared/filters.ts";
-import { fetchEvents } from "../api.ts";
+import {
+  addDays, eventDays, fmtMonth, fmtTime, fmtWeekdayShort, isAllDay, localDateKey, monthEnd, spansDays, weekdayIndex,
+} from "../../shared/format.ts";
+import { t } from "../../shared/i18n/index.ts";
+import type { PublicEvent } from "../../shared/types.ts";
+import { Icon } from "../../shared/ui.tsx";
 
-/** Calendar view: shows the events of the selected window ("Ten miesiąc", Od–Do, …) like the list and map. */
-export function EventCalendar({ filters, isDesktop }: { filters: Filters; isDesktop: boolean }) {
-  // FullCalendar draws only what falls inside the visible range, so the window's events are enough.
-  const loadEvents = async (_info: EventSourceFuncInfo) => {
-    const events = await fetchEvents(filters);
-    return events.map((e) => ({
-      id: String(e.id),
-      title: e.title,
-      start: e.start_at,
-      end: e.end_at ?? undefined,
-      url: `/events/${e.slug}`,
-      color: CATEGORY_INFO[e.category].color,
-    }));
-  };
+const MAX_PER_CELL = 3;
+const MAX_SPAN_DAYS = 62;
+
+const monthStart = (day: string) => day.slice(0, 8) + "01";
+const shiftMonth = (first: string, n: number) => {
+  const d = new Date(first + "T00:00:00Z");
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + n, 1)).toISOString().slice(0, 10);
+};
+
+function eventsByDay(events: PublicEvent[]): Map<string, PublicEvent[]> {
+  const map = new Map<string, PublicEvent[]>();
+  for (const e of events) {
+    const [first, last] = eventDays(e);
+    for (let d = first, i = 0; d <= last && i < MAX_SPAN_DAYS; d = addDays(d, 1), i++) {
+      const list = map.get(d);
+      if (list) list.push(e);
+      else map.set(d, [e]);
+    }
+  }
+  return map;
+}
+
+function CalEvent({ e, day }: { e: PublicEvent; day: string }) {
+  const cat = CATEGORY_INFO[e.category];
+  const multi = spansDays(e);
+  const isFirst = localDateKey(e.start_at) === day;
+  return (
+    <a className={`cal-ev cat-${cat.slug}${multi ? " cal-ev--span" : ""}`} href={`/events/${e.slug}`} title={e.title}>
+      <Icon name={cat.icon} />
+      {isFirst && !isAllDay(e) && <b>{fmtTime(e.start_at)}</b>}
+      <span>{isFirst ? e.title : `${t.calendar.continued} ${e.title}`}</span>
+    </a>
+  );
+}
+
+/**
+ * Month grid (desktop) and list of days (phones, via CSS) of the events loaded for the selected
+ * window, shown on the window's first month. The arrows set the window to the previous or next
+ * month (`onMonth`), so a month never shows as empty only because it lies outside the window;
+ * "Dziś" goes back to this month's default window. "+N więcej" opens that day in the list.
+ */
+export function EventCalendar({ events, days, onMonth, onThisMonth, onShowDay }: {
+  events: PublicEvent[];
+  days: [string, string];
+  onMonth: (first: string) => void;
+  onThisMonth: () => void;
+  onShowDay: (day: string) => void;
+}) {
+  const today = localDateKey(new Date());
+  const month = monthStart(days[0]);
+  const byDay = eventsByDay(events);
+  const last = monthEnd(month);
+  const gridStart = addDays(month, -weekdayIndex(month));
+  const gridEnd = addDays(last, 6 - weekdayIndex(last));
+  const cells: string[] = [];
+  for (let d = gridStart; d <= gridEnd; d = addDays(d, 1)) cells.push(d);
+  const agenda = cells.filter((d) => d >= month && d <= last && byDay.has(d));
 
   return (
-    <div className="calendar">
-      <FullCalendar
-        key={`${isDesktop}-${JSON.stringify(filters)}`}
-        plugins={[classicTheme, dayGridPlugin, timeGridPlugin, listPlugin]}
-        locale={plLocale}
-        initialView={isDesktop ? "dayGridMonth" : "listWeek"}
-        initialDate={filters.from ?? undefined}
-        headerToolbar={
-          isDesktop
-            ? { start: "prev,next today", center: "title", end: "dayGridMonth,timeGridWeek,listWeek" }
-            : { start: "prev,next", center: "title", end: "today" }
-        }
-        events={loadEvents}
-        height="auto"
-        firstDay={1}
-        eventTimeFormat={{ hour: "2-digit", minute: "2-digit", hour12: false }}
-        dayMaxEvents={4}
-      />
+    <div className="cal">
+      <div className="cal__head">
+        <h2 className="cal__month">{fmtMonth(month)}</h2>
+        <button type="button" className="btn btn--ghost btn--icon" aria-label={t.calendar.prev} onClick={() => onMonth(shiftMonth(month, -1))}>
+          <Icon name="chevl" />
+        </button>
+        <button type="button" className="btn btn--secondary" onClick={onThisMonth}>{t.calendar.today}</button>
+        <button type="button" className="btn btn--ghost btn--icon" aria-label={t.calendar.next} onClick={() => onMonth(shiftMonth(month, 1))}>
+          <Icon name="chevr" />
+        </button>
+      </div>
+      <div className="cal__dow" aria-hidden="true">
+        {t.calendar.weekdays.map((d) => <span key={d}>{d}</span>)}
+      </div>
+      <div className="cal__grid">
+        {cells.map((d) => {
+          const evs = d >= month && d <= last ? byDay.get(d) ?? [] : [];
+          const cls = ["cal__cell", (d < month || d > last) && "is-out", d === today && "is-today", weekdayIndex(d) >= 5 && "is-we"];
+          return (
+            <div key={d} className={cls.filter(Boolean).join(" ")}>
+              <span className="cal__date">{Number(d.slice(8))}</span>
+              {evs.slice(0, MAX_PER_CELL).map((e) => <CalEvent key={e.id} e={e} day={d} />)}
+              {evs.length > MAX_PER_CELL && (
+                <a className="cal__more" href={`/?from=${d}`} onClick={(ev) => { ev.preventDefault(); onShowDay(d); }}>
+                  {t.calendar.more(evs.length - MAX_PER_CELL)}
+                </a>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <ol className="agenda">
+        {agenda.length === 0 && <li><span /><p className="muted">{t.calendar.none}</p></li>}
+        {agenda.map((d) => (
+          <li key={d} className={d === today ? "is-today" : undefined}>
+            <div className="agenda__date">
+              <span className="agenda__num">{Number(d.slice(8))}</span>
+              <span className="agenda__dow">{fmtWeekdayShort(d)}</span>
+            </div>
+            <div className="agenda__evs">
+              {byDay.get(d)!.map((e) => <CalEvent key={e.id} e={e} day={d} />)}
+            </div>
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }

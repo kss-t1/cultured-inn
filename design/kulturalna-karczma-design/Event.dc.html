@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Drugi Run – Larp Gwiezdny Horyzont · Kulturalna Karczma</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./kk.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&amp;family=Source+Sans+3:ital,wght@0,400..700;1,400..700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="kk kk-app" data-theme="{{theme}}">
+
+<svg width="0" height="0" style="position: absolute" aria-hidden="true">
+<symbol id="e-logo" viewBox="0 0 48 48"><path d="M38.6 25L45.4 4" style="fill: none; stroke: currentColor; stroke-width: 4.8; stroke-linecap: round"></path><path d="M38.6 25L45.4 4" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 2.8; stroke-linecap: round"></path><path d="M18 23l-6.5 2.2c-1.8.6-2.6 2.4-1.9 4 .6 1.4 2.2 2.1 3.7 1.6l3.7-1.2-3.8 11c-.5 1.5.6 3 2.2 3h4.4L24 37l4.2 6.6h4.4c1.6 0 2.7-1.5 2.2-3L31 29.6l3.7 1.2c1.5.5 3.1-.2 3.7-1.6.7-1.6-.1-3.4-1.9-4L30 23z" style="fill: var(--sign-ink, #f6e9cf); stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round"></path><circle cx="24" cy="15.2" r="6.6" style="fill: var(--sign-ink, #f6e9cf); stroke: currentColor; stroke-width: 1.4"></circle><path d="M17.6 13.4c2-.9 4.4-1 6.4.2 2-1.2 4.4-1.1 6.4-.2l-.6 3.6c-1.8 1.4-4.2 1.3-5.8-.4-1.6 1.7-4 1.8-5.8.4z" style="fill: var(--sign-gold, #f2b84f); stroke: none"></path><ellipse cx="21" cy="15" rx="1.35" ry=".9" style="fill: var(--sign-bg, #2a1c10)"></ellipse><ellipse cx="27" cy="15" rx="1.35" ry=".9" style="fill: var(--sign-bg, #2a1c10)"></ellipse><path d="M34.6 24.6l7.6 2.5" style="fill: none; stroke: currentColor; stroke-width: 4.4; stroke-linecap: round"></path><path d="M34.6 24.6l7.6 2.5" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 2.4; stroke-linecap: round"></path><path d="M38.4 25.8l-1.2 3.6" style="fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round"></path><path d="M12 22.5l7.4 4.25v8.5L12 39.5l-7.4-4.25v-8.5z" style="fill: var(--sign-bg, #2a1c10); stroke: var(--sign-gold, #f2b84f); stroke-width: 2; stroke-linejoin: round"></path><path d="M12 26l4.5 7.8h-9z" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round"></path></symbol>
+<symbol id="e-larp" viewBox="0 0 24 24"><path d="M4 4l11 11M13 17l4-4M15 15l4 4M20 4L9 15M11 17l-4-4M9 15l-4 4"></path></symbol>
+<symbol id="e-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></symbol>
+<symbol id="e-calplus" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M3.5 10h17M8 3v4M16 3v4M12 12.5v5.5M9.25 15.25h5.5"></path></symbol>
+<symbol id="e-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"></path><circle cx="12" cy="10" r="2.3"></circle></symbol>
+<symbol id="e-ticket" viewBox="0 0 24 24"><path d="M4 7.5A1.5 1.5 0 0 1 5.5 6h13A1.5 1.5 0 0 1 20 7.5V10a2 2 0 0 0 0 4v2.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 16.5V14a2 2 0 0 0 0-4z"></path><path d="M14.5 7v1.5M14.5 11.25v1.5M14.5 15.5V17"></path></symbol>
+<symbol id="e-share" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"></circle><circle cx="17.5" cy="6" r="2.5"></circle><circle cx="17.5" cy="18" r="2.5"></circle><path d="M8.2 10.8l7-3.6M8.2 13.2l7 3.6"></path></symbol>
+<symbol id="e-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M3.5 12h17M12 3.5c2.5 2.6 3.5 5.4 3.5 8.5s-1 5.9-3.5 8.5c-2.5-2.6-3.5-5.4-3.5-8.5s1-5.9 3.5-8.5z"></path></symbol>
+<symbol id="e-ext" viewBox="0 0 24 24"><path d="M14 4.5h5.5V10M19.5 4.5L11 13M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"></path></symbol>
+<symbol id="e-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M14.6 9.3c-.5-.8-1.4-1.3-2.6-1.3-1.5 0-2.5.8-2.5 1.9 0 2.6 5 1.4 5 4.2 0 1.1-1 1.9-2.5 1.9-1.2 0-2.1-.5-2.6-1.3M12 6.5V8M12 16v1.5"></path></symbol>
+<symbol id="e-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 20c.8-3.5 3.5-5.5 7-5.5s6.2 2 7 5.5"></path></symbol>
+<symbol id="e-sprout" viewBox="0 0 24 24"><path d="M12 20v-8M12 12c0-3.5-2.5-6-6.5-6 0 3.8 2.6 6 6.5 6zM12 13.5c0-3 2.2-5.5 6.5-5.5 0 3.5-2.6 5.5-6.5 5.5z"></path></symbol>
+<symbol id="e-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"></path></symbol>
+<symbol id="e-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 11v5M12 8h.01"></path></symbol>
+</svg>
+
+<header class="sign">
+<div class="wrap sign__in">
+<a class="brand" href="#" aria-label="Kulturalna Karczma — strona główna">
+<svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true"><use href="#e-logo"></use></svg>
+<span class="brand__text"><span class="brand__name">Kulturalna Karczma</span><span class="brand__tag">gdzie gra się kulturalnie</span></span>
+</a>
+<span class="sign__aside"><svg class="ico ico--sm" aria-hidden="true"><use href="#e-pin"></use></svg>Poznań</span>
+</div>
+</header>
+
+<main class="wrap">
+<article class="{{evCls}}">
+<a class="linkbtn ev__back" href="#"><svg class="ico" aria-hidden="true"><use href="#e-back"></use></svg>Wszystkie wydarzenia</a>
+
+<div class="ev__cover">
+<sc-if value="{{hasCover}}" hint-placeholder-val="{{true}}">
+<figure class="cover cover--ph"><figcaption>Okładka z wydarzenia na Facebooku · 1200 × 630</figcaption></figure>
+</sc-if>
+<sc-if value="{{noCover}}" hint-placeholder-val="{{false}}">
+<div class="cover cover--none" aria-hidden="true"><span class="cover__seal"><svg class="ico" aria-hidden="true"><use href="#e-larp"></use></svg></span></div>
+</sc-if>
+</div>
+
+<div class="ev__titleblock">
+<sc-if value="{{isCancelled}}" hint-placeholder-val="{{false}}">
+<div class="notice notice--danger" role="status"><span class="stamp">Odwołane</span><div><p class="notice__t">Organizator odwołał to wydarzenie.</p><p>Jeśli masz bilet albo zapisałeś się, sprawdź wiadomość od organizatora.</p></div></div>
+</sc-if>
+<sc-if value="{{isPast}}" hint-placeholder-val="{{false}}">
+<div class="notice" role="status"><svg class="ico" aria-hidden="true" style="margin-top: 2px"><use href="#e-info"></use></svg><div><p class="notice__t">To wydarzenie już się odbyło.</p><p><a href="#">Zobacz nadchodzące wydarzenia</a> — także w Klubie Fantastyki Druga Era.</p></div></div>
+</sc-if>
+<div class="ev__badges">
+<span class="badge badge--cat badge--lg"><svg class="ico" aria-hidden="true"><use href="#e-larp"></use></svg>LARP</span>
+<span class="badge badge--lg"><svg class="ico" aria-hidden="true"><use href="#e-sprout"></use></svg>dla początkujących</span>
+<sc-if value="{{isPast}}" hint-placeholder-val="{{false}}"><span class="badge badge--past badge--lg">Minione</span></sc-if>
+</div>
+<h1 class="ev__title">Drugi Run – Larp Gwiezdny Horyzont</h1>
+<p class="ev__sub">sobota, 7 listopada 2026 · 10:00–20:00</p>
+</div>
+
+<aside class="ev__aside" aria-label="Szczegóły i zapisy">
+<div class="ticket">
+<ul class="ticket__facts">
+<li class="fact"><svg class="ico" aria-hidden="true"><use href="#e-cal"></use></svg><div><span class="fact__k">Kiedy</span><span class="fact__v">sobota, 7 listopada 2026</span><span class="fact__s">10:00–20:00 · zbiórka o 9:30</span></div></li>
+<li class="fact"><svg class="ico" aria-hidden="true"><use href="#e-pin"></use></svg><div><span class="fact__k">Gdzie</span><span class="fact__v">Klub Fantastyki Druga Era</span><span class="fact__s">[ulica i numer], Poznań</span></div></li>
+<li class="fact"><svg class="ico" aria-hidden="true"><use href="#e-user"></use></svg><div><span class="fact__k">Organizator</span><span class="fact__v">Grupa larpowa Horyzont</span></div></li>
+<li class="fact"><svg class="ico" aria-hidden="true"><use href="#e-coin"></use></svg><div><span class="fact__k">Cena</span><span class="fact__v">120 zł</span><span class="fact__s">w cenie obiad i rekwizyty</span></div></li>
+<li class="fact"><svg class="ico" aria-hidden="true"><use href="#e-globe"></use></svg><div><span class="fact__k">Język</span><span class="fact__v">polski</span></div></li>
+</ul>
+<div class="ticket__actions">
+<sc-if value="{{isOpen}}" hint-placeholder-val="{{true}}">
+<a class="btn btn--primary btn--lg btn--block" href="#"><svg class="ico" aria-hidden="true"><use href="#e-ticket"></use></svg>Kup bilet / Zapisy<svg class="ico ico--sm" aria-hidden="true"><use href="#e-ext"></use></svg><span class="sr-only">(otwiera stronę organizatora)</span></a>
+<div class="ticket__row">
+<a class="btn btn--secondary" href="#" download=""><svg class="ico" aria-hidden="true"><use href="#e-calplus"></use></svg>Dodaj do kalendarza</a>
+<button type="button" class="btn btn--secondary"><svg class="ico" aria-hidden="true"><use href="#e-share"></use></svg>Udostępnij</button>
+</div>
+</sc-if>
+<sc-if value="{{isCancelled}}" hint-placeholder-val="{{false}}">
+<button type="button" class="btn btn--primary btn--lg btn--block" disabled="">Zapisy zamknięte</button>
+<div class="ticket__row"><button type="button" class="btn btn--secondary"><svg class="ico" aria-hidden="true"><use href="#e-share"></use></svg>Udostępnij</button></div>
+</sc-if>
+<sc-if value="{{isPast}}" hint-placeholder-val="{{false}}">
+<a class="btn btn--primary btn--lg btn--block" href="#">Nadchodzące wydarzenia</a>
+<div class="ticket__row"><button type="button" class="btn btn--secondary"><svg class="ico" aria-hidden="true"><use href="#e-share"></use></svg>Udostępnij</button></div>
+</sc-if>
+<p class="ticket__src">Źródło: <a href="#">Facebook<svg class="ico ico--sm" aria-hidden="true" style="vertical-align: -3px; margin-left: 3px"><use href="#e-ext"></use></svg></a><span>· zaimportowano 2 lis 2026</span></p>
+</div>
+</div>
+
+<div class="mapcard">
+<div class="map map--mini" role="img" aria-label="Mapa: Klub Fantastyki Druga Era">
+<svg class="map__tiles" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<rect width="600" height="300" fill="#f2efe9"></rect>
+<rect x="40" y="30" width="120" height="80" rx="6" fill="#c8facc"></rect>
+<path d="M470-20c-20 80 30 130 5 200s-40 90-10 140" fill="none" stroke="#aad3df" stroke-width="30"></path>
+<g fill="#e3dad0"><rect x="200" y="30" width="80" height="70" rx="3"></rect><rect x="310" y="30" width="90" height="70" rx="3"></rect><rect x="40" y="170" width="120" height="70" rx="3"></rect><rect x="200" y="200" width="70" height="80" rx="3"></rect><rect x="320" y="210" width="80" height="60" rx="3"></rect></g>
+<g fill="none" stroke-linecap="round">
+<path d="M-20 140h640M180-20v340M300 120v200" stroke="#d6cfc4" stroke-width="13"></path>
+<path d="M-20 140h640M180-20v340M300 120v200" stroke="#ffffff" stroke-width="9"></path>
+<path d="M-20 175c180-25 360 20 640-15" stroke="#c9a46a" stroke-width="18"></path>
+<path d="M-20 175c180-25 360 20 640-15" stroke="#fcd6a4" stroke-width="13"></path>
+</g>
+</svg>
+<span class="pin cat-larp" style="left: 50%; top: 58%; cursor: default"><span class="pin__head"><svg class="ico" aria-hidden="true"><use href="#e-larp"></use></svg></span></span>
+<div class="map__attr">Leaflet | © <a href="#">OpenStreetMap</a></div>
+</div>
+<div class="mapcard__links"><a href="#">Otwórz większą mapę</a><a href="#">Wyznacz trasę</a></div>
+</div>
+</aside>
+
+<section class="ev__desc">
+<h2>O wydarzeniu</h2>
+<p class="ev__text">{{desc}}</p>
+</section>
+</article>
+</main>
+
+<footer class="wrap foot">
+<p><strong>Kulturalna Karczma</strong> — darmowy, niekomercyjny przewodnik po wydarzeniach hobbystycznych w Poznaniu.</p>
+<p>Opis i dane pochodzą od organizatora. Szczegóły zawsze potwierdzaj u źródła.</p>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"status":{"editor":"enum","options":["open","cancelled","past"],"default":"open"},"cover":{"editor":"boolean","default":true},"$preview":{"width":1280,"height":1800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const status = this.props.status ?? 'open';
+    const c = this.props.cover;
+    const hasCover = c === undefined ? true : (c === true || c === 'true');
+    return {
+      theme: this.props.theme ?? 'light',
+      evCls: 'ev cat-larp' + (status === 'cancelled' ? ' is-cancelled' : '') + (status === 'past' ? ' is-past' : ''),
+      isOpen: status === 'open',
+      isCancelled: status === 'cancelled',
+      isPast: status === 'past',
+      hasCover,
+      noCover: !hasCover,
+      desc: 'Gwiezdny Horyzont wraca na drugi run! To larp science fiction dla 24 osób: załoga statku kolonizacyjnego budzi się z hibernacji trzysta lat za wcześnie i musi zdecydować, komu jeszcze można ufać.\n\nNie potrzebujesz doświadczenia. Przed grą prowadzimy godzinne warsztaty dla nowych osób, a postacie rozsyłamy mailem tydzień przed wydarzeniem.\n\nCo zabrać:\n– wygodne ubranie w odcieniach szarości lub granatu,\n– wodę i coś na ząb (obiad jest w cenie),\n– dobry humor.\n\nZapisy przez formularz do 5 listopada lub do wyczerpania miejsc. Gra dla osób od 16 lat.'
+    };
+  }
+}
+</script>
+</body>
+</html>

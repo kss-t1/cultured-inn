@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>System wizualny Kulturalnej Karczmy</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./kk.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&amp;family=Source+Sans+3:ital,wght@0,400..700;1,400..700&amp;display=swap">
+<style>
+body{margin:0}
+.sys-h2{font-family:var(--font-display);font-size:34px;line-height:40px;font-weight:650;font-variation-settings:"SOFT" 70}
+.sys-h3{font-size:12px;line-height:16px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.sys-cap{font-size:13px;line-height:17px;color:var(--ink-3)}
+.sys-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;color:var(--ink-2)}
+</style>
+</helmet>
+<div class="kk" data-theme="light" style="width: 1440px; box-sizing: border-box; padding: 56px; display: flex; flex-direction: column; gap: 64px; background: var(--bg)">
+
+<svg width="0" height="0" style="position: absolute" aria-hidden="true">
+<symbol id="i-logo" viewBox="0 0 48 48"><path d="M38.6 25L45.4 4" style="fill: none; stroke: currentColor; stroke-width: 4.8; stroke-linecap: round"></path><path d="M38.6 25L45.4 4" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 2.8; stroke-linecap: round"></path><path d="M18 23l-6.5 2.2c-1.8.6-2.6 2.4-1.9 4 .6 1.4 2.2 2.1 3.7 1.6l3.7-1.2-3.8 11c-.5 1.5.6 3 2.2 3h4.4L24 37l4.2 6.6h4.4c1.6 0 2.7-1.5 2.2-3L31 29.6l3.7 1.2c1.5.5 3.1-.2 3.7-1.6.7-1.6-.1-3.4-1.9-4L30 23z" style="fill: var(--sign-ink, #f6e9cf); stroke: currentColor; stroke-width: 1.4; stroke-linejoin: round"></path><circle cx="24" cy="15.2" r="6.6" style="fill: var(--sign-ink, #f6e9cf); stroke: currentColor; stroke-width: 1.4"></circle><path d="M17.6 13.4c2-.9 4.4-1 6.4.2 2-1.2 4.4-1.1 6.4-.2l-.6 3.6c-1.8 1.4-4.2 1.3-5.8-.4-1.6 1.7-4 1.8-5.8.4z" style="fill: var(--sign-gold, #f2b84f); stroke: none"></path><ellipse cx="21" cy="15" rx="1.35" ry=".9" style="fill: var(--sign-bg, #2a1c10)"></ellipse><ellipse cx="27" cy="15" rx="1.35" ry=".9" style="fill: var(--sign-bg, #2a1c10)"></ellipse><path d="M34.6 24.6l7.6 2.5" style="fill: none; stroke: currentColor; stroke-width: 4.4; stroke-linecap: round"></path><path d="M34.6 24.6l7.6 2.5" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 2.4; stroke-linecap: round"></path><path d="M38.4 25.8l-1.2 3.6" style="fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round"></path><path d="M12 22.5l7.4 4.25v8.5L12 39.5l-7.4-4.25v-8.5z" style="fill: var(--sign-bg, #2a1c10); stroke: var(--sign-gold, #f2b84f); stroke-width: 2; stroke-linejoin: round"></path><path d="M12 26l4.5 7.8h-9z" style="fill: none; stroke: var(--sign-gold, #f2b84f); stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round"></path></symbol>
+<symbol id="i-larp" viewBox="0 0 24 24"><path d="M4 4l11 11M13 17l4-4M15 15l4 4M20 4L9 15M11 17l-4-4M9 15l-4 4"></path></symbol>
+<symbol id="i-impro" viewBox="0 0 24 24"><path d="M4 4.5c2.6 1 5.4 1.5 8 1.5s5.4-.5 8-1.5v7a8 8 0 0 1-16 0z"></path><path d="M7.8 10.6c.7-.7 1.8-.7 2.4 0M13.8 10.6c.7-.7 1.8-.7 2.4 0M8.5 14.5c1.9 2 5.1 2 7 0"></path></symbol>
+<symbol id="i-rpg" viewBox="0 0 24 24"><path d="M12 2.5l8.5 4.75v9.5L12 21.5l-8.5-4.75v-9.5z"></path><path d="M12 7.5l4.5 7.5h-9zM12 2.5v5M7.5 15l-4 1.75M16.5 15l4 1.75"></path></symbol>
+<symbol id="i-plansz" viewBox="0 0 24 24"><path d="M12 3a2.6 2.6 0 0 1 2.6 2.6c0 .9-.4 1.6-1 2.1l4.9 2.1c.9.4 1.3 1.3 1 2.2-.3.8-1.2 1.2-2 1l-2.1-.6 2.6 6.4c.3.8-.3 1.7-1.2 1.7h-2.4L12 16.5l-2.4 4H7.2c-.9 0-1.5-.9-1.2-1.7l2.6-6.4-2.1.6c-.8.2-1.7-.2-2-1-.3-.9.1-1.8 1-2.2l4.9-2.1c-.6-.5-1-1.2-1-2.1A2.6 2.6 0 0 1 12 3z"></path></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5"></path></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></symbol>
+<symbol id="i-calplus" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"></rect><path d="M3.5 10h17M8 3v4M16 3v4M12 12.5v5.5M9.25 15.25h5.5"></path></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"></path><circle cx="12" cy="10" r="2.3"></circle></symbol>
+<symbol id="i-pinq" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"></path><path d="M10.2 8.6a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.4M12 13.9v.1"></path></symbol>
+<symbol id="i-ticket" viewBox="0 0 24 24"><path d="M4 7.5A1.5 1.5 0 0 1 5.5 6h13A1.5 1.5 0 0 1 20 7.5V10a2 2 0 0 0 0 4v2.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 16.5V14a2 2 0 0 0 0-4z"></path><path d="M14.5 7v1.5M14.5 11.25v1.5M14.5 15.5V17"></path></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"></circle><circle cx="17.5" cy="6" r="2.5"></circle><circle cx="17.5" cy="18" r="2.5"></circle><path d="M8.2 10.8l7-3.6M8.2 13.2l7 3.6"></path></symbol>
+<symbol id="i-locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1.2"></circle><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"></path></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"></path></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></symbol>
+<symbol id="i-chevl" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></symbol>
+<symbol id="i-chevr" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"></path></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></symbol>
+<symbol id="i-map" viewBox="0 0 24 24"><path d="M3.5 6.5L9 4l6 2.5L20.5 4v13.5L15 20l-6-2.5-5.5 2.5z"></path><path d="M9 4v13.5M15 6.5V20"></path></symbol>
+<symbol id="i-repeat" viewBox="0 0 24 24"><path d="M17 3.5l3 3-3 3M4 11.5v-1a4 4 0 0 1 4-4h12M7 20.5l-3-3 3-3M20 12.5v1a4 4 0 0 1-4 4H4"></path></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M3.5 12h17M12 3.5c2.5 2.6 3.5 5.4 3.5 8.5s-1 5.9-3.5 8.5c-2.5-2.6-3.5-5.4-3.5-8.5s1-5.9 3.5-8.5z"></path></symbol>
+<symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4.5h5.5V10M19.5 4.5L11 13M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"></path></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></symbol>
+<symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M14.6 9.3c-.5-.8-1.4-1.3-2.6-1.3-1.5 0-2.5.8-2.5 1.9 0 2.6 5 1.4 5 4.2 0 1.1-1 1.9-2.5 1.9-1.2 0-2.1-.5-2.6-1.3M12 6.5V8M12 16v1.5"></path></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 20c.8-3.5 3.5-5.5 7-5.5s6.2 2 7 5.5"></path></symbol>
+<symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 20v-8M12 12c0-3.5-2.5-6-6.5-6 0 3.8 2.6 6 6.5 6zM12 13.5c0-3 2.2-5.5 6.5-5.5 0 3.5-2.6 5.5-6.5 5.5z"></path></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"></path></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 11v5M12 8h.01"></path></symbol>
+</svg>
+
+<!-- ====== Title ====== -->
+<header style="display: flex; align-items: flex-end; justify-content: space-between; gap: 32px">
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 860px">
+<span class="eyebrow">Kierunek A · rozwinięty</span>
+<h1 class="display" style="font-size: 56px; line-height: 60px; font-weight: 650">Karczma przy świecy — system wizualny</h1>
+<p style="font-size: 19px; line-height: 28px; color: var(--ink-2)">Jeden arkusz <strong>kk.css</strong>: tokeny jako zmienne CSS (jasny i ciemny motyw, przełączane przez <span class="sys-mono">data-theme</span> lub ustawienia systemu), komponenty i wszystkie ich stany. Mobile-first, bez frameworka.</p>
+</div>
+<div class="sign" style="border-radius: 18px; padding: 18px 24px 22px; display: flex; align-items: center; gap: 14px; flex: none">
+<svg class="brand__mark" viewBox="0 0 48 48" style="width: 60px; height: 60px; color: var(--sign-ink)" aria-hidden="true"><use href="#i-logo"></use></svg>
+<span class="brand__text"><span class="brand__name" style="font-size: 32px; color: var(--sign-ink)">Kulturalna Karczma</span><span class="brand__tag" style="font-size: 17px">gdzie gra się kulturalnie</span></span>
+</div>
+</header>
+
+<!-- ====== 1. Colours ====== -->
+<section style="display: flex; flex-direction: column; gap: 20px">
+<h2 class="sys-h2">Kolory</h2>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px">
+<sc-for list="{{themes}}" as="th" hint-placeholder-count="2">
+<div class="kk" data-theme="{{th.theme}}" style="background: var(--bg); border: 1px solid var(--line); border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; align-items: baseline; justify-content: space-between"><h3 class="display" style="font-size: 24px; font-weight: 650">{{th.name}}</h3><span class="sys-cap">{{th.hint}}</span></div>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{th.sw}}" as="s" hint-placeholder-count="15">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<div style="height: 52px; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--line-strong); background: var({{s.v}})"></div>
+<span class="sys-mono">{{s.v}}</span>
+<span class="sys-cap">{{s.hex}} · {{s.use}}</span>
+</div>
+</sc-for>
+</div>
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Kategorie</span>
+<sc-for list="{{th.cats}}" as="c" hint-placeholder-count="4">
+<div class="{{c.cls}}" style="display: grid; grid-template-columns: 52px 150px minmax(0, 1fr); gap: 14px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 8px">
+<span style="width: 52px; height: 44px; border-radius: 8px; background: var(--cat); color: var(--on-cat); display: grid; place-items: center"><svg class="ico ico--lg" aria-hidden="true"><use href="{{c.icon}}"></use></svg></span>
+<span style="display: flex; flex-direction: column"><strong style="color: var(--cat); font-size: 16px">{{c.name}}</strong><span class="sys-mono">{{c.v}} {{c.hex}}</span></span>
+<span class="sys-cap">{{c.note}}</span>
+</div>
+</sc-for>
+<p class="sys-cap">Kategorie różni nie tylko barwa: każda ma własną sylwetkę ikony (miecze, maska, k20, meeple) i zawsze podpis tekstowy. Pinezki na mapie zawsze używają jasnych wartości (<span class="sys-mono">--pin-*</span>), bo leżą na jasnych kafelkach OSM.</p>
+</div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<!-- ====== 2. Type + scales ====== -->
+
+
+<!-- ====== 3. Icons ====== -->
+<section style="display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 32px">
+<div style="display: flex; flex-direction: column; gap: 20px">
+<h2 class="sys-h2">Typografia</h2>
+<div style="background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 8px 24px">
+<sc-for list="{{type}}" as="t" hint-placeholder-count="7">
+<div style="display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 20px; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--line)">
+<span style="display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 14px">{{t.name}}</strong><span class="sys-mono">{{t.spec}}</span></span>
+<span style="{{t.style}}">{{t.sample}}</span>
+</div>
+</sc-for>
+<p class="sys-cap" style="padding: 14px 0">Fraunces: zmienny szeryf z osią „SOFT” — zaokrąglone, ciepłe litery dla znaku i nagłówków. Source Sans 3: czytelny tekst i UI. Oba z podzbiorem latin-ext (ąćęłńóśźż), ładowane z <span class="sys-mono">display=swap</span>; razem ok. 110 kB woff2.</p>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 20px">
+<h2 class="sys-h2">Odstępy, promienie, cienie</h2>
+<div style="background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 24px">
+<div style="display: grid; gap: 8px">
+<span class="sys-h3">Odstępy (siatka 4 px)</span>
+<sc-for list="{{spaces}}" as="s" hint-placeholder-count="8">
+<div style="display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 12px; align-items: center"><span class="sys-mono">{{s.v}}</span><span style="height: 12px; border-radius: 3px; background: var(--gold); width: {{s.px}}"></span></div>
+</sc-for>
+<span class="sys-cap">Margines boczny 16 px (telefon) / 32 px (desktop), min. cel dotyku 44 px, chip 40 px.</span>
+</div>
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Promienie</span>
+<div style="display: flex; gap: 14px; align-items: flex-end">
+<sc-for list="{{radii}}" as="r" hint-placeholder-count="6">
+<div style="display: flex; flex-direction: column; gap: 6px; align-items: center"><span style="width: 64px; height: 48px; background: var(--accent-soft); border: 1.5px solid var(--accent); border-radius: {{r.px}}"></span><span class="sys-mono">{{r.v}}</span></div>
+</sc-for>
+</div>
+</div>
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Cienie (ciepłe)</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 12px; background: var(--bg); border-radius: 14px">
+<div style="height: 72px; border-radius: 12px; background: var(--surface); box-shadow: var(--sh-1); display: grid; place-items: center"><span class="sys-mono">--sh-1 · karta</span></div>
+<div style="height: 72px; border-radius: 12px; background: var(--surface); box-shadow: var(--sh-2); display: grid; place-items: center"><span class="sys-mono">--sh-2 · hover</span></div>
+<div style="height: 72px; border-radius: 12px; background: var(--surface); box-shadow: var(--sh-pop); display: grid; place-items: center"><span class="sys-mono">--sh-pop · dymek</span></div>
+</div>
+</div>
+</div>
+</div>
+</section><section style="display: flex; flex-direction: column; gap: 20px">
+<h2 class="sys-h2">Ikony</h2>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 32px">
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{catIcons}}" as="c" hint-placeholder-count="4">
+<div class="{{c.cls}}" style="background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: flex; gap: 14px; align-items: center">
+<span style="width: 72px; height: 72px; border-radius: 18px; background: var(--cat); color: var(--on-cat); display: grid; place-items: center; flex: none"><svg class="ico ico--xl" aria-hidden="true"><use href="{{c.icon}}"></use></svg></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 17px; color: var(--cat)">{{c.name}}</strong><span class="sys-cap">{{c.what}}</span><span class="sys-mono">{{c.id}}</span></span>
+</div>
+</sc-for>
+</div>
+<div style="background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px 10px">
+<sc-for list="{{uiIcons}}" as="u" hint-placeholder-count="25">
+<div style="display: flex; align-items: center; gap: 10px; padding: 6px 0; min-width: 0"><svg class="ico" aria-hidden="true"><use href="{{u.id}}"></use></svg><span class="sys-cap" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{u.name}}</span></div>
+</sc-for>
+<p class="sys-cap" style="grid-column: 1 / -1; padding-top: 8px">Siatka 24 px, kontur 1,75 px, zaokrąglone końce, <span class="sys-mono">stroke: currentColor</span>. Jeden sprite <span class="sys-mono">&lt;symbol&gt;</span> + <span class="sys-mono">&lt;use href="#i-…"&gt;</span>, albo każdą ikonę jako mały komponent React.</p>
+</div>
+</div>
+</section>
+
+<!-- ====== 4. Components ====== -->
+<section style="display: flex; flex-direction: column; gap: 20px">
+<h2 class="sys-h2">Komponenty i stany</h2>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px">
+<sc-for list="{{themes}}" as="th" hint-placeholder-count="2">
+<div class="kk" data-theme="{{th.theme}}" style="background: var(--bg); border: 1px solid var(--line); border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 28px; min-width: 0">
+<h3 class="display" style="font-size: 24px; font-weight: 650">{{th.name}}</h3>
+
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Chip „Kiedy” (jednokrotny wybór)</span>
+<div style="display: flex; flex-wrap: wrap; gap: 14px">
+<div style="display: grid; gap: 6px; justify-items: start"><button type="button" class="chip" aria-pressed="false">Jutro</button><span class="sys-cap">domyślny</span></div>
+<div style="display: grid; gap: 6px; justify-items: start"><button type="button" class="chip is-hover" aria-pressed="false">Jutro</button><span class="sys-cap">hover</span></div>
+<div style="display: grid; gap: 6px; justify-items: start"><button type="button" class="chip" aria-pressed="true"><svg class="ico ico--sm chip__check" aria-hidden="true"><use href="#i-check"></use></svg>Ten miesiąc</button><span class="sys-cap">wybrany: wypełnienie + ✓ + pogrubienie</span></div>
+<div style="display: grid; gap: 6px; justify-items: start"><button type="button" class="chip is-focus" aria-pressed="false">Dziś</button><span class="sys-cap">focus</span></div>
+<div style="display: grid; gap: 6px; justify-items: start"><button type="button" class="chip" aria-pressed="false" disabled="">Ten weekend</button><span class="sys-cap">nieaktywny</span></div>
+</div>
+</div>
+
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Chip kategorii (wielokrotny wybór)</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{catChipsOff}}" as="c" hint-placeholder-count="4">
+<button type="button" class="{{c.cls}}" aria-pressed="false"><svg class="ico" aria-hidden="true"><use href="{{c.icon}}"></use></svg>{{c.label}}<svg class="ico ico--sm chip__check" aria-hidden="true"><use href="#i-check"></use></svg></button>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{catChipsOff}}" as="c" hint-placeholder-count="4">
+<button type="button" class="{{c.cls}}" aria-pressed="true"><svg class="ico" aria-hidden="true"><use href="{{c.icon}}"></use></svg>{{c.label}}<svg class="ico ico--sm chip__check" aria-hidden="true"><use href="#i-check"></use></svg></button>
+</sc-for>
+</div>
+<span class="sys-cap">Górny rząd: wyłączone (ikona w kolorze). Dolny: włączone — pełny kolor kategorii, tekst {{th.onCat}}, znacznik ✓.</span>
+</div>
+
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Opcje „Więcej filtrów”</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button type="button" class="chip chip--opt" aria-pressed="true"><svg class="ico ico--sm chip__check" aria-hidden="true"><use href="#i-check"></use></svg>Wieczorem (od 17)</button>
+<button type="button" class="chip chip--opt" aria-pressed="false">W dzień</button>
+<button type="button" class="chip chip--opt is-hover" aria-pressed="false">Za darmo</button>
+<button type="button" class="chip chip--opt" aria-pressed="false">Po angielsku</button>
+</div>
+</div>
+
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Przyciski · domyślny / hover / focus / nieaktywny</span>
+<div style="display: grid; grid-template-columns: repeat(4, max-content); gap: 10px; align-items: center">
+<button type="button" class="btn btn--primary">Kup bilet</button>
+<button type="button" class="btn btn--primary is-hover">Kup bilet</button>
+<button type="button" class="btn btn--primary is-focus">Kup bilet</button>
+<button type="button" class="btn btn--primary" disabled="">Kup bilet</button>
+<button type="button" class="btn btn--secondary"><svg class="ico" aria-hidden="true"><use href="#i-share"></use></svg>Udostępnij</button>
+<button type="button" class="btn btn--secondary is-hover"><svg class="ico" aria-hidden="true"><use href="#i-share"></use></svg>Udostępnij</button>
+<button type="button" class="btn btn--secondary is-focus"><svg class="ico" aria-hidden="true"><use href="#i-share"></use></svg>Udostępnij</button>
+<button type="button" class="btn btn--secondary" disabled=""><svg class="ico" aria-hidden="true"><use href="#i-share"></use></svg>Udostępnij</button>
+<button type="button" class="btn btn--ghost"><svg class="ico" aria-hidden="true"><use href="#i-locate"></use></svg>Blisko mnie</button>
+<button type="button" class="btn btn--ghost is-hover"><svg class="ico" aria-hidden="true"><use href="#i-locate"></use></svg>Blisko mnie</button>
+<button type="button" class="btn btn--ghost is-focus"><svg class="ico" aria-hidden="true"><use href="#i-locate"></use></svg>Blisko mnie</button>
+<button type="button" class="linkbtn">Wyczyść filtry</button>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center">
+<button type="button" class="btn btn--secondary" aria-expanded="false"><svg class="ico" aria-hidden="true"><use href="#i-sliders"></use></svg>Więcej filtrów<svg class="ico ico--sm chev" aria-hidden="true"><use href="#i-chev"></use></svg></button>
+<button type="button" class="btn btn--secondary" aria-expanded="true"><svg class="ico" aria-hidden="true"><use href="#i-sliders"></use></svg>Więcej filtrów<span class="count-dot">2</span><svg class="ico ico--sm chev" aria-hidden="true"><use href="#i-chev"></use></svg></button>
+</div>
+</div>
+
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Pola · puste / focus / wypełnione</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<label class="input-icon"><span class="sr-only">Szukaj</span><svg class="ico" aria-hidden="true"><use href="#i-search"></use></svg><input class="input" type="search" placeholder="Szukaj: tytuł, miejsce…"></label>
+<label class="input-icon"><span class="sr-only">Szukaj</span><svg class="ico" aria-hidden="true"><use href="#i-search"></use></svg><input class="input is-focus" type="search" value="impro"></label>
+<label class="field"><span class="sr-only">Od</span><span class="input-icon"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-cal"></use></svg><input class="input" type="text" value="05.11.2026"></span></label>
+</div>
+<div class="range">
+<div class="range__head"><label for="sys-price-{{th.theme}}">Cena maks.</label><span class="range__val">60 zł</span></div>
+<input id="sys-price-{{th.theme}}" class="slider" type="range" min="0" max="150" step="5" value="60">
+<div class="range__scale"><span>0 zł</span><span>150 zł · dowolna</span></div>
+</div>
+</div>
+
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Zakładki i licznik</span>
+<div class="tabs" role="tablist" aria-label="Widok (telefon)">
+<button type="button" class="tab" role="tab" aria-selected="true"><svg class="ico" aria-hidden="true"><use href="#i-list"></use></svg>Lista</button>
+<button type="button" class="tab is-hover" role="tab" aria-selected="false"><svg class="ico" aria-hidden="true"><use href="#i-map"></use></svg>Mapa</button>
+<button type="button" class="tab" role="tab" aria-selected="false"><svg class="ico" aria-hidden="true"><use href="#i-cal"></use></svg>Kalendarz</button>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+<div class="tabs" role="tablist" aria-label="Widok (desktop)" style="flex: none">
+<button type="button" class="tab" role="tab" aria-selected="true" style="flex: none; padding: 0 18px"><svg class="ico" aria-hidden="true"><use href="#i-map"></use></svg>Lista i mapa</button>
+<button type="button" class="tab is-focus" role="tab" aria-selected="false" style="flex: none; padding: 0 18px"><svg class="ico" aria-hidden="true"><use href="#i-cal"></use></svg>Kalendarz</button>
+</div>
+<span class="count"><span class="count__n">21 wydarzeń</span><span class="count__range">3–30 listopada</span></span>
+</div>
+<span class="sys-cap">Wybrana zakładka: jasne tło, cień, złota kreska u dołu i pogrubienie — nie tylko kolor.</span>
+</div>
+
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Etykiety</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+<span class="price">25 zł</span>
+<span class="price">400–480 zł</span>
+<span class="badge badge--free"><svg class="ico" aria-hidden="true"><use href="#i-coin"></use></svg>Za darmo</span>
+<span class="badge"><svg class="ico" aria-hidden="true"><use href="#i-repeat"></use></svg>cykliczne</span>
+<span class="badge"><svg class="ico" aria-hidden="true"><use href="#i-sprout"></use></svg>dla początkujących</span>
+<span class="badge badge--en"><svg class="ico" aria-hidden="true"><use href="#i-globe"></use></svg>EN</span>
+<span class="badge"><svg class="ico" aria-hidden="true"><use href="#i-cal"></use></svg>wielodniowe</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+<span class="badge badge--cat badge--lg cat-larp"><svg class="ico" aria-hidden="true"><use href="#i-larp"></use></svg>LARP</span>
+<span class="badge badge--cat badge--lg cat-impro"><svg class="ico" aria-hidden="true"><use href="#i-impro"></use></svg>Impro</span>
+<span class="badge badge--danger badge--lg">Odwołane</span>
+<span class="badge badge--past badge--lg">Minione</span>
+<span class="stamp">Odwołane</span>
+</div>
+</div>
+
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Nagłówek dnia i karty (bilet)</span>
+<div class="day">
+<div class="day__head"><h3 class="day__name">Wtorek, 3 listopada</h3><span class="day__rel">Dziś</span><span class="day__rule"></span></div>
+<a class="card cat-rpg" href="#">
+<span class="card__stub"><span class="card__time">18:30</span><span class="card__end">–23:00</span><svg class="ico" aria-hidden="true"><use href="#i-rpg"></use></svg></span>
+<span class="card__body"><span class="card__cat">RPG</span><span class="card__title">One-shot D&amp;D: Klątwa młyna nad Wartą</span><span class="card__venue"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-pin"></use></svg>Podziemie</span><span class="card__meta"><span class="price">25 zł</span><span class="badge"><svg class="ico" aria-hidden="true"><use href="#i-sprout"></use></svg>dla początkujących</span></span></span>
+</a>
+<span class="sys-cap">Domyślna. Pieniek biletu = godzina + ikona kategorii, przedziurkowany od reszty.</span>
+<a class="card cat-plansz is-hover" href="#">
+<span class="card__stub"><span class="card__time">19:00</span><span class="card__end">–21:30</span><svg class="ico" aria-hidden="true"><use href="#i-plansz"></use></svg></span>
+<span class="card__body"><span class="card__cat">Planszówki</span><span class="card__title">Dwudziesty pierwszy Wieczór Gier Planszowych w Osiedlowym Domu Kultury „Pod Lipami”</span><span class="card__venue"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-pin"></use></svg>ODK „Pod Lipami”</span><span class="card__meta"><span class="badge badge--free"><svg class="ico" aria-hidden="true"><use href="#i-coin"></use></svg>Za darmo</span><span class="badge"><svg class="ico" aria-hidden="true"><use href="#i-repeat"></use></svg>cykliczne</span></span></span>
+</a>
+<span class="sys-cap">Hover + długi tytuł (maks. 3 linie na telefonie, 2 na desktopie).</span>
+<a class="card card--multi cat-larp" href="#">
+<span class="card__stub"><span class="card__time">3</span><span class="card__end">dni</span><svg class="ico" aria-hidden="true"><use href="#i-larp"></use></svg></span>
+<span class="card__body"><span class="card__cat">LARP</span><span class="card__title">Zimowa Brama – weekendowy konwent larpowy</span><span class="card__when">pt., 6 lis 18:00 – niedz., 8 lis 21:00</span><span class="card__venue is-unknown"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-pinq"></use></svg>Miejsce do potwierdzenia</span><span class="card__meta"><span class="price">400–480 zł</span><span class="badge"><svg class="ico" aria-hidden="true"><use href="#i-cal"></use></svg>wielodniowe</span></span></span>
+</a>
+<span class="sys-cap">Wielodniowe + nieznane miejsce.</span>
+<a class="card cat-impro is-cancelled is-focus" href="#">
+<span class="card__stub"><span class="card__time">20:00</span><span class="card__end">–22:00</span><svg class="ico" aria-hidden="true"><use href="#i-impro"></use></svg></span>
+<span class="card__body"><span class="card__cat">Impro</span><span class="card__title">Improv Jam in English</span><span class="card__venue"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-pin"></use></svg>Bar Zielona Latarnia</span><span class="card__meta"><span class="badge badge--danger">Odwołane</span><span class="badge badge--en"><svg class="ico" aria-hidden="true"><use href="#i-globe"></use></svg>EN</span></span></span>
+</a>
+<span class="sys-cap">Odwołane (przekreślony tytuł + etykieta) i focus z klawiatury.</span>
+</div>
+</div>
+
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Mapa: pinezki, sterowanie, dymek</span>
+<div class="map" style="height: 470px">
+<svg class="map__tiles" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="600" fill="#f2efe9"></rect><path d="M-20 0h860v70c-120 30-200-10-320 20s-220 10-300-10-160 10-240-10z" fill="#d6e9c6"></path><path d="M560-20c-20 100 40 160 10 250s-50 150-10 240 30 120 20 150" fill="none" stroke="#aad3df" stroke-width="36"></path><rect x="250" y="250" width="110" height="80" rx="6" fill="#c8facc"></rect><g fill="#e3dad0"><rect x="80" y="120" width="70" height="46" rx="3"></rect><rect x="170" y="120" width="56" height="46" rx="3"></rect><rect x="80" y="190" width="146" height="40" rx="3"></rect><rect x="390" y="140" width="90" height="60" rx="3"></rect><rect x="390" y="230" width="60" height="70" rx="3"></rect><rect x="640" y="420" width="90" height="56" rx="3"></rect></g><g fill="none" stroke-linecap="round"><path d="M-20 250h840M240 -20v640M60 380h470M380 -20v640M640 100v520" stroke="#d6cfc4" stroke-width="13"></path><path d="M-20 250h840M240 -20v640M60 380h470M380 -20v640M640 100v520" stroke="#ffffff" stroke-width="9"></path><path d="M-20 470c200-30 400 20 540-20s200-60 300-40" stroke="#c9a46a" stroke-width="16"></path><path d="M-20 470c200-30 400 20 540-20s200-60 300-40" stroke="#fcd6a4" stroke-width="12"></path></g></svg>
+<div class="map__ctl"><button type="button" aria-label="Przybliż"><svg class="ico" aria-hidden="true"><use href="#i-plus"></use></svg></button><button type="button" aria-label="Oddal"><svg class="ico" aria-hidden="true"><use href="#i-minus"></use></svg></button></div>
+<button type="button" class="btn btn--secondary map__near"><svg class="ico" aria-hidden="true"><use href="#i-locate"></use></svg>Blisko mnie</button>
+<button type="button" class="pin cat-larp" style="left: 16%; top: 96%" aria-label="LARP"><span class="pin__head"><svg class="ico" aria-hidden="true"><use href="#i-larp"></use></svg></span></button>
+<button type="button" class="pin cat-impro is-hover" style="left: 34%; top: 96%" aria-label="Impro"><span class="pin__head"><svg class="ico" aria-hidden="true"><use href="#i-impro"></use></svg></span></button>
+<button type="button" class="pin cat-rpg" style="left: 52%; top: 96%" aria-label="RPG"><span class="pin__head"><svg class="ico" aria-hidden="true"><use href="#i-rpg"></use></svg></span></button>
+<button type="button" class="pin cat-plansz is-focus" style="left: 70%; top: 96%" aria-label="Planszówki"><span class="pin__head"><svg class="ico" aria-hidden="true"><use href="#i-plansz"></use></svg></span></button>
+<button type="button" class="pin" style="left: 88%; top: 96%" aria-label="Twierdza Gier: 2 wydarzenia"><span class="pin__head" style="background: var(--pin-plansz)"><span class="pin__count">2</span></span></button>
+<button type="button" class="pin" aria-expanded="true" style="left: 50%; top: 74%" aria-label="Klub Fantastyki Druga Era: 6 wydarzeń"><span class="pin__head" style="background: conic-gradient(var(--pin-plansz) 0deg 120deg, var(--pin-rpg) 120deg 240deg, var(--pin-larp) 240deg 360deg)"><span class="pin__count">6</span></span></button>
+<div class="popup" style="left: 50%; top: 74%" role="dialog" aria-label="Klub Fantastyki Druga Era">
+<div class="popup__head"><div><p class="popup__title">Klub Fantastyki Druga Era</p><p class="popup__addr">[ulica i numer], Poznań · 6 wydarzeń</p></div><button type="button" class="popup__close" aria-label="Zamknij"><svg class="ico" aria-hidden="true"><use href="#i-x"></use></svg></button></div>
+<ul class="popup__list">
+<li><a class="popup__item cat-plansz" href="#"><span class="popup__ico"><svg class="ico" aria-hidden="true"><use href="#i-plansz"></use></svg></span><span><span class="popup__when">czw. 5 lis · 18:00</span><span class="popup__t">Wieczór planszówkowy w Drugiej Erze</span></span></a></li>
+<li><a class="popup__item cat-larp" href="#"><span class="popup__ico"><svg class="ico" aria-hidden="true"><use href="#i-larp"></use></svg></span><span><span class="popup__when">sob. 7 lis · 10:00</span><span class="popup__t">Drugi Run – Larp Gwiezdny Horyzont</span></span></a></li>
+</ul>
+</div>
+<div class="map__attr">Leaflet | © <a href="#">OpenStreetMap</a></div>
+</div>
+<span class="sys-cap">Dolny rząd: 4 kategorie (domyślny, hover, —, focus) i miejsce z 2 wydarzeniami. Środek: miejsce z kilkoma kategoriami — pinezka dzielona kolorami + liczba, stan otwarty (obwódka) z dymkiem.</span>
+<div class="map__note" style="position: static; align-self: flex-start"><svg class="ico" aria-hidden="true"><use href="#i-info"></use></svg>3 wydarzenia bez lokalizacji na mapie<button type="button" class="linkbtn">Pokaż</button></div>
+</div>
+
+<div style="display: grid; gap: 10px">
+<span class="sys-h3">Bloki w kalendarzu</span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; max-width: 420px">
+<a class="cal-ev cat-larp" href="#"><svg class="ico" aria-hidden="true"><use href="#i-larp"></use></svg><b>10:00</b><span>Drugi Run – Gwiezdny…</span></a>
+<a class="cal-ev cat-impro" href="#"><svg class="ico" aria-hidden="true"><use href="#i-impro"></use></svg><b>20:00</b><span>Wieczór komedii impro</span></a>
+<a class="cal-ev cat-rpg" href="#"><svg class="ico" aria-hidden="true"><use href="#i-rpg"></use></svg><b>18:30</b><span>One-shot D&amp;D</span></a>
+<a class="cal-ev cat-plansz" href="#"><svg class="ico" aria-hidden="true"><use href="#i-plansz"></use></svg><b>18:00</b><span>Wieczór planszówkowy</span></a>
+<a class="cal-ev cal-ev--span cat-larp" href="#" style="grid-column: 1 / -1"><svg class="ico" aria-hidden="true"><use href="#i-larp"></use></svg><b>pt.–ndz.</b><span>Zimowa Brama (wydarzenie wielodniowe)</span></a>
+</div>
+</div>
+
+</div>
+</sc-for>
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const base = [
+      ['--bg', '#f4ecdd', '#16110b', 'tło'],
+      ['--surface', '#fffaf0', '#211910', 'karty'],
+      ['--surface-2', '#f7efe0', '#2a2016', 'pola'],
+      ['--line', '#e0d1b6', '#3a2d20', 'linie'],
+      ['--line-strong', '#9a8160', '#7a6650', 'obrysy'],
+      ['--ink', '#2a1c10', '#f3e7d2', 'tekst'],
+      ['--ink-2', '#5a4632', '#d4c2a5', 'tekst 2'],
+      ['--ink-3', '#75604a', '#b19d80', 'tekst 3'],
+      ['--accent', '#6e3b16', '#eaa95b', 'akcja'],
+      ['--accent-soft', '#f1e2c9', '#33261a', 'hover'],
+      ['--gold', '#d4952a', '#f0b54a', 'płomień'],
+      ['--gold-ink', '#7a5208', '#f0b54a', 'złoty tekst'],
+      ['--sign-bg', '#2a1c10', '#0e0a06', 'szyld'],
+      ['--focus', '#1f56c9', '#8fb5ff', 'focus'],
+      ['--danger', '#a3261a', '#ff8f80', 'odwołane']
+    ];
+    const cats = [
+      ['larp', 'LARP', '#6a3fa8', '#bc9ef2', 'biały na kolorze 7,3:1 · kolor na karcie 7,0:1', 'ciemny na kolorze 8,3:1 · kolor na karcie 7,7:1'],
+      ['impro', 'Impro', '#a8480c', '#f3a165', 'biały na kolorze 5,8:1 · kolor na karcie 5,6:1', 'ciemny na kolorze 9,0:1 · kolor na karcie 8,3:1'],
+      ['rpg', 'RPG', '#9e1f33', '#f28b98', 'biały na kolorze 7,8:1 · kolor na karcie 7,5:1', 'ciemny na kolorze 8,0:1 · kolor na karcie 7,4:1'],
+      ['plansz', 'Planszówki', '#0d6e63', '#5cd0bd', 'biały na kolorze 6,1:1 · kolor na karcie 5,9:1', 'ciemny na kolorze 10:1 · kolor na karcie 9,3:1']
+    ];
+    const mk = (i) => ({
+      theme: i ? 'dark' : 'light',
+      name: i ? 'Ciemny motyw' : 'Jasny motyw',
+      hint: i ? 'świeca w ciemnej izbie' : 'pergamin i orzech',
+      onCat: i ? 'ciemny' : 'biały',
+      sw: base.map(b => ({ v: b[0], hex: b[1 + i], use: b[3] })),
+      cats: cats.map(c => ({ cls: 'cat-' + c[0], name: c[1], icon: '#i-' + c[0], v: '--c-' + c[0], hex: c[2 + i], note: c[4 + i] }))
+    });
+    return {
+      themes: [mk(0), mk(1)],
+      type: [
+        { name: 'Znak', spec: 'Fraunces 650 · 30/32 · SOFT 80', sample: 'Kulturalna Karczma', style: 'font-family: var(--font-display); font-size: 30px; line-height: 32px; font-weight: 650; font-variation-settings: "SOFT" 80' },
+        { name: 'Tytuł wydarzenia', spec: 'Fraunces 650 · 46/52 (tel. 30/35)', sample: 'Drugi Run – Larp Gwiezdny Horyzont', style: 'font-family: var(--font-display); font-size: 40px; line-height: 46px; font-weight: 650; letter-spacing: -.015em; font-variation-settings: "SOFT" 70' },
+        { name: 'Nagłówek dnia', spec: 'Fraunces 600 · 21/26', sample: 'Czwartek, 5 listopada', style: 'font-family: var(--font-display); font-size: 21px; line-height: 26px; font-weight: 600' },
+        { name: 'Tytuł karty', spec: 'Fraunces 600 · 18/23 (desk. 19/24)', sample: 'Wieczór komedii impro w ODK Orbita', style: 'font-family: var(--font-display); font-size: 18px; line-height: 23px; font-weight: 600' },
+        { name: 'Tekst', spec: 'Source Sans 3 400 · 17/27', sample: 'Pchnąć w tę łódź jeża lub ośm skrzyń fig. Zażółć gęślą jaźń.', style: 'font-size: 17px; line-height: 27px' },
+        { name: 'UI / chipy', spec: 'Source Sans 3 600 · 15–16', sample: 'Ten tydzień · Więcej filtrów · Dodaj do kalendarza', style: 'font-size: 16px; font-weight: 600' },
+        { name: 'Etykieta', spec: 'Source Sans 3 700 · 12/16 · +0.09em', sample: 'PLANSZÓWKI · KIEDY · ORGANIZATOR', style: 'font-size: 12px; font-weight: 700; letter-spacing: .09em; color: var(--ink-3)' }
+      ],
+      spaces: [['--s-1', 4], ['--s-2', 8], ['--s-3', 12], ['--s-4', 16], ['--s-5', 24], ['--s-6', 32], ['--s-7', 48], ['--s-8', 64]].map(s => ({ v: s[0] + ' ' + s[1], px: (s[1] * 3) + 'px' })),
+      radii: [['--r-xs', '4px'], ['--r-sm', '8px'], ['--r-md', '12px'], ['--r-lg', '16px'], ['--r-xl', '24px'], ['--r-pill', '999px']].map(r => ({ v: r[0], px: r[1] })),
+      catIcons: [
+        { cls: 'cat-larp', name: 'LARP', what: 'skrzyżowane miecze', id: '#i-larp', icon: '#i-larp' },
+        { cls: 'cat-impro', name: 'Impro', what: 'uśmiechnięta maska', id: '#i-impro', icon: '#i-impro' },
+        { cls: 'cat-rpg', name: 'RPG', what: 'kość k20', id: '#i-rpg', icon: '#i-rpg' },
+        { cls: 'cat-plansz', name: 'Planszówki', what: 'meeple (też wargaming)', id: '#i-plansz', icon: '#i-plansz' }
+      ],
+      uiIcons: [['search', 'Szukaj'], ['cal', 'Kalendarz'], ['calplus', 'Do kalendarza'], ['clock', 'Czas'], ['pin', 'Miejsce'], ['pinq', 'Miejsce ?'], ['ticket', 'Bilet'], ['share', 'Udostępnij'], ['locate', 'Blisko mnie'], ['sliders', 'Filtry'], ['list', 'Lista'], ['map', 'Mapa'], ['repeat', 'Cykliczne'], ['sprout', 'Początkujący'], ['globe', 'Język'], ['coin', 'Cena'], ['user', 'Organizator'], ['ext', 'Link zewn.'], ['check', 'Wybrane'], ['x', 'Zamknij'], ['plus', 'Przybliż'], ['minus', 'Oddal'], ['chev', 'Rozwiń'], ['back', 'Wstecz'], ['info', 'Info']].map(u => ({ id: '#i-' + u[0], name: u[1] })),
+      catChipsOff: [['larp', 'LARP'], ['impro', 'Impro'], ['rpg', 'RPG'], ['plansz', 'Planszówki']].map(c => ({ cls: 'chip chip--cat cat-' + c[0], icon: '#i-' + c[0], label: c[1] }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -7,6 +7,7 @@ import { adminImportRoutes } from "./routes/adminImports.ts";
 import { publicRoutes } from "./routes/public.ts";
 import { submitRoutes } from "./routes/submit.ts";
 import { startScheduler } from "./jobs/scheduler.ts";
+import favicon from "./site/favicon.svg" with { type: "text" };
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -25,6 +26,9 @@ export const server = Bun.serve({
     ...adminRoutes,
     ...adminImportRoutes,
     "/healthz": () => new Response("ok"),
+    // For the server-rendered pages; the SPA pages bundle the same file.
+    "/favicon.svg": () =>
+      new Response(favicon, { headers: { "Content-Type": "image/svg+xml", "Cache-Control": "public, max-age=86400" } }),
   },
   fetch() {
     return new Response("Not found", { status: 404 });
