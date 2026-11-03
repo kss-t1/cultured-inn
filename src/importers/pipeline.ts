@@ -3,7 +3,7 @@ import { sql, TZ } from "../db.ts";
 import { uniqueSlug } from "../lib/slugs.ts";
 import { classify, type Category } from "../shared/categories.ts";
 import type { AdapterResult, EventCandidate, SourceRow } from "./types.ts";
-import { distanceKm, isLocal, utcToZoned } from "./util.ts";
+import { distanceKm, isLocal, parsePrice, utcToZoned } from "./util.ts";
 
 export type SkipReason =
   | "no_title" | "excluded" | "rule_skip" | "no_match" | "out_of_area" | "past" | "cancelled" | "rejected";
@@ -141,9 +141,28 @@ async function createVenue(c: EventCandidate, cityId: number): Promise<VenueRow 
 // ---------- storage ----------
 
 /** Content fingerprint: an unchanged item skips all writes except last_seen_at. */
+/** Bump when the mapping from candidate to event fields changes, so unchanged items are re-applied. */
+const PIPELINE_VERSION = 3;
+
 function contentHash(c: EventCandidate, d: Decision): string {
   const { raw: _raw, ...rest } = c;
-  return new Bun.CryptoHasher("sha256").update(JSON.stringify([rest, d])).digest("hex");
+  return new Bun.CryptoHasher("sha256").update(JSON.stringify([PIPELINE_VERSION, rest, d])).digest("hex");
+}
+
+/**
+ * The adapter's price, else one found in the title or description. "Free" in the title beats a
+ * price in the description (which often belongs to a related course). With no price anywhere the
+ * event counts as free (most club meetings never say so), unless it has a ticket link.
+ */
+export function priceOf(c: EventCandidate): { isFree: boolean; priceMin: number | null; priceMax: number | null } {
+  const inTitle = parsePrice(c.title);
+  if (c.isFree || (inTitle.isFree && inTitle.priceMin === null)) return { isFree: true, priceMin: null, priceMax: null };
+  if (c.priceMin != null || c.priceMax != null) {
+    return { isFree: false, priceMin: c.priceMin ?? c.priceMax ?? null, priceMax: c.priceMax ?? c.priceMin ?? null };
+  }
+  const p = parsePrice(`${c.title}\n${c.description}`);
+  if (p.priceMin !== null) return p;
+  return { isFree: p.isFree || !c.ticketUrl, priceMin: null, priceMax: null };
 }
 
 const localDate = (d: Date) => {
@@ -179,6 +198,7 @@ async function upsertSeries(source: SourceRow, c: EventCandidate): Promise<numbe
 }
 
 function eventFields(c: EventCandidate, d: Extract<Decision, { keep: true }>) {
+  const price = priceOf(c);
   return {
     title: c.title.slice(0, 300),
     description: c.description,
@@ -186,9 +206,9 @@ function eventFields(c: EventCandidate, d: Extract<Decision, { keep: true }>) {
     tags: d.tags,
     start: c.start,
     end: c.end,
-    priceMin: c.isFree ? null : (c.priceMin ?? null),
-    priceMax: c.isFree ? null : (c.priceMax ?? null),
-    isFree: c.isFree ?? false,
+    priceMin: price.priceMin,
+    priceMax: price.priceMax,
+    isFree: price.isFree,
     ticketUrl: c.ticketUrl ?? null,
     sourceUrl: c.url ?? null,
     imageUrl: c.imageUrl ?? null,
