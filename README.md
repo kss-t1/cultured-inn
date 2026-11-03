@@ -51,12 +51,12 @@ bun run dev                     # http://localhost:3000, admin at /admin
 
 ```
 src/server.ts          Bun.serve routes (SPAs via HTML imports, APIs, SSR event pages)
-src/routes/            public.ts (/api/events, /events/:slug[.ics]), admin.ts (/api/admin/*)
+src/routes/            public.ts (/api/events, /events/:slug[.ics]), submit.ts (/api/submit), admin.ts (/api/admin/*)
 src/lib/               events queries, auth, ICS export, geocoding, HTTP helpers
 src/importers/         import pipeline (pipeline.ts), runner (run.ts) and adapters/ (ics, jsonld, poznanPl, facebook)
 src/jobs/              in-process scheduler
 src/shared/            code shared by client and server: filters, schemas, categories, i18n, formatting
-src/site/              public SPA (list, map, calendar)
+src/site/              public SPA (list, map, calendar) and the /submit form
 src/admin/             admin SPA
 db/migrations/         numbered SQL migrations; db/migrate.ts applies them
 tests/                 bun test
@@ -112,7 +112,9 @@ Recurring ICS events are expanded 60 days ahead (`rrule`), keyed by local date, 
 | `bbox` | `minLon,minLat,maxLon,maxLat` |
 | `q` | free text: title, description, venue, organizer; ignores diacritics, matches prefixes, tolerates typos |
 
-Admin API errors look like `{ "error": "<code>", "fields": { "<field>": "<code>" } }`. The UI translates the codes.
+`POST /api/submit` takes the public **Zgłoś wydarzenie** form (`/submit`, fields in `SubmitInput`, `src/shared/schemas.ts`). It needs an allowed `Origin`, ignores submissions that fill the hidden `website` field, and accepts at most 5 per IP per hour (`429 rate_limited`). Each submission becomes a `DRAFT` flagged `submitted` that waits on the review page; the location text and contact are kept in `submissions` for admins. Behind a reverse proxy set `TRUST_PROXY=1`, or every visitor counts as the proxy's IP and shares one limit.
+
+API errors look like `{ "error": "<code>", "fields": { "<field>": "<code>" } }`. The UI translates the codes.
 
 ## Deployment (planned)
 

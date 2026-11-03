@@ -8,6 +8,7 @@
   --chip-on-bg: #2b241c;
   --chip-on-fg: #ffffff;
   --good: #2e7d4f;
+  --danger: #b3261e;
   --radius: 12px;
   color-scheme: light dark;
 }
@@ -22,6 +23,7 @@
     --chip-on-bg: #eee7dc;
     --chip-on-fg: #17140f;
     --good: #6fcf97;
+    --danger: #f2b8b5;
   }
 }
 
@@ -45,7 +47,8 @@ button { font: inherit; color: inherit; }
 .app { max-width: 1400px; margin: 0 auto; padding: 0 16px 24px; }
 
 /* Header */
-.site-header { padding: 14px 0 6px; }
+.site-header { padding: 14px 0 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.header-link { display: inline-flex; align-items: center; min-height: 44px; text-align: right; }
 .brand { display: inline-flex; flex-direction: column; color: var(--fg); text-decoration: none; }
 .brand-name { font-size: 1.35rem; line-height: 1.2; }
 .tagline { color: var(--muted); font-size: .9rem; font-style: italic; }
@@ -111,7 +114,7 @@ button { font: inherit; color: inherit; }
 
 /* List */
 .status { padding: 24px 4px; color: var(--muted); }
-.status.error { color: #b3261e; }
+.status.error { color: var(--danger); }
 .empty p { margin: 0 0 6px; }
 .day + .day { margin-top: 18px; }
 .day-heading { font-size: 1rem; margin: 0 0 8px; color: var(--muted); font-weight: 600; }
@@ -179,3 +182,36 @@ button { font: inherit; color: inherit; }
 
 /* Calendar */
 .calendar { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px; }
+
+/* Submit form */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 18px;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); cursor: pointer;
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
+.btn:disabled { opacity: .6; cursor: default; }
+.submit-page { max-width: 680px; margin: 0 auto; }
+.submit-page h1 { font-size: 1.6rem; margin: 12px 0 4px; }
+.submit-form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.submit-form p { margin: 0; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field label { font-weight: 600; }
+.field input, .field select, .field textarea {
+  width: 100%; min-height: 44px; padding: 8px 12px; font: inherit; color: var(--fg);
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.field textarea { resize: vertical; }
+.field [aria-invalid="true"] { border-color: var(--danger); }
+.field-pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.check { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.check input { width: 20px; height: 20px; accent-color: var(--accent); }
+.submit-form fieldset { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px 14px; margin: 0; min-width: 0; }
+.submit-form legend { font-weight: 600; padding: 0 4px; }
+.submit-form .small { font-size: .9rem; margin-bottom: 10px; }
+.field-error { color: var(--danger); }
+.notice { background: var(--card); border: 1px solid var(--line); border-left: 5px solid var(--good); border-radius: var(--radius); padding: 4px 18px 18px; }
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+@media (min-width: 560px) {
+  .field-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .submit-form > .btn { justify-self: start; }
+}

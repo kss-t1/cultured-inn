@@ -122,7 +122,7 @@ export function matchVenue(venues: VenueRow[], c: Pick<EventCandidate, "location
   return null;
 }
 
-async function loadVenues(): Promise<VenueRow[]> {
+export async function loadVenues(): Promise<VenueRow[]> {
   return (await sql`SELECT id, name, address, aliases, lat, lon FROM venues`) as VenueRow[];
 }
 

@@ -92,6 +92,33 @@ export const OrganizerInput = z.object({
 });
 export type OrganizerInput = z.infer<typeof OrganizerInput>;
 
+/** Public "submit an event" form. `website` is a honeypot: people never see it, bots fill it in. */
+export const SubmitInput = z
+  .object({
+    title: z.string().trim().min(1, "required").max(200),
+    category: z.enum(CATEGORIES, { error: "required" }),
+    start_local: localDateTime,
+    end_local: localDateTime.nullish().transform((v) => v || null),
+    location: z.string().trim().min(1, "required").max(300),
+    description: z.string().trim().max(5000).default(""),
+    link: optUrl,
+    is_free: z.boolean().default(false),
+    beginner_friendly: z.boolean().default(false),
+    contact_name: optText(200),
+    contact_email: z
+      .string()
+      .trim()
+      .nullish()
+      .transform((v) => (v ? v : null))
+      .pipe(z.email("invalid_email").nullable()),
+    website: z.string().max(500).optional(),
+  })
+  .refine((e) => !e.end_local || e.end_local >= e.start_local, {
+    message: "end_before_start",
+    path: ["end_local"],
+  });
+export type SubmitInput = z.infer<typeof SubmitInput>;
+
 export const LoginInput = z.object({
   email: z.string().trim().toLowerCase().max(200),
   password: z.string().min(1).max(500),

@@ -262,7 +262,8 @@ karczma/
     server.ts                 Bun.serve: routes, HTML imports, scheduler start
     db.ts                     Bun.sql instance
     routes/
-      public.ts               /api/events, /feed.ics, /wydarzenia/:slug (SSR), /api/submit
+      public.ts               /api/events, /feed.ics, /wydarzenia/:slug (SSR)
+      submit.ts               /submit form API: /api/submit
       admin.ts                /api/admin/* (events, venues, organizers, sources, review queue)
       auth.ts                 login/logout, sessions, lockout, origin check
     site/                     public SPA

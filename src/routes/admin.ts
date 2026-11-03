@@ -138,13 +138,17 @@ const updateEvent = admin<"/api/admin/events/:id">(async (req) => {
 });
 
 /**
- * When an admin assigns a venue to an imported event the pipeline couldn't place, remember the
- * source's location text as an alias, so the next import from that source matches by itself.
+ * When an admin assigns a venue to an imported or submitted event that couldn't be placed, remember
+ * the location text as an alias, so the next import or submission naming it matches by itself.
  */
-async function learnVenueAlias(eventId: number, venueId: number) {
+export async function learnVenueAlias(eventId: number, venueId: number) {
   const [item] = await sql`
-    SELECT location_text FROM imported_items WHERE event_id = ${eventId} AND location_text IS NOT NULL
-    ORDER BY id LIMIT 1`;
+    SELECT location_text FROM (
+      SELECT location_text, 1 AS pref, id FROM imported_items WHERE event_id = ${eventId}
+      UNION ALL
+      SELECT location_text, 2, id FROM submissions WHERE event_id = ${eventId}
+    ) t WHERE location_text IS NOT NULL
+    ORDER BY pref, id LIMIT 1`;
   const alias = item?.location_text?.split(",")[0]?.trim().slice(0, 100);
   if (!alias || alias.length < 4) return;
   await sql`
