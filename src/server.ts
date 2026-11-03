@@ -1,9 +1,11 @@
 // Single Bun process: public SPA, admin SPA, server-rendered event pages and JSON APIs.
 import site from "./site/index.html";
+import submitPage from "./site/submit.html";
 import adminApp from "./admin/index.html";
 import { adminRoutes } from "./routes/admin.ts";
 import { adminImportRoutes } from "./routes/adminImports.ts";
 import { publicRoutes } from "./routes/public.ts";
+import { submitRoutes } from "./routes/submit.ts";
 import { startScheduler } from "./jobs/scheduler.ts";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -15,9 +17,11 @@ export const server = Bun.serve({
   development: !isProd && { hmr: true, console: true },
   routes: {
     "/": site,
+    "/submit": submitPage,
     "/admin": adminApp,
     "/admin/*": adminApp,
     ...publicRoutes,
+    ...submitRoutes,
     ...adminRoutes,
     ...adminImportRoutes,
     "/healthz": () => new Response("ok"),

@@ -77,6 +77,7 @@ export function App() {
           <span className="brand-name">{t.brand.nameFirst} <b>{t.brand.nameSecond}</b></span>
           <span className="tagline">{t.brand.tagline}</span>
         </a>
+        <a href="/submit" className="header-link">{t.submit.headerLink}</a>
       </header>
 
       <FilterBar filters={filters} onChange={setFilters} />

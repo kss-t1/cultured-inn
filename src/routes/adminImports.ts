@@ -12,7 +12,9 @@ import { z } from "zod";
 const listReview = admin<"/api/admin/review">(async () =>
   json(await sql`
     SELECT e.id, e.title, e.category, e.status, e.start_at, e.end_at, e.review_flags, e.source_url,
-           e.venue_id, v.name AS venue_name, s.name AS source_name, s.key AS source_key, i.location_text,
+           e.venue_id, v.name AS venue_name, s.name AS source_name, s.key AS source_key,
+           coalesce(i.location_text, sub.location_text) AS location_text,
+           sub.id IS NOT NULL AS submitted, sub.contact_name, sub.contact_email,
            coalesce((
              SELECT json_agg(d ORDER BY d.sim DESC) FROM (
                SELECT d.id, d.title, d.status, d.start_at, v2.name AS venue_name,
@@ -29,6 +31,9 @@ const listReview = admin<"/api/admin/review">(async () =>
     LEFT JOIN LATERAL (
       SELECT location_text FROM imported_items WHERE event_id = e.id ORDER BY id LIMIT 1
     ) i ON true
+    LEFT JOIN LATERAL (
+      SELECT id, location_text, contact_name, contact_email FROM submissions WHERE event_id = e.id ORDER BY id LIMIT 1
+    ) sub ON true
     WHERE ((e.origin = 'IMPORTED' AND e.status IN ('DRAFT', 'PUBLISHED') AND e.created_at > now() - interval '7 days')
            OR (e.status = 'DRAFT' AND e.origin = 'IMPORTED') OR e.review_flags <> '{}')
       AND coalesce(e.end_at, e.start_at) > now() - interval '1 day'

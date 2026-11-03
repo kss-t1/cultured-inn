@@ -20,6 +20,9 @@ interface Row {
   source_name: string | null;
   source_key: string | null;
   location_text: string | null;
+  submitted: boolean;
+  contact_name: string | null;
+  contact_email: string | null;
   duplicates: Duplicate[];
 }
 
@@ -113,6 +116,13 @@ export function ReviewPage() {
                     {dateFmt.format(new Date(r.start_at))} · {r.venue_name ?? (r.location_text ? `${R.location}: ${r.location_text}` : t.list.venueTbd)}
                     {sourceName(r) && <> · {R.source}: {r.source_url ? <a href={r.source_url} target="_blank" rel="noopener">{sourceName(r)}</a> : sourceName(r)}</>}
                   </div>
+                  {r.submitted && (
+                    <div className="muted small">
+                      {r.contact_name || r.contact_email ? <>{R.submittedBy}: {r.contact_name}{" "}
+                        {r.contact_email && <a href={`mailto:${r.contact_email}`}>{r.contact_email}</a>}</> : R.submittedAnon}
+                      {r.source_url && <> · <a href={r.source_url} target="_blank" rel="noopener">{r.source_url}</a></>}
+                    </div>
+                  )}
                   {r.duplicates.length > 0 && (
                     <div className="dups small">
                       {R.duplicates}

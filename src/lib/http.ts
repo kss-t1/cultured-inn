@@ -6,7 +6,8 @@ export type ErrorCode =
   | "not_found" | "bad_json" | "validation_failed" | "unauthorized" | "forbidden_origin"
   | "invalid_credentials" | "locked_out" | "conflict" | "in_use" | "venue_has_events"
   | "geocode_failed" | "geocode_query_too_short" | "server_error"
-  | "unsupported_url" | "no_event_found" | "fetch_failed" | "source_busy" | "merge_into_self";
+  | "unsupported_url" | "no_event_found" | "fetch_failed" | "source_busy" | "merge_into_self"
+  | "rate_limited";
 
 export interface ApiError {
   error: ErrorCode;
@@ -41,7 +42,7 @@ export function parseId(raw: string | undefined): number {
 /** Validation codes we set explicitly in schemas.ts; anything else is reported generically. */
 const FIELD_CODES = new Set([
   "required", "invalid_url", "invalid_email", "invalid_datetime", "end_before_start",
-  "price_max_below_min", "coordinates_pair", "invalid_regex", "invalid_config",
+  "price_max_below_min", "coordinates_pair", "invalid_regex", "invalid_config", "in_past",
 ]);
 
 export function fieldErrors(e: z.ZodError): Record<string, string> {

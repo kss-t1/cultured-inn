@@ -107,6 +107,35 @@ const pl = {
     notFoundPageTitle: "Nie znaleziono",
   },
 
+  submit: {
+    headerLink: "Zgłoś wydarzenie",
+    title: "Zgłoś wydarzenie",
+    intro: "Organizujesz LARP, impro, sesję RPG albo spotkanie planszówkowe w Poznaniu? Wypełnij formularz. Sprawdzimy zgłoszenie i dodamy je do kalendarza.",
+    fields: {
+      title: "Nazwa wydarzenia",
+      category: "Kategoria",
+      categoryPick: "— wybierz —",
+      start: "Początek",
+      end: "Koniec (opcjonalnie)",
+      location: "Miejsce (nazwa lub adres)",
+      description: "Opis (opcjonalnie)",
+      link: "Link do wydarzenia, np. na Facebooku (opcjonalnie)",
+      isFree: "Wstęp wolny",
+      beginner: "Dla początkujących",
+      contactName: "Imię lub nazwa organizatora",
+      contactEmail: "E-mail",
+      website: "Nie wypełniaj tego pola",
+    },
+    timesNote: "Godziny w czasie lokalnym (Poznań).",
+    contact: "Kontakt (opcjonalnie)",
+    contactHint: "Widzą go tylko administratorzy. Przyda się, jeśli będziemy mieć pytania.",
+    send: "Wyślij zgłoszenie",
+    sending: "Wysyłanie…",
+    thanksTitle: "Dziękujemy!",
+    thanks: "Zgłoszenie czeka na zatwierdzenie. Wydarzenie pojawi się w kalendarzu, gdy je sprawdzimy.",
+    another: "Zgłoś kolejne wydarzenie",
+  },
+
   errors: {
     // Keyed by API error codes (see src/lib/http.ts).
     generic: "Coś poszło nie tak. Spróbuj ponownie.",
@@ -129,6 +158,7 @@ const pl = {
     fetch_failed: "Nie udało się pobrać strony. Spróbuj ponownie później.",
     source_busy: "To źródło jest właśnie importowane.",
     merge_into_self: "Nie można scalić wydarzenia z samym sobą.",
+    rate_limited: "Za dużo zgłoszeń z tego adresu. Spróbuj ponownie za godzinę.",
   } as Record<string, string>,
 
   fieldErrors: {
@@ -142,6 +172,7 @@ const pl = {
     coordinates_pair: "Podaj obie współrzędne albo żadnej.",
     invalid_config: "Nieprawidłowa konfiguracja (sprawdź nazwy i typy pól).",
     invalid_regex: "Nieprawidłowe wyrażenie regularne.",
+    in_past: "Ten termin już minął.",
     invalid: "Nieprawidłowa wartość.",
   } as Record<string, string>,
 
@@ -231,7 +262,7 @@ const pl = {
     },
     review: {
       title: "Do przejrzenia",
-      intro: "Zaimportowane wydarzenia są publikowane od razu. Tu widać te dodane w ostatnich 7 dniach (najpierw te z uwagami): popraw błędy, scal duplikaty albo ukryj to, co nie pasuje.",
+      intro: "Zaimportowane wydarzenia są publikowane od razu. Tu widać te dodane w ostatnich 7 dniach (najpierw te z uwagami): popraw błędy, scal duplikaty albo ukryj to, co nie pasuje. Zgłoszenia z formularza czekają jako szkice, dopóki ich nie opublikujesz.",
       importUrl: "Importuj z linku",
       importUrlPlaceholder: "Link do wydarzenia na Facebooku lub strony z biletami…",
       importing: "Importuję…",
@@ -246,12 +277,15 @@ const pl = {
       duplicates: "Możliwe duplikaty:",
       location: "Lokalizacja w źródle",
       source: "Źródło",
-      empty: "Brak nowych wydarzeń z importu. 🎉",
+      empty: "Brak nowych wydarzeń z importu ani zgłoszeń. 🎉",
+      submittedBy: "Zgłoszenie od",
+      submittedAnon: "Zgłoszenie (bez kontaktu)",
       flags: {
         needs_venue: "brak miejsca",
         missing_from_source: "zniknęło ze źródła",
         changed_at_source: "zmienione w źródle",
         check_category: "sprawdź kategorię",
+        submitted: "zgłoszenie",
       } as Record<string, string>,
     },
     sources: {
