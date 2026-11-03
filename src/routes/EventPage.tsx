@@ -1,7 +1,7 @@
 // Server-rendered event detail page (/events/:slug) with schema.org Event JSON-LD.
 import type { ReactNode } from "react";
 import { CATEGORY_INFO } from "../shared/categories.ts";
-import { fmtDate, fmtLongDate, fmtPrice, fmtRange, isMultiday } from "../shared/format.ts";
+import { fmtDate, fmtLongDate, fmtPrice, fmtRange, isAllDay, spansDays } from "../shared/format.ts";
 import { t } from "../shared/i18n/index.ts";
 import type { IconName } from "../shared/icons.ts";
 import type { EventDetail } from "../shared/types.ts";
@@ -104,8 +104,8 @@ export function EventPage({ e, url, now = new Date() }: { e: EventDetail; url: s
   const cancelled = e.status === "CANCELLED";
   const endMs = e.end_at ? Date.parse(e.end_at) : Date.parse(e.start_at) + 3 * 3600_000;
   const past = !cancelled && endMs < now.getTime();
-  const multi = isMultiday(e);
-  const when = multi ? fmtRange(e.start_at, e.end_at) : `${fmtLongDate(e.start_at)} · ${fmtRange(e.start_at, e.end_at)}`;
+  const hours = isAllDay(e) ? t.list.allDay : fmtRange(e.start_at, e.end_at);
+  const when = spansDays(e) ? fmtRange(e.start_at, e.end_at) : `${fmtLongDate(e.start_at)} · ${hours}`;
   const share = (
     <button className="btn btn--secondary" type="button" id="share" data-url={url} data-title={e.title} data-copied={t.event.linkCopied}>
       <Icon name="share" />{t.event.share}
@@ -154,7 +154,7 @@ export function EventPage({ e, url, now = new Date() }: { e: EventDetail; url: s
           <aside className="ev__aside" aria-label={t.event.details}>
             <div className="ticket">
               <ul className="ticket__facts">
-                <Fact icon="cal" label={t.event.when} value={fmtLongDate(e.start_at)} sub={fmtRange(e.start_at, e.end_at)} />
+                <Fact icon="cal" label={t.event.when} value={fmtLongDate(e.start_at)} sub={hours} />
                 <Fact icon="pin" label={t.event.where} value={v ? v.name : t.list.venueTbd}
                   sub={v?.address ? [v.address, v.district].filter(Boolean).join(", ") : null} />
                 {e.organizer && (

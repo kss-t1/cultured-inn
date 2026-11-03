@@ -49,6 +49,12 @@ describe("EventPage", () => {
     expect(html).toContain(t.list.venueTbd);
   });
 
+  test("an all-day event reads 'cały dzień', not 00:00 – 00:00", () => {
+    const html = render({ start_at: "2026-11-04T23:00:00Z", end_at: "2026-11-05T23:00:00Z" }, before);
+    expect(html).toContain(t.list.allDay);
+    expect(html).not.toMatch(/00:00(<!-- -->)? –/);
+  });
+
   test("description text is escaped, never parsed as HTML", () => {
     const html = render({ description: "<script>alert(1)</script>" }, before);
     expect(html).not.toContain("<script>alert");
