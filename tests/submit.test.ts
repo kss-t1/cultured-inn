@@ -3,6 +3,8 @@ import { ZodError } from "zod";
 import { sql } from "../src/db.ts";
 import { fieldErrors } from "../src/lib/http.ts";
 import { queryEvents } from "../src/lib/events.ts";
+import { learnVenueAlias } from "../src/routes/admin.ts";
+import { reviewRows } from "../src/routes/adminImports.ts";
 import { SUBMIT_LIMIT, submitEvent } from "../src/routes/submit.ts";
 import { DEFAULT_FILTERS } from "../src/shared/filters.ts";
 import { addVenue, resetDb, warsaw } from "./helpers.ts";
@@ -57,6 +59,32 @@ describe("submitEvent", () => {
     expect((await submitEvent(form(), "10.0.0.2", now)).ok).toBe(true);
     const later = new Date(now.getTime() + 61 * 60_000);
     expect((await submitEvent(form(), "10.0.0.1", later)).ok).toBe(true);
+  });
+
+  test("parallel requests from one IP can't exceed the limit", async () => {
+    const results = await Promise.all(
+      Array.from({ length: SUBMIT_LIMIT + 3 }, (_, i) => submitEvent(form({ title: `Jam ${i}` }), "10.0.0.1", now)),
+    );
+    expect(results.filter((r) => r.ok)).toHaveLength(SUBMIT_LIMIT);
+  });
+
+  test("stays on the review page while a draft, even after an admin edit clears the flags", async () => {
+    const r = await submitEvent(form(), "10.0.0.1", now);
+    const id = r.ok ? r.eventId : null;
+    await sql`UPDATE events SET review_flags = '{}' WHERE id = ${id}`; // what saving in the editor does
+    const rows = await reviewRows(now);
+    expect(rows.map((x: { id: number }) => x.id)).toEqual([id]);
+    expect(rows[0]).toMatchObject({ submitted: true, location_text: "Klub Pod Minogą, Nowowiejskiego 8", contact_email: "ola@example.com" });
+    await sql`UPDATE events SET status = 'HIDDEN' WHERE id = ${id}`;
+    expect(await reviewRows(now)).toEqual([]);
+  });
+
+  test("assigning a venue learns the typed place as an alias", async () => {
+    const venueId = await addVenue("Klub Muzyczny Minoga", 52.41, 16.93);
+    const r = await submitEvent(form(), "10.0.0.1", now);
+    await learnVenueAlias(r.ok ? r.eventId! : 0, venueId);
+    const [v] = await sql`SELECT aliases FROM venues WHERE id = ${venueId}`;
+    expect(v.aliases).toEqual(["Klub Pod Minogą"]);
   });
 
   test("rejects past dates and invalid input", async () => {

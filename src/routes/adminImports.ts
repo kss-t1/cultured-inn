@@ -9,8 +9,9 @@ import { z } from "zod";
 
 // ---------- review queue ----------
 
-const listReview = admin<"/api/admin/review">(async () =>
-  json(await sql`
+/** Review page rows: recent imports, flagged events, and submissions still waiting as drafts. */
+export function reviewRows(now = new Date()) {
+  return sql`
     SELECT e.id, e.title, e.category, e.status, e.start_at, e.end_at, e.review_flags, e.source_url,
            e.venue_id, v.name AS venue_name, s.name AS source_name, s.key AS source_key,
            coalesce(i.location_text, sub.location_text) AS location_text,
@@ -34,12 +35,14 @@ const listReview = admin<"/api/admin/review">(async () =>
     LEFT JOIN LATERAL (
       SELECT id, location_text, contact_name, contact_email FROM submissions WHERE event_id = e.id ORDER BY id LIMIT 1
     ) sub ON true
-    WHERE ((e.origin = 'IMPORTED' AND e.status IN ('DRAFT', 'PUBLISHED') AND e.created_at > now() - interval '7 days')
-           OR (e.status = 'DRAFT' AND e.origin = 'IMPORTED') OR e.review_flags <> '{}')
-      AND coalesce(e.end_at, e.start_at) > now() - interval '1 day'
+    WHERE ((e.origin = 'IMPORTED' AND e.status IN ('DRAFT', 'PUBLISHED') AND e.created_at > ${now}::timestamptz - interval '7 days')
+           OR (e.status = 'DRAFT' AND (e.origin = 'IMPORTED' OR sub.id IS NOT NULL)) OR e.review_flags <> '{}')
+      AND coalesce(e.end_at, e.start_at) > ${now}::timestamptz - interval '1 day'
     ORDER BY (e.review_flags <> '{}' OR e.status = 'DRAFT') DESC, e.start_at
-    LIMIT 300`),
-);
+    LIMIT 300`;
+}
+
+const listReview = admin<"/api/admin/review">(async () => json(await reviewRows()));
 
 const bulkReview = admin<"/api/admin/review/bulk">(async (req) => {
   const { ids, action } = BulkInput.parse(await readJson(req));

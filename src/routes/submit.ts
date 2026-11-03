@@ -20,17 +20,18 @@ export async function submitEvent(input: unknown, ip: string, now = new Date()):
   const s = SubmitInput.parse(input);
   if (s.website) return { ok: true, eventId: null };
 
-  const [check] = await sql`
-    SELECT (SELECT count(*)::int FROM submissions
-            WHERE ip = ${ip} AND created_at > ${now}::timestamptz - ${SUBMIT_WINDOW}::interval) AS recent,
-           (${s.start_local}::timestamp AT TIME ZONE ${TZ}) < ${now}::timestamptz AS past`;
-  if (check.recent >= SUBMIT_LIMIT) return { ok: false, reason: "rate_limited" };
-  if (check.past) return { ok: false, reason: "in_past" };
-
   const venueId = matchVenue(await loadVenues(), { locationName: s.location, address: null, lat: null, lon: null });
   const flags = venueId === null ? ["submitted", "needs_venue"] : ["submitted"];
   const slug = await uniqueSlug(s.title, s.start_local);
-  const eventId = await sql.begin(async (tx) => {
+  return sql.begin(async (tx): Promise<SubmitResult> => {
+    // Serializes submissions per IP, so parallel requests can't all pass the count below.
+    await tx`SELECT pg_advisory_xact_lock(hashtext(${`submit:${ip}`}))`;
+    const [check] = await tx`
+      SELECT (SELECT count(*)::int FROM submissions
+              WHERE ip = ${ip} AND created_at > ${now}::timestamptz - ${SUBMIT_WINDOW}::interval) AS recent,
+             (${s.start_local}::timestamp AT TIME ZONE ${TZ}) < ${now}::timestamptz AS past`;
+    if (check.recent >= SUBMIT_LIMIT) return { ok: false, reason: "rate_limited" };
+    if (check.past) return { ok: false, reason: "in_past" };
     const [ev] = await tx`
       INSERT INTO events (city_id, slug, title, description, category, start_at, end_at, venue_id,
                           is_free, beginner_friendly, source_url, status, origin, review_flags)
@@ -44,9 +45,8 @@ export async function submitEvent(input: unknown, ip: string, now = new Date()):
       VALUES (${ev.id}, ${s.location}, ${s.contact_name}, ${s.contact_email}, ${ip}, ${now})`;
     // IPs are only needed for the rate limit.
     await tx`UPDATE submissions SET ip = NULL WHERE ip IS NOT NULL AND created_at < ${now}::timestamptz - interval '30 days'`;
-    return ev.id as number;
+    return { ok: true, eventId: ev.id as number };
   });
-  return { ok: true, eventId };
 }
 
 async function postSubmit(req: BunRequest, server: Server<unknown>) {
