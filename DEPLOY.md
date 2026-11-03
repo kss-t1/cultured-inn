@@ -19,12 +19,8 @@ Imports need no separate setup. In production the server checks every 10 minutes
 
 1. Sign up at <https://signup.cloud.oracle.com>. The home region can't be changed later; pick **Germany Central (Frankfurt)**. A card is needed for verification only.
 2. **Upgrade to Pay As You Go** (Billing → Upgrade and Manage Payment). Always Free resources stay free, and Oracle stops reclaiming VMs it considers idle; this site is idle most of the time. Then add a budget alert (Billing → Budgets, e.g. 1 EUR) so any accidental paid resource emails you.
-3. Compute → Instances → **Create instance**:
-   - Image: **Canonical Ubuntu 24.04** (not Minimal).
-   - Shape: **VM.Standard.A1.Flex**, 2 OCPU and 12 GB (the free allowance is 4 OCPU and 24 GB in total). "Out of capacity" means try again later or another availability domain.
-   - Networking: keep the new VCN and public subnet, and **assign a public IPv4 address**.
-   - SSH keys: paste the public key of the machine you deploy from (`cat ~/.ssh/id_ed25519.pub`).
-4. Open the web ports: instance → subnet → Security Lists → Default Security List → **Add Ingress Rules**: source `0.0.0.0/0`, TCP, destination port `80`; then the same for `443`.
+3. Networking → Virtual cloud networks → **Actions → Start VCN Wizard → Create VCN with Internet Connectivity**, keeping the defaults. This creates a public subnet with an internet gateway.
+4. Open **Cloud Shell** (the `>_` icon in the top bar), upload `deploy/oci-launch.sh` (Cloud Shell's ⚙ menu → Upload) and run `bash oci-launch.sh "<contents of ~/.ssh/id_ed25519.pub>"`. It creates a **VM.Standard.A1.Flex** VM (1 OCPU, 6 GB; the free allowance is 4 OCPU and 24 GB in total) with **Canonical Ubuntu 24.04** on the public subnet, with a public IP and your SSH key. It tries each availability domain until one has capacity, opens TCP 80 and 443 in the subnet's security list, and prints the public IP. The console's Create-instance form does the same in theory, but it may not list the wizard's VCN and may grey out the public IP.
 5. Optional: Networking → Reserved Public IPs, to keep the same address if the VM is ever recreated. DuckDNS follows the address anyway.
 
 ### 2. DuckDNS subdomain
