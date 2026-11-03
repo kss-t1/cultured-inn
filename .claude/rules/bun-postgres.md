@@ -8,3 +8,4 @@
 - **A backtick anywhere inside a `sql\`…\`` template closes it early**, including inside a SQL `--` comment; `tsc` then reports `TS1005` many lines later.
 - **Advisory locks belong to a connection.** Take and release them on one `sql.reserve()` connection (`db/migrate.ts`, `runSource` in `src/importers/run.ts`); on the pool, the unlock may run on a different connection and the lock stays held.
 - **Need Bun ≥ 1.4**: Bun 1.3.x's pool can route an ordinary query into a connection a `sql.begin` transaction holds, and one failure there aborts the transaction (`25P02`).
+- **Backslash escapes inside a `sql\`…\`` template are processed by JavaScript first**: `'\s+'` reaches Postgres as `'s+'`, so `regexp_replace(x, '\s+', ' ')` deleted every letter "s" from event excerpts. Use backslash-free classes (`[[:space:]]`, `[[:digit:]]`), or pass the pattern as a parameter (`${"\\s+"}`).

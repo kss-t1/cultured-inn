@@ -9,6 +9,12 @@ const titles = (evs: { title: string }[]) => evs.map((e) => e.title);
 beforeEach(resetDb);
 
 describe("queryEvents", () => {
+  test("excerpt collapses whitespace and keeps every letter", async () => {
+    await addEvent({ title: "x", start: "2026-11-05 18:00", description: "Planszówki są\n\ndla  Ciebie" });
+    const [e] = await queryEvents(f({ when: "week" }), { now: await warsaw("2026-11-03 14:00") });
+    expect(e!.excerpt).toBe("Planszówki są dla Ciebie");
+  });
+
   test("today: published only, includes ongoing, excludes finished and tomorrow", async () => {
     await addEvent({ title: "ongoing", start: "2026-11-03 12:00", end: "2026-11-03 16:00" });
     await addEvent({ title: "finished", start: "2026-11-03 09:00", end: "2026-11-03 11:00" });
