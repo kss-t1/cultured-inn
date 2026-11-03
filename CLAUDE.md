@@ -8,7 +8,7 @@ Write lessons and conventions into this file or `.claude/rules/`, not only into 
 
 - **English code, Polish UI.** Identifiers, comments, API fields, error codes, URLs and DB values are English. Every user-facing string lives in `src/shared/i18n/pl.ts` (English localization may come later).
 - **Bun + Postgres, minimal dependencies.** Prefer Bun built-ins (`Bun.serve`, `Bun.sql`, `Bun.file`, `bun test`) over packages. Pitfalls: `.claude/rules/bun-postgres.md`.
-- **"Deploy" means the local dev server**: pull `main`, `bun run db:migrate`, restart `bun run dev` on localhost:3000, check it in a browser. There is no production server yet.
+- **"Deploy" means the local dev server**: pull `main`, `bun run db:migrate`, restart `bun run dev` on localhost:3000, check it in a browser. The public server (`DEPLOY.md`) is updated with `deploy/update.sh` only when asked.
 - **Every change goes through a PR** on a feature branch (`/branch-commit-pr`). Never push to `main`. Git details: `.claude/rules/git-workflow.md`.
 - **`bun run verify` (typecheck, tests, build) passes before every push**; the pre-push hook runs it.
 
