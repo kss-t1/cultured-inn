@@ -18,7 +18,7 @@ export function toPrefixQuery(q: string): string | null {
 /** Shared SELECT list producing the PublicEvent JSON shape. */
 const PUBLIC_COLUMNS = sql`
   e.id, e.slug, e.title,
-  left(regexp_replace(e.description, '\s+', ' ', 'g'), 220) AS excerpt,
+  left(regexp_replace(e.description, '[[:space:]]+', ' ', 'g'), 220) AS excerpt, -- no backslashes: see .claude/rules/bun-postgres.md
   e.category, e.tags, e.start_at, e.end_at, e.is_free,
   e.price_min::float8 AS price_min, e.price_max::float8 AS price_max, e.currency,
   e.language, e.beginner_friendly, e.ticket_url, e.status,
