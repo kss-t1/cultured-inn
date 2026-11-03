@@ -116,24 +116,9 @@ Recurring ICS events are expanded 60 days ahead (`rrule`), keyed by local date, 
 
 API errors look like `{ "error": "<code>", "fields": { "<field>": "<code>" } }`. The UI translates the codes.
 
-## Deployment (planned)
+## Deployment
 
-1. `bun run build` produces one binary.
-2. Copy it and `db/migrations/` to the VPS and run `bun db/migrate.ts`, or run migrations from a checkout.
-3. Run the binary under systemd with `NODE_ENV=production`, `TRUST_PROXY=1`, `PUBLIC_BASE_URL=https://…` and a long `SESSION_SECRET`.
-4. Put Caddy in front for HTTPS and security headers, for example:
-
-```
-kulturalnakarczma.pl {
-  encode zstd gzip
-  header {
-    Strict-Transport-Security "max-age=31536000"
-    X-Content-Type-Options nosniff
-    Referrer-Policy strict-origin-when-cross-origin
-  }
-  reverse_proxy 127.0.0.1:3000
-}
-```
+The public site runs on a free Oracle Cloud VM behind Caddy, with a DuckDNS domain. Setup, shipping updates, logs and backups: [DEPLOY.md](DEPLOY.md).
 
 ## License
 

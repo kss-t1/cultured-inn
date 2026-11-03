@@ -1,0 +1,20 @@
+[Unit]
+Description=Kulturalna Karczma (web server and import scheduler)
+Requires=postgresql.service
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+User=karczma
+WorkingDirectory=/home/karczma/app
+# Bun reads .env from the working directory; it holds DATABASE_URL and the secrets.
+Environment=NODE_ENV=production
+ExecStart=/home/karczma/.bun/bin/bun src/server.ts
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
