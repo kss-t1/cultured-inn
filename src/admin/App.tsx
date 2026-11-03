@@ -5,6 +5,8 @@ import { EventForm } from "./pages/EventForm.tsx";
 import { EventsPage } from "./pages/Events.tsx";
 import { Login } from "./pages/Login.tsx";
 import { OrganizerForm, OrganizersPage } from "./pages/Organizers.tsx";
+import { ReviewPage } from "./pages/Review.tsx";
+import { SourceForm, SourcesPage } from "./pages/Sources.tsx";
 import { VenueForm } from "./pages/VenueForm.tsx";
 import { VenuesPage } from "./pages/Venues.tsx";
 import { linkProps, usePath } from "./router.ts";
@@ -15,6 +17,9 @@ function route(path: string) {
   const m = (re: RegExp) => path.match(re);
   let r: RegExpMatchArray | null;
   if ((r = m(/^\/admin\/events\/(new|\d+)$/))) return <EventForm key={path} id={r[1] === "new" ? null : Number(r[1])} />;
+  if (path === "/admin/review") return <ReviewPage />;
+  if (path === "/admin/sources") return <SourcesPage />;
+  if ((r = m(/^\/admin\/sources\/(new|\d+)$/))) return <SourceForm key={path} id={r[1] === "new" ? null : Number(r[1])} />;
   if (path === "/admin/venues") return <VenuesPage />;
   if ((r = m(/^\/admin\/venues\/(new|\d+)$/))) return <VenueForm key={path} id={r[1] === "new" ? null : Number(r[1])} />;
   if (path === "/admin/organizers") return <OrganizersPage />;
@@ -36,6 +41,8 @@ export function App() {
 
   const nav = [
     { href: "/admin", label: t.admin.nav.events, active: path === "/admin" || path.startsWith("/admin/events") },
+    { href: "/admin/review", label: t.admin.nav.review, active: path === "/admin/review" },
+    { href: "/admin/sources", label: t.admin.nav.sources, active: path.startsWith("/admin/sources") },
     { href: "/admin/venues", label: t.admin.nav.venues, active: path.startsWith("/admin/venues") },
     { href: "/admin/organizers", label: t.admin.nav.organizers, active: path.startsWith("/admin/organizers") },
   ];

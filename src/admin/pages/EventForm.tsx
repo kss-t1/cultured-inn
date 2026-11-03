@@ -114,6 +114,11 @@ function PickerWithNew({ label, options, value, onChange, newLabel, create, erro
   );
 }
 
+function importInfo(e: any): { source: string | null; locked: boolean } | null {
+  if (e.origin !== "IMPORTED") return null;
+  return { source: e.source_key === "manual-url" ? t.admin.sources.manualName : e.source_name, locked: e.import_locked };
+}
+
 export function EventForm({ id }: { id: number | null }) {
   const [f, setF] = useState<FormState>(EMPTY);
   const [slug, setSlug] = useState<string | null>(null);
@@ -123,6 +128,7 @@ export function EventForm({ id }: { id: number | null }) {
   const [msg, setMsg] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [loaded, setLoaded] = useState(id === null);
+  const [imported, setImported] = useState<{ source: string | null; locked: boolean } | null>(null);
 
   useEffect(() => {
     api<Option[]>("GET", "/venues").then(setVenues);
@@ -131,6 +137,7 @@ export function EventForm({ id }: { id: number | null }) {
       api("GET", `/events/${id}`).then((e) => {
         setF(fromApi(e));
         setSlug(e.slug);
+        setImported(importInfo(e));
         setLoaded(true);
       }, (e: ApiError) => setMsg({ kind: "error", text: e.text }));
     }
@@ -149,6 +156,7 @@ export function EventForm({ id }: { id: number | null }) {
       else {
         setF(fromApi(saved));
         setSlug(saved.slug);
+        setImported(importInfo(saved));
         setMsg({ kind: "ok", text: t.admin.saved });
       }
     } catch (err) {
@@ -181,6 +189,13 @@ export function EventForm({ id }: { id: number | null }) {
           <a href={`/events/${slug}`} target="_blank" rel="noopener">{t.admin.preview} ↗</a>
         )}
       </div>
+
+      {imported && (
+        <p className="notice small">
+          {t.admin.events.imported(imported.source ?? "—")}{" "}
+          {imported.locked ? t.admin.events.importedLocked : t.admin.events.importedUnlocked}
+        </p>
+      )}
 
       <TextInput label={F.title} value={f.title} onChange={(v) => set("title", v)} error={fields.title} required />
       <div className="grid-2">

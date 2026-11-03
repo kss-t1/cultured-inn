@@ -7,13 +7,13 @@ import {
   userForToken, type AdminUser,
 } from "../lib/auth.ts";
 import { geocode } from "../lib/geocode.ts";
+import { uniqueSlug } from "../lib/slugs.ts";
 import { error, handleError, HttpError, json, parseId, readJson } from "../lib/http.ts";
 import { EventInput, LoginInput, OrganizerInput, StatusInput, VenueInput, STATUSES } from "../shared/schemas.ts";
-import { slugify } from "../shared/slug.ts";
 
-type Handler<P extends string> = (req: BunRequest<P>, user: AdminUser, server: Server<unknown>) => Promise<Response>;
+export type Handler<P extends string> = (req: BunRequest<P>, user: AdminUser, server: Server<unknown>) => Promise<Response>;
 
-function admin<P extends string>(handler: Handler<P>) {
+export function admin<P extends string>(handler: Handler<P>) {
   return async (req: BunRequest<P>, server: Server<unknown>) => {
     try {
       if (!checkOrigin(req)) return error(403, "forbidden_origin");
@@ -61,18 +61,8 @@ const EVENT_ADMIN_COLUMNS = sql`
   e.start_at, e.venue_id, e.organizer_id,
   e.price_min::float8 AS price_min, e.price_max::float8 AS price_max, e.currency, e.is_free,
   e.language, e.beginner_friendly, e.ticket_url, e.source_url, e.image_url,
-  e.status, e.origin, e.series_id, e.created_at, e.updated_at`;
-
-async function uniqueSlug(title: string, startLocal: string): Promise<string> {
-  const base = `${slugify(title)}-${startLocal.slice(0, 10)}`;
-  const taken = new Set(
-    (await sql`SELECT slug FROM events WHERE slug = ${base} OR slug LIKE ${base + "-%"}`).map(
-      (r: { slug: string }) => r.slug,
-    ),
-  );
-  if (!taken.has(base)) return base;
-  for (let i = 2; ; i++) if (!taken.has(`${base}-${i}`)) return `${base}-${i}`;
-}
+  e.status, e.origin, e.series_id, e.created_at, e.updated_at,
+  e.import_locked, e.review_flags, s.name AS source_name, s.key AS source_key`;
 
 function eventValues(e: EventInput) {
   return sql`
@@ -125,7 +115,8 @@ const createEvent = admin<"/api/admin/events">(async (req) => {
 });
 
 async function getEvent(id: number) {
-  const [row] = await sql`SELECT ${EVENT_ADMIN_COLUMNS} FROM events e WHERE e.id = ${id}`;
+  const [row] = await sql`
+    SELECT ${EVENT_ADMIN_COLUMNS} FROM events e LEFT JOIN sources s ON s.id = e.source_id WHERE e.id = ${id}`;
   if (!row) throw new HttpError(404, "not_found");
   return row;
 }
@@ -135,10 +126,33 @@ const showEvent = admin<"/api/admin/events/:id">(async (req) => json(await getEv
 const updateEvent = admin<"/api/admin/events/:id">(async (req) => {
   const id = parseId(req.params.id);
   const e = EventInput.parse(await readJson(req));
-  const res = await sql`UPDATE events SET ${eventValues(e)} WHERE id = ${id} RETURNING id`;
-  if (!res.length) throw new HttpError(404, "not_found");
+  const [before] = await sql`SELECT venue_id, review_flags FROM events WHERE id = ${id}`;
+  if (!before) throw new HttpError(404, "not_found");
+  // An admin edit wins over later imports (import_locked) and settles the review flags.
+  await sql`
+    UPDATE events SET ${eventValues(e)},
+      import_locked = (origin = 'IMPORTED'), review_flags = '{}'
+    WHERE id = ${id}`;
+  if (e.venue_id && before.review_flags.includes("needs_venue")) await learnVenueAlias(id, e.venue_id);
   return json(await getEvent(id));
 });
+
+/**
+ * When an admin assigns a venue to an imported event the pipeline couldn't place, remember the
+ * source's location text as an alias, so the next import from that source matches by itself.
+ */
+async function learnVenueAlias(eventId: number, venueId: number) {
+  const [item] = await sql`
+    SELECT location_text FROM imported_items WHERE event_id = ${eventId} AND location_text IS NOT NULL
+    ORDER BY id LIMIT 1`;
+  const alias = item?.location_text?.split(",")[0]?.trim().slice(0, 100);
+  if (!alias || alias.length < 4) return;
+  await sql`
+    UPDATE venues SET aliases = array_append(aliases, ${alias}), updated_at = now()
+    WHERE id = ${venueId}
+      AND f_unaccent(lower(name)) <> f_unaccent(lower(${alias}))
+      AND NOT EXISTS (SELECT 1 FROM unnest(aliases) a WHERE f_unaccent(lower(a)) = f_unaccent(lower(${alias})))`;
+}
 
 const deleteEvent = admin<"/api/admin/events/:id">(async (req) => {
   const id = parseId(req.params.id);
@@ -150,7 +164,8 @@ const setEventStatus = admin<"/api/admin/events/:id/status">(async (req) => {
   const id = parseId(req.params.id);
   const { status } = StatusInput.parse(await readJson(req));
   const res = await sql`
-    UPDATE events SET status = ${status}::event_status, updated_at = now() WHERE id = ${id} RETURNING id`;
+    UPDATE events SET status = ${status}::event_status, review_flags = '{}', updated_at = now()
+    WHERE id = ${id} RETURNING id`;
   if (!res.length) throw new HttpError(404, "not_found");
   return json(await getEvent(id));
 });

@@ -15,14 +15,14 @@ export function categoryFromSlug(slug: string): Category | null {
 }
 
 /**
- * Keyword rules for classifying imported events (DESIGN.md §5), used from M2.
- * The patterns are data, not code: they must match Polish source text.
+ * Keyword rules for classifying imported events (DESIGN.md §5). The patterns are data, not
+ * code: they must match Polish source text. Order matters: the first matching category wins.
  */
 export const CATEGORY_KEYWORDS: [Category, RegExp][] = [
   ["LARP", /\blarp|larpow/i],
-  ["IMPRO", /\bimpro|improwiz/i],
-  ["RPG", /\brpg\b|\bsesj[aię]|d&d|\bdnd\b|one-shot|warhammer fantasy roleplay|zew cthulhu/i],
-  ["BOARDGAMES", /planszów|planszow|board ?games?|gry planszowe/i],
+  ["RPG", /\brpg\b|\bttrpg\b|d&d|\bdnd\b|dungeons (&|and) dragons|one-shot|gry? fabularn|warhammer fantasy roleplay|zew cthulhu|call of cthulhu|pathfinder|\bsesj[aię] rpg/i],
+  ["IMPRO", /\bimpro\b|\bimpro[ -]|improwizacj|improwizowan|\bimprov\b|impro ?jam/i],
+  ["BOARDGAMES", /planszów|planszow|board ?games?|gry? bitewn|wargam|gier karcianych|gry karciane|kooperacyjn/i],
 ];
 
 export function classify(text: string): Category[] {
