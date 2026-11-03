@@ -66,4 +66,4 @@ Before a DELETE, an UPDATE that hides or deactivates rows, or removing files or 
 - `.claude/rules/bun-postgres.md`: Bun SQL driver traps.
 - `.claude/rules/testing.md`: proving tests, time-dependent fixtures, failures that aren't your diff, exit codes.
 - `.claude/rules/git-workflow.md`: branches, pushing, PR scope and PR body.
-- Skills: `/branch-commit-pr`, `/review <PR>`, `/bugfix`.
+- Skills: `/branch-commit-pr`, `/review <PR>`, `/bugfix`, `/environments` (local and prod: URLs, SSH, DB, deploying, APIs).
