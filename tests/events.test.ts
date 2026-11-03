@@ -16,7 +16,7 @@ describe("queryEvents", () => {
     await addEvent({ title: "draft", start: "2026-11-03 19:00", status: "DRAFT" });
     await addEvent({ title: "tomorrow", start: "2026-11-04 10:00" });
     const now = await warsaw("2026-11-03 14:00");
-    expect(titles(await queryEvents(f(), { now }))).toEqual(["ongoing", "tonight"]);
+    expect(titles(await queryEvents(f({ when: "today" }), { now }))).toEqual(["ongoing", "tonight"]);
   });
 
   test("evening filter uses Warsaw local time, not UTC", async () => {

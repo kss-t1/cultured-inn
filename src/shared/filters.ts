@@ -2,14 +2,14 @@
 // Parsing is lenient: unknown or malformed values are dropped, so old shared links never break.
 import { CATEGORIES, CATEGORY_INFO, categoryFromSlug, type Category } from "./categories.ts";
 
-export const WHENS = ["today", "tomorrow", "weekend", "week"] as const;
+export const WHENS = ["today", "tomorrow", "weekend", "week", "month"] as const;
 export type When = (typeof WHENS)[number];
 export type TimeOfDay = "day" | "evening";
 
 export interface Filters {
   /** Quick window; ignored when `from` is set. */
   when: When;
-  /** Local dates YYYY-MM-DD (inclusive). */
+  /** Local dates YYYY-MM-DD (inclusive); `to` null means the single day `from`. */
   from: string | null;
   to: string | null;
   cats: Category[];
@@ -27,7 +27,7 @@ export interface Filters {
 }
 
 export const DEFAULT_FILTERS: Filters = {
-  when: "today",
+  when: "month",
   from: null,
   to: null,
   cats: [],

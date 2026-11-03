@@ -66,7 +66,8 @@ button { font: inherit; color: inherit; }
 }
 .cat-chip { border-color: var(--cat); border-width: 2px; }
 .cat-chip[aria-pressed="true"] { background: var(--cat); border-color: var(--cat); color: #fff; }
-.date-chip { position: relative; padding-right: 10px; }
+.date-range { display: contents; } /* the two date chips flow (and scroll on mobile) like the other chips */
+.date-chip { position: relative; padding-right: 10px; gap: 6px; }
 .date-chip input[type="date"] {
   border: 0; background: transparent; color: inherit; font: inherit; min-width: 0; width: 8.5em;
   color-scheme: inherit;

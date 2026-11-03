@@ -26,8 +26,8 @@ Status: draft v0.1 (2026-11-03)
 ## 2. User experience
 
 ### The main flow: "I have a free evening"
-1. Open the site. It defaults to **Dziś** (today), events starting from now.
-2. Pick a time with quick chips: `Dziś` · `Jutro` · `Ten weekend` · `Ten tydzień` · `📅 wybierz dzień`.
+1. Open the site. It defaults to **Ten miesiąc** (this month), events from now until the end of the month, so the map isn't empty on quiet days.
+2. Pick a time with quick chips: `Dziś` · `Jutro` · `Ten weekend` · `Ten tydzień` · `Ten miesiąc`, or dates in `Od` … `Do` (only `Od` = that single day).
 3. Pick categories by tapping chips: `LARP` `Impro` `RPG` `Planszówki`. Each one has its own color, used everywhere.
 4. See the results as a **list and a map side by side** on desktop, or switch between **Mapa / Lista / Kalendarz** tabs on mobile.
 5. Tap an event to open a card with the time, place, price, a "Dla początkujących" (beginner-friendly) badge, and the ticket or source link.

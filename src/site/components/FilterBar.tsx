@@ -10,6 +10,15 @@ export function FilterBar({ filters: f, onChange }: { filters: Filters; onChange
   const set = (patch: Partial<Filters>) => onChange({ ...f, ...patch });
 
   const pickWhen = (when: When) => set({ when, from: null, to: null });
+  const today = localDateKey(new Date());
+  // "Od" alone shows that single day; "Do" extends it to a range. Clearing "Od" goes back to the default window.
+  const setFrom = (from: string) =>
+    from ? set({ from, to: f.to && f.to > from ? f.to : null }) : pickWhen(DEFAULT_FILTERS.when);
+  // Picking "Do" first starts the range today.
+  const setTo = (to: string) => {
+    const from = f.from ?? today;
+    set({ from, to: to && to > from ? to : null });
+  };
   const toggleCat = (c: Category) =>
     set({ cats: f.cats.includes(c) ? f.cats.filter((x) => x !== c) : [...f.cats, c] });
 
@@ -25,17 +34,18 @@ export function FilterBar({ filters: f, onChange }: { filters: Filters; onChange
             {t.when[w]}
           </button>
         ))}
-        <label className={`chip date-chip${f.from ? " active" : ""}`}>
-          <span aria-hidden="true">📅</span>
-          <span className="sr-only">{t.when.pickDay}</span>
-          <input
-            type="date"
-            value={f.from ?? ""}
-            min={localDateKey(new Date())}
-            aria-label={t.when.pickDay}
-            onChange={(e) => (e.target.value ? set({ from: e.target.value, to: null }) : pickWhen("today"))}
-          />
-        </label>
+        <span className="date-range">
+          <label className={`chip date-chip${f.from ? " active" : ""}`}>
+            <span>{t.when.from}</span>
+            <input type="date" value={f.from ?? ""} min={today} aria-label={t.when.fromLabel}
+              onChange={(e) => setFrom(e.target.value)} />
+          </label>
+          <label className={`chip date-chip${f.to ? " active" : ""}`}>
+            <span>{t.when.to}</span>
+            <input type="date" value={f.to ?? ""} min={f.from ?? today} aria-label={t.when.toLabel}
+              onChange={(e) => setTo(e.target.value)} />
+          </label>
+        </span>
       </div>
 
       <div className="chip-row" role="group" aria-label={t.filters.categories}>
