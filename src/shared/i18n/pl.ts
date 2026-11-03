@@ -120,6 +120,11 @@ const pl = {
     geocode_failed: "Geokodowanie nie powiodło się.",
     geocode_query_too_short: "Podaj adres.",
     server_error: "Błąd serwera.",
+    unsupported_url: "To nie wygląda na prawidłowy link.",
+    no_event_found: "Nie znaleziono wydarzenia pod tym linkiem.",
+    fetch_failed: "Nie udało się pobrać strony. Spróbuj ponownie później.",
+    source_busy: "To źródło jest właśnie importowane.",
+    merge_into_self: "Nie można scalić wydarzenia z samym sobą.",
   } as Record<string, string>,
 
   fieldErrors: {
@@ -131,6 +136,8 @@ const pl = {
     end_before_start: "Koniec nie może być przed początkiem.",
     price_max_below_min: "Cena maksymalna jest mniejsza niż minimalna.",
     coordinates_pair: "Podaj obie współrzędne albo żadnej.",
+    invalid_config: "Nieprawidłowa konfiguracja (sprawdź nazwy i typy pól).",
+    invalid_regex: "Nieprawidłowe wyrażenie regularne.",
     invalid: "Nieprawidłowa wartość.",
   } as Record<string, string>,
 
@@ -141,7 +148,10 @@ const pl = {
     email: "E-mail",
     password: "Hasło",
     loggingIn: "Logowanie…",
-    nav: { events: "Wydarzenia", venues: "Miejsca", organizers: "Organizatorzy", site: "Strona publiczna" },
+    nav: {
+      events: "Wydarzenia", review: "Do przejrzenia", sources: "Źródła", venues: "Miejsca",
+      organizers: "Organizatorzy", site: "Strona publiczna",
+    },
     save: "Zapisz",
     saving: "Zapisywanie…",
     saved: "Zapisano.",
@@ -186,6 +196,9 @@ const pl = {
         imageUrl: "Link do obrazka",
         status: "Status",
       },
+      imported: (source: string) => `Zaimportowane ze źródła: ${source}.`,
+      importedLocked: "Zmiany wprowadzone tutaj mają pierwszeństwo: kolejne importy nie nadpiszą tego wydarzenia.",
+      importedUnlocked: "Po zapisaniu kolejne importy przestaną aktualizować to wydarzenie.",
       newVenue: "+ nowe miejsce",
       newOrganizer: "+ nowy organizator",
       timesNote: "Godziny w czasie lokalnym (Poznań).",
@@ -212,6 +225,84 @@ const pl = {
         aliases: "Inne nazwy (oddzielone przecinkami)",
       },
     },
+    review: {
+      title: "Do przejrzenia",
+      intro: "Szkice z importu i wydarzenia, które wymagają uwagi. Zaznacz kilka, aby opublikować lub ukryć je naraz.",
+      importUrl: "Importuj z linku",
+      importUrlPlaceholder: "Link do wydarzenia na Facebooku lub strony z biletami…",
+      importing: "Importuję…",
+      importedExisting: "To wydarzenie już jest w bazie. Otwieram je.",
+      selectAll: "Zaznacz wszystkie",
+      selected: (n: number) => `Zaznaczono: ${n}`,
+      publish: "Opublikuj",
+      hide: "Ukryj",
+      dismiss: "Oznacz jako sprawdzone",
+      merge: "Scal z tym",
+      confirmMerge: (title: string) => `Scalić to wydarzenie z „${title}”? Szkic zostanie usunięty.`,
+      duplicates: "Możliwe duplikaty:",
+      location: "Lokalizacja w źródle",
+      source: "Źródło",
+      empty: "Nic do przejrzenia. 🎉",
+      flags: {
+        needs_venue: "brak miejsca",
+        missing_from_source: "zniknęło ze źródła",
+        changed_at_source: "zmienione w źródle",
+        check_category: "sprawdź kategorię",
+      } as Record<string, string>,
+    },
+    sources: {
+      title: "Źródła importu",
+      new: "Nowe źródło",
+      edit: "Edytuj źródło",
+      runNow: "Importuj teraz",
+      running: "Trwa import…",
+      never: "nigdy",
+      apifyOn: "Apify: włączone (APIFY_TOKEN ustawiony).",
+      apifyOff: "Apify: wyłączone. Strony Facebooka za ekranem logowania nie będą importowane.",
+      manualName: "Import z linku",
+      kinds: {
+        ICS: "Kalendarz (iCal)",
+        JSONLD: "Strona z danymi schema.org",
+        HTML_ADAPTER: "Adapter strony",
+        FB_PAGE: "Strona na Facebooku",
+        MANUAL_URL: "Import z linku",
+        LLM_PAGE: "Strona (LLM)",
+      } as Record<string, string>,
+      trust: { AUTO_PUBLISH: "Publikuj automatycznie", REVIEW: "Do przejrzenia" } as Record<string, string>,
+      status: { ok: "OK", warning: "Ostrzeżenia", error: "Błąd" } as Record<string, string>,
+      columns: {
+        name: "Nazwa", kind: "Typ", trust: "Publikacja", lastRun: "Ostatni import", status: "Status",
+        events: "Nadchodzące", enabled: "Włączone",
+      },
+      upcoming: (published: number, drafts: number) => `${published} opubl. · ${drafts} szkiców`,
+      details: "Szczegóły",
+      stats: (s: { received?: number; created?: number; updated?: number; linked?: number; missing?: number; skipped?: Record<string, number> }) => {
+        const parts = [`pobrano ${s.received ?? 0}`];
+        if (s.created) parts.push(`nowe ${s.created}`);
+        if (s.updated) parts.push(`zmienione ${s.updated}`);
+        if (s.linked) parts.push(`duplikaty ${s.linked}`);
+        if (s.missing) parts.push(`zniknęło ${s.missing}`);
+        const skipped = Object.entries(s.skipped ?? {}).filter(([, n]) => n > 0);
+        if (skipped.length) parts.push(`pominięto: ${skipped.map(([r, n]) => `${n} ${skipReasons[r] ?? r}`).join(", ")}`);
+        return parts.join(" · ");
+      },
+      fields: {
+        name: "Nazwa",
+        key: "Klucz (dla CLI, opcjonalnie)",
+        kind: "Typ",
+        url: "Adres (kalendarz .ics, strona na Facebooku, strona z danymi)",
+        adapter: "Adapter",
+        category: "Domyślna kategoria",
+        categoryNone: "— wg słów kluczowych —",
+        venue: "Domyślne miejsce",
+        organizer: "Domyślny organizator",
+        trust: "Publikacja",
+        enabled: "Włączone",
+        schedule: "Co ile godzin",
+        config: "Konfiguracja (JSON)",
+        configHint: "rules: [{match, category, tags, skip}], requireMatch, exclude, matchOn, tags, urls, provider (direct/apify/auto), days, horizonDays",
+      },
+    },
     organizers: {
       title: "Organizatorzy",
       new: "Nowy organizator",
@@ -226,6 +317,17 @@ const pl = {
       },
     },
   },
+};
+
+const skipReasons: Record<string, string> = {
+  no_title: "bez tytułu",
+  excluded: "wykluczone",
+  rule_skip: "pominięte regułą",
+  no_match: "spoza tematyki",
+  out_of_area: "poza Poznaniem",
+  past: "minione",
+  cancelled: "odwołane",
+  rejected: "usunięte wcześniej",
 };
 
 /** Polish plural forms: 1 wydarzenie, 2–4 wydarzenia, 5+ wydarzeń (12–14 use the "many" form). */

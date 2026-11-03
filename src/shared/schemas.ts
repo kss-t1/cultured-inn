@@ -96,3 +96,33 @@ export const LoginInput = z.object({
   email: z.string().trim().toLowerCase().max(200),
   password: z.string().min(1).max(500),
 });
+
+export const SOURCE_KINDS_EDITABLE = ["ICS", "JSONLD", "HTML_ADAPTER", "FB_PAGE"] as const;
+export const TRUST_LEVELS = ["AUTO_PUBLISH", "REVIEW"] as const;
+
+/** Import source form. `config` is validated against SourceConfig on the server. */
+export const SourceInput = z
+  .object({
+    name: z.string().trim().min(1, "required").max(200),
+    key: z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/, "invalid").max(60).nullish().transform((v) => v || null),
+    kind: z.enum(SOURCE_KINDS_EDITABLE),
+    url: optUrl,
+    adapter_name: optText(60),
+    config: z.record(z.string(), z.unknown()).default({}),
+    default_category: z.enum(CATEGORIES).nullish().transform((v) => v ?? null),
+    default_venue_id: optId,
+    default_organizer_id: optId,
+    trust: z.enum(TRUST_LEVELS).default("REVIEW"),
+    enabled: z.boolean().default(true),
+    schedule_hours: z.number().int().min(1).max(24 * 7).default(24),
+  })
+  .refine((s) => s.kind !== "HTML_ADAPTER" || s.adapter_name, { message: "required", path: ["adapter_name"] })
+  .refine((s) => s.kind === "HTML_ADAPTER" || s.kind === "JSONLD" || s.url, { message: "required", path: ["url"] });
+export type SourceInput = z.infer<typeof SourceInput>;
+
+export const ImportUrlInput = z.object({ url: z.string().trim().min(1, "required").max(2000) });
+export const BulkInput = z.object({
+  ids: z.array(z.number().int().positive()).min(1).max(500),
+  action: z.enum(["publish", "hide", "dismiss_flags"]),
+});
+export const MergeInput = z.object({ into: z.number().int().positive() });

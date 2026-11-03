@@ -92,3 +92,31 @@ tbody tr:last-child td { border-bottom: 0; }
 .login h1 { margin: 0; font-size: 1.4rem; }
 .login p { margin: 0; }
 .login label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: .9rem; }
+
+/* review queue & sources */
+.small { font-size: .85rem; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85rem; }
+.notice { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 8px 12px; margin: 0; }
+.import-url { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; }
+.import-url input { flex: 1 1 280px; }
+.import-url .form-error { flex-basis: 100%; }
+.bulk-bar { align-items: center; }
+.review-list { list-style: none; margin: 0; padding: 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); }
+.review-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.review-item:last-child { border-bottom: 0; }
+.review-item > input { margin-top: 5px; }
+.review-body { flex: 1; min-width: 0; }
+.review-title { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.review-item .row-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.flag { font-size: .75rem; padding: 1px 8px; border-radius: 999px; background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); white-space: nowrap; }
+.dups { margin-top: 6px; padding: 6px 10px; border-left: 3px solid var(--line); }
+.dups ul { margin: 4px 0 0; padding-left: 18px; }
+.status-run-ok { border-color: var(--ok); color: var(--ok); }
+.status-run-warning { color: var(--accent); border-color: var(--accent); }
+.status-run-error { color: var(--danger); border-color: var(--danger); }
+.error-text { white-space: pre-wrap; word-break: break-word; max-width: 420px; margin: 4px 0 0; color: var(--danger); font-size: .8rem; }
+.label-spacer { font-size: .9rem; }
+@media (max-width: 640px) {
+  .review-item { flex-wrap: wrap; }
+  .review-item .row-actions { width: 100%; justify-content: flex-start; padding-left: 28px; }
+}

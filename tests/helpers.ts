@@ -1,7 +1,7 @@
 import { sql, TZ } from "../src/db.ts";
 
 export async function resetDb() {
-  await sql`TRUNCATE events, venues, organizers, admin_sessions, admin_users, login_attempts RESTART IDENTITY CASCADE`;
+  await sql`TRUNCATE events, venues, organizers, sources, imported_items, event_series, admin_sessions, admin_users, login_attempts RESTART IDENTITY CASCADE`;
 }
 
 let n = 0;
