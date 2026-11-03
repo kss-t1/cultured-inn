@@ -37,7 +37,7 @@ Status: draft v0.1 (2026-11-03)
 | View | Contents |
 |---|---|
 | **Mapa** | Leaflet with OpenStreetMap tiles. Pins are colored by category and cluster when zoomed out. "Near me" uses browser geolocation. Several events at one venue share one pin, and the popup lists them. |
-| **Kalendarz** | FullCalendar with month, week and day modes and category colors. On mobile the default is a **list-by-day** mode, because a month grid is unreadable on a phone. |
+| **Kalendarz** | FullCalendar with month, week and day modes and category colors. It shows the same events as the list (the selected **Kiedy** window and filters) and opens at the start of an `Od`–`Do` range. On mobile the default is a **list-by-day** mode, because a month grid is unreadable on a phone. |
 | **Lista** | Events grouped by day and sorted by start time. This is the fastest view for "what's on tonight". |
 | **Event detail** | Title, category, date and time, venue with a small map, price, organizer, description, tags, ticket link, source link, and "last updated". Includes schema.org `Event` JSON-LD for SEO. |
 

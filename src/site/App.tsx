@@ -49,7 +49,7 @@ export function App() {
   const key = serializeFilters(queryFilters).toString();
 
   useEffect(() => {
-    if (view === "calendar") return; // the calendar fetches its own visible range
+    if (view === "calendar") return; // EventCalendar fetches its own events
     const ctrl = new AbortController();
     setLoad((l) => (l.status === "ok" ? l : { status: "loading" }));
     fetchEvents(queryFilters, ctrl.signal)

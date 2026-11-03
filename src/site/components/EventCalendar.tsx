@@ -10,14 +10,13 @@ import "@fullcalendar/react/themes/classic/palette.css";
 import type { EventSourceFuncInfo } from "@fullcalendar/react";
 import { CATEGORY_INFO } from "../../shared/categories.ts";
 import type { Filters } from "../../shared/filters.ts";
-import { localDateKey } from "../../shared/format.ts";
 import { fetchEvents } from "../api.ts";
 
-/** Calendar view: uses all filters except the date window, which comes from the visible range. */
+/** Calendar view: shows the events of the selected window ("Ten miesiąc", Od–Do, …) like the list and map. */
 export function EventCalendar({ filters, isDesktop }: { filters: Filters; isDesktop: boolean }) {
-  const loadEvents = async (info: EventSourceFuncInfo) => {
-    const lastDay = new Date(info.end.getTime() - 1); // `end` is exclusive
-    const events = await fetchEvents({ ...filters, from: localDateKey(info.start), to: localDateKey(lastDay) });
+  // FullCalendar draws only what falls inside the visible range, so the window's events are enough.
+  const loadEvents = async (_info: EventSourceFuncInfo) => {
+    const events = await fetchEvents(filters);
     return events.map((e) => ({
       id: String(e.id),
       title: e.title,
@@ -31,10 +30,11 @@ export function EventCalendar({ filters, isDesktop }: { filters: Filters; isDesk
   return (
     <div className="calendar">
       <FullCalendar
-        key={`${isDesktop}-${JSON.stringify({ ...filters, when: null, from: null, to: null })}`}
+        key={`${isDesktop}-${JSON.stringify(filters)}`}
         plugins={[classicTheme, dayGridPlugin, timeGridPlugin, listPlugin]}
         locale={plLocale}
         initialView={isDesktop ? "dayGridMonth" : "listWeek"}
+        initialDate={filters.from ?? undefined}
         headerToolbar={
           isDesktop
             ? { start: "prev,next today", center: "title", end: "dayGridMonth,timeGridWeek,listWeek" }
