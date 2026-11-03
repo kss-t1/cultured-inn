@@ -38,12 +38,12 @@ const dateFmt = new Intl.DateTimeFormat(t.locale, {
 const displayName = (s: Pick<Source, "key" | "name">) => (s.key === "manual-url" ? S.manualName : s.name);
 
 export function SourcesPage() {
-  const [data, setData] = useState<{ sources: Source[]; apify: boolean } | null>(null);
+  const [data, setData] = useState<{ sources: Source[]; facebookLogin: boolean } | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const timer = useRef<Timer | null>(null);
 
   const load = () =>
-    api<{ sources: Source[]; apify: boolean }>("GET", "/sources").then((d) => {
+    api<{ sources: Source[]; facebookLogin: boolean }>("GET", "/sources").then((d) => {
       setData(d);
       // While something runs in the background, poll until it finishes.
       if (timer.current) clearTimeout(timer.current);
@@ -84,7 +84,7 @@ export function SourcesPage() {
         <h1>{S.title}</h1>
         <a className="btn primary" {...linkProps("/admin/sources/new")}>{S.new}</a>
       </div>
-      {data && <p className="muted small">{data.apify ? S.apifyOn : S.apifyOff}</p>}
+      {data && <p className="muted small">{data.facebookLogin ? S.facebookLoginOn : S.facebookLoginOff}</p>}
       {err && <p className="form-error" role="alert">{err}</p>}
       {data === null ? <p>{t.admin.loading}</p> : (
         <div className="table-wrap">

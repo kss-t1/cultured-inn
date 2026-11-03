@@ -165,7 +165,7 @@ A small React app at `/admin`, served by the same Bun server and talking to a JS
 - **Recommended for the MVP:**
   1. **Import from URL** in the admin. A human pastes a Facebook event link and the system fetches that one public page (OpenGraph tags plus the LLM extractor) to make a draft. This is low-volume and human-triggered.
   2. **Ask organizers for an ICS feed.** Many already keep a Google Calendar, which is the cleanest option.
-  3. *Optional, risk accepted knowingly:* a paid Apify actor that runs daily over a list of about 30 organizer page URLs, with results going to `REVIEW`. Keep it behind a feature flag so it can be turned off easily.
+  3. *Risk accepted knowingly (decided 2026-11-04):* organizer Pages are read daily. Pages that show a login wall to logged-out visitors are listed with a dedicated throwaway account's cookies (`FB_COOKIES`); event pages are always read logged-out. The paid Apify scraper used before was removed.
 
 **Generic Poznań culture listings** (filtered with the keyword rules)
 - **kultura.poznan.pl**, the city culture portal. Pyrkon is listed there. It has a calendar with per-day pages (`/events/YYYY-MM-DD/`) and categories (Spectacle, Meeting, Festival...), but no visible RSS, iCal or API. Use an HTML adapter that crawls the next 30 days. Useful for improv shows and festivals.
@@ -308,7 +308,7 @@ karczma/
 ---
 
 ## 8. Open decisions
-1. **Facebook:** use only URL import plus ICS, or also run the paid Apify scraper (accepting the ToS risk)?
+1. ~~**Facebook:** use only URL import plus ICS, or also run the paid Apify scraper?~~ Decided: Page lists are read logged-out where possible, otherwise with a throwaway account (`FB_COOKIES`); no Apify.
 2. **Auto-publish:** which sources are trusted enough to skip review?
 3. **Language:** Polish only at launch, or Polish and English? Poznań has a large international student population.
 4. **Domain and hosting:** check that `kulturalnakarczma.pl` is available.

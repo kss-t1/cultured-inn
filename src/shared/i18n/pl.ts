@@ -295,8 +295,8 @@ const pl = {
       runNow: "Importuj teraz",
       running: "Trwa import…",
       never: "nigdy",
-      apifyOn: "Apify: włączone (APIFY_TOKEN ustawiony).",
-      apifyOff: "Apify: wyłączone. Strony Facebooka za ekranem logowania nie będą importowane.",
+      facebookLoginOn: "Konto Facebooka: ustawione (FB_COOKIES). Strony, które bez logowania pokazują ekran logowania, są czytane przez to konto.",
+      facebookLoginOff: "Konto Facebooka: brak (FB_COOKIES). Strony Facebooka za ekranem logowania nie będą importowane.",
       manualName: "Import z linku",
       kinds: {
         ICS: "Kalendarz (iCal)",
@@ -338,7 +338,7 @@ const pl = {
         enabled: "Włączone",
         schedule: "Co ile godzin",
         config: "Konfiguracja (JSON)",
-        configHint: "rules: [{match, category, tags, skip}], requireMatch, exclude, matchOn, tags, urls, provider (direct/apify/auto), days, horizonDays",
+        configHint: "rules: [{match, category, tags, skip}], requireMatch, exclude, matchOn, tags, urls, days, horizonDays",
       },
     },
     organizers: {

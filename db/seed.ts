@@ -138,18 +138,19 @@ const SOURCES: SourceSeed[] = [
   },
   { key: "fb-larpunk", name: "Facebook – Stowarzyszenie Larpunk", kind: "FB_PAGE", url: "https://www.facebook.com/stowarzyszenielarpunk", category: "LARP", organizer: "Stowarzyszenie Larpunk", hours: 24 },
   { key: "fb-lavida-impro", name: "Facebook – La Vida Impro", kind: "FB_PAGE", url: "https://www.facebook.com/LaVidaImpro", category: "IMPRO", organizer: "La Vida Impro", hours: 24 },
-  // Larpowy Ogród, Wargamer and Cooliozum show a login wall and go through Apify (billed per event): every 3 days.
-  { key: "fb-larpowy-ogrod", name: "Facebook – Larpowy Ogród", kind: "FB_PAGE", url: "https://www.facebook.com/larpowyogrod", category: "LARP", organizer: "Larpowy Ogród", hours: 72 },
-  { key: "fb-wargamer", name: "Facebook – Wargamer Poznań", kind: "FB_PAGE", url: "https://www.facebook.com/wargamer.poznan", category: "BOARDGAMES", organizer: "Wargamer Poznań", config: { tags: ["gry bitewne"] }, hours: 72 },
-  { key: "fb-cooliozum", name: "Facebook – Cooliozum", kind: "FB_PAGE", url: "https://www.facebook.com/cooliozum", category: "BOARDGAMES", organizer: "Cooliozum", hours: 72 },
+  // Larpowy Ogród and Wargamer show a login wall; their event lists are read with FB_COOKIES.
+  // facebook.com/cooliozum doesn't exist (wrong URL); disable it until the right one is known.
+  { key: "fb-larpowy-ogrod", name: "Facebook – Larpowy Ogród", kind: "FB_PAGE", url: "https://www.facebook.com/larpowyogrod", category: "LARP", organizer: "Larpowy Ogród", hours: 24 },
+  { key: "fb-wargamer", name: "Facebook – Wargamer Poznań", kind: "FB_PAGE", url: "https://www.facebook.com/wargamer.poznan", category: "BOARDGAMES", organizer: "Wargamer Poznań", config: { tags: ["gry bitewne"] }, hours: 24 },
+  { key: "fb-cooliozum", name: "Facebook – Cooliozum", kind: "FB_PAGE", url: "https://www.facebook.com/cooliozum", category: "BOARDGAMES", organizer: "Cooliozum", hours: 24 },
   { key: "fb-podziemie", name: "Facebook – Podziemie", kind: "FB_PAGE", url: "https://www.facebook.com/podziemiepoznan", category: "BOARDGAMES", venue: "Podziemie", organizer: "Podziemie", hours: 24 },
-  // Poznań impro groups. DPR and Improsi are readable logged out; the others need Apify (every 3 days).
+  // Poznań impro groups. DPR and Improsi are readable logged out; the others need FB_COOKIES.
   { key: "fb-dpr-impro", name: "Facebook – Drukała Poprawa Ratajczak", kind: "FB_PAGE", url: "https://www.facebook.com/DPRimpro", category: "IMPRO", organizer: "Drukała Poprawa Ratajczak", hours: 24 },
   { key: "fb-improsi", name: "Facebook – Improsi", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61582069984035", category: "IMPRO", organizer: "Improsi", hours: 24 },
-  { key: "fb-leniwe-raz", name: "Facebook – Leniwe Raz", kind: "FB_PAGE", url: "https://www.facebook.com/leniwerazimpro", category: "IMPRO", organizer: "Leniwe Raz", hours: 72 },
-  { key: "fb-czworka-na-szynach", name: "Facebook – Czwórka na Szynach", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61574240152074", category: "IMPRO", organizer: "Czwórka na Szynach", hours: 72 },
-  { key: "fb-improlaki", name: "Facebook – Improłaki", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61589955491168", category: "IMPRO", organizer: "Improłaki", hours: 72 },
-  { key: "fb-rymparzysci", name: "Facebook – Rymparzyści – teatr improwizacji", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61572191894828", category: "IMPRO", organizer: "Rymparzyści – teatr improwizacji", hours: 72 },
+  { key: "fb-leniwe-raz", name: "Facebook – Leniwe Raz", kind: "FB_PAGE", url: "https://www.facebook.com/leniwerazimpro", category: "IMPRO", organizer: "Leniwe Raz", hours: 24 },
+  { key: "fb-czworka-na-szynach", name: "Facebook – Czwórka na Szynach", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61574240152074", category: "IMPRO", organizer: "Czwórka na Szynach", hours: 24 },
+  { key: "fb-improlaki", name: "Facebook – Improłaki", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61589955491168", category: "IMPRO", organizer: "Improłaki", hours: 24 },
+  { key: "fb-rymparzysci", name: "Facebook – Rymparzyści – teatr improwizacji", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61572191894828", category: "IMPRO", organizer: "Rymparzyści – teatr improwizacji", hours: 24 },
 ];
 
 export async function seedOrganizers() {
