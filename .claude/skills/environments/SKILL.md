@@ -67,11 +67,12 @@ curl -s "$BASE/api/events?when=week&cat=larp,rpg" | jq '.events | length'
 curl -s "$BASE/events/<slug>.ics"
 ```
 
-**Admin:** `/api/admin/*`, using a session cookie (`karczma_session`) from logging in. Mutating requests must send `Origin: $BASE` (CSRF check against `PUBLIC_BASE_URL`). The user holds the prod admin password; ask for it, or for a curl session, rather than resetting it. On local, create a throwaway admin with `admin:create`.
+**Admin:** `/api/admin/*`, using a session cookie (`karczma_session`) from logging in. Mutating requests must send `Origin: $BASE` (CSRF check against `PUBLIC_BASE_URL`). The prod admin login is in `.secrets/prod-admin` in the main checkout on the dev machine (gitignored; `BASE`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`). Source it rather than copying the values, and never reset that account's password unless asked. On local, create a throwaway admin with `admin:create`.
 
 ```sh
-curl -s -c /tmp/jar -H "Origin: $BASE" -H 'Content-Type: application/json' \
-  -d '{"email":"<email>","password":"<password>"}' "$BASE/api/admin/login"
+set -a; . .secrets/prod-admin; set +a     # prod; on local, use your throwaway admin
+jq -n --arg e "$ADMIN_EMAIL" --arg p "$ADMIN_PASSWORD" '{email:$e,password:$p}' \
+  | curl -s -c /tmp/jar -H "Origin: $BASE" -H 'Content-Type: application/json' -d @- "$BASE/api/admin/login"
 curl -s -b /tmp/jar "$BASE/api/admin/sources" | jq '.sources[0].key'
 curl -s -b /tmp/jar -X POST -H "Origin: $BASE" "$BASE/api/admin/sources/<id>/run"
 ```
