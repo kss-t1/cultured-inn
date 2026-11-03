@@ -8,6 +8,8 @@
     "start": "NODE_ENV=production bun src/server.ts",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
+    "verify": "bun run typecheck && bun test && bun run build",
+    "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
     "db:migrate": "bun db/migrate.ts",
     "db:seed": "bun db/seed.ts",
     "admin:create": "bun scripts/createAdmin.ts",
