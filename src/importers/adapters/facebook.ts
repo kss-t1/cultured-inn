@@ -157,6 +157,22 @@ export function pageEventsUrl(pageUrl: string): string {
   return `https://www.facebook.com/${first}/${tab}`;
 }
 
+/**
+ * An events section with no collections ("Sekcja wydarzenia jest pusta"). Only meaningful logged
+ * in: a login-walled page shows the same empty section to logged-out visitors.
+ */
+function hasEmptyEventsSection(html: string): boolean {
+  let empty = false;
+  for (const b of jsonBlobs(html)) {
+    walk(b, (o) => {
+      if (o.section_type === "EVENTS" && Array.isArray(o.all_collections?.nodes) && o.all_collections.nodes.length === 0) {
+        empty = true;
+      }
+    });
+  }
+  return empty;
+}
+
 /** The Facebook user a page was rendered for: "0" when logged out, null when the marker is missing. */
 export function viewerId(html: string): string | null {
   return html.match(/"USER_ID":"(\d+)"/)?.[1] ?? null;
@@ -183,12 +199,13 @@ export async function listPageEventIds(
   if (ids) return ids;
   if (!cookie) throw new Error("Facebook shows a login wall for this Page's events. Set FB_COOKIES (README, Facebook).");
   const html = await fetchPage(url, cookie);
-  const viaLogin = parsePageEventIds(html);
-  if (viaLogin) return viaLogin;
   const viewer = viewerId(html);
   if (!viewer || viewer === "0") {
     throw new Error("FB_COOKIES no longer log in (expired, or the account needs a security check). Export fresh cookies.");
   }
+  const viaLogin = parsePageEventIds(html);
+  if (viaLogin) return viaLogin;
+  if (hasEmptyEventsSection(html)) return []; // logged in and nothing upcoming
   throw new Error("Logged in, but the events list wasn't found in the page (Facebook changed its markup?).");
 }
 

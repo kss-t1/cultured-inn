@@ -138,7 +138,8 @@ const SOURCES: SourceSeed[] = [
   },
   { key: "fb-larpunk", name: "Facebook – Stowarzyszenie Larpunk", kind: "FB_PAGE", url: "https://www.facebook.com/stowarzyszenielarpunk", category: "LARP", organizer: "Stowarzyszenie Larpunk", hours: 24 },
   { key: "fb-lavida-impro", name: "Facebook – La Vida Impro", kind: "FB_PAGE", url: "https://www.facebook.com/LaVidaImpro", category: "IMPRO", organizer: "La Vida Impro", hours: 24 },
-  // Larpowy Ogród, Wargamer and Cooliozum show a login wall; their event lists are read with FB_COOKIES.
+  // Larpowy Ogród and Wargamer show a login wall; their event lists are read with FB_COOKIES.
+  // facebook.com/cooliozum doesn't exist (wrong URL); disable it until the right one is known.
   { key: "fb-larpowy-ogrod", name: "Facebook – Larpowy Ogród", kind: "FB_PAGE", url: "https://www.facebook.com/larpowyogrod", category: "LARP", organizer: "Larpowy Ogród", hours: 24 },
   { key: "fb-wargamer", name: "Facebook – Wargamer Poznań", kind: "FB_PAGE", url: "https://www.facebook.com/wargamer.poznan", category: "BOARDGAMES", organizer: "Wargamer Poznań", config: { tags: ["gry bitewne"] }, hours: 24 },
   { key: "fb-cooliozum", name: "Facebook – Cooliozum", kind: "FB_PAGE", url: "https://www.facebook.com/cooliozum", category: "BOARDGAMES", organizer: "Cooliozum", hours: 24 },

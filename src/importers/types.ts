@@ -42,6 +42,8 @@ export interface AdapterResult {
   horizon?: Date;
   /** Non-fatal problems worth showing on the Sources page. */
   warnings?: string[];
+  /** The source failed, but `candidates` still hold what could be read; the run is stored as an error. */
+  error?: string;
 }
 
 const Rule = z.object({

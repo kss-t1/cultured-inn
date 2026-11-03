@@ -103,10 +103,16 @@ const refreshKnownItems: Adapter = async (source) => {
 /**
  * Logged-out Page listings show only the first few events, so events we already know but that
  * aren't in the listing are re-read from their own pages (catches time changes and cancellations).
+ * Event pages need no login, so this also runs when the listing itself failed.
  */
 function withKnownFacebookEvents(adapter: Adapter): Adapter {
   return async (source) => {
-    const result = await adapter(source);
+    let result: AdapterResult;
+    try {
+      result = await adapter(source);
+    } catch (e) {
+      result = { candidates: [], complete: false, error: (e as Error).message ?? String(e) };
+    }
     const listed = new Set(result.candidates.map((c) => c.externalId));
     const gone: string[] = [];
     for (const item of await knownUpcoming(source.id)) {
@@ -154,15 +160,17 @@ async function runLocked(id: number, log: (msg: string) => void): Promise<RunOut
     const result: AdapterResult = await adapterFor(source)(source);
     const { stats } = await processCandidates(source, result);
     const warnings = result.warnings ?? [];
-    const status = warnings.length ? "warning" : "ok";
+    const status = result.error ? "error" : warnings.length ? "warning" : "ok";
+    const problems = [...(result.error ? [result.error] : []), ...warnings.slice(0, 10)];
     await sql`
       UPDATE sources SET last_run_at = now(), last_status = ${status},
-        last_error = ${warnings.length ? warnings.slice(0, 10).join("\n").slice(0, 2000) : null},
+        last_error = ${problems.length ? problems.join("\n").slice(0, 2000) : null},
         events_found = ${stats.received},
         last_stats = ${{ ...stats, durationMs: Date.now() - started }}::jsonb
       WHERE id = ${id}`;
-    log(`[import] ${source.name}: ${JSON.stringify(stats)}`);
-    return { status, stats, warnings };
+    log(`[import] ${source.name}: ${result.error ? `error: ${result.error} ` : ""}${JSON.stringify(stats)}`);
+    if (result.error) return { status: "error", error: result.error };
+    return { status: warnings.length ? "warning" : "ok", stats, warnings };
   } catch (e) {
     const message = (e as Error).message ?? String(e);
     await sql`

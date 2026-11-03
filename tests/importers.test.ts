@@ -178,16 +178,36 @@ describe("Facebook", () => {
 
     test("behind a login wall the list is read with the cookies", async () => {
       calls.length = 0;
-      const list = await fixture("fb-page-larpunk.html");
-      expect(await listPageEventIds(PAGE, "c_user=1; xs=x", fetcher(WALL, list))).toEqual(LARPUNK_IDS);
+      const loggedIn = (await fixture("fb-page-larpunk.html")) + '<script type="application/json">{"USER_ID":"100012345"}</script>';
+      expect(await listPageEventIds(PAGE, "c_user=1; xs=x", fetcher(WALL, loggedIn))).toEqual(LARPUNK_IDS);
       expect(calls).toEqual([null, "c_user=1; xs=x"]);
     });
 
     test("errors say whether the cookies are missing, expired, or the markup changed", async () => {
       await expect(listPageEventIds(PAGE, null, fetcher(WALL, WALL))).rejects.toThrow(/Set FB_COOKIES/);
       await expect(listPageEventIds(PAGE, "c_user=1; xs=x", fetcher(WALL, WALL))).rejects.toThrow(/no longer log in/);
+      const noMarker = "<html><title>Checkpoint</title></html>";
+      await expect(listPageEventIds(PAGE, "c_user=1; xs=x", fetcher(WALL, noMarker))).rejects.toThrow(/no longer log in/);
       const loggedInNoList = '<html><script type="application/json">{"USER_ID":"100012345"}</script></html>';
       await expect(listPageEventIds(PAGE, "c_user=1; xs=x", fetcher(WALL, loggedInNoList))).rejects.toThrow(/changed its markup/);
+    });
+
+    test("logged in, a Page with no upcoming events gives an empty list, not an error", async () => {
+      // Shape of a real logged-in page whose events section is empty (Wargamer Poznań, 2026-11-04).
+      const section = '"section":{"__typename":"TimelineAppSection","section_type":"EVENTS","all_collections":{"nodes":[]},'
+        + '"null_state_message":{"text":"Sekcja wydarzenia jest pusta"}}';
+      const empty = `<script type="application/json">{"USER_ID":"100012345",${section}}</script>`;
+      expect(await listPageEventIds(PAGE, "c_user=1; xs=x", fetcher(WALL, empty))).toEqual([]);
+      // Logged out, the login wall shows the same empty section: that must not count as "no events".
+      calls.length = 0;
+      const walledLoggedOut = `<script type="application/json">{"USER_ID":"0",${section}}</script>`;
+      expect(await listPageEventIds(PAGE, "c_user=1; xs=x", fetcher(walledLoggedOut, empty))).toEqual([]);
+      expect(calls).toEqual([null, "c_user=1; xs=x"]);
+      await expect(listPageEventIds(PAGE, null, fetcher(walledLoggedOut, empty))).rejects.toThrow(/Set FB_COOKIES/);
+      // Collections present but no readable items is still a markup change, not "no events".
+      const changed = '<script type="application/json">{"USER_ID":"100012345","section":{"section_type":"EVENTS",'
+        + '"all_collections":{"nodes":[{"style_renderer":{}}]}}}</script>';
+      await expect(listPageEventIds(PAGE, "c_user=1; xs=x", fetcher(WALL, changed))).rejects.toThrow(/changed its markup/);
     });
 
     test("viewerId reads the logged-in user from the page", () => {
