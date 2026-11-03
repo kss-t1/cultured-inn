@@ -10,6 +10,7 @@ const pl = {
     name: "Kulturalna Karczma",
     tagline: "gdzie gra się kulturalnie",
     homeLabel: "Kulturalna Karczma — strona główna",
+    navLabel: "Strony serwisu",
     about: "— darmowy, niekomercyjny przewodnik po wydarzeniach hobbystycznych w Poznaniu.",
     sources: "Zbieramy wydarzenia ze stron na Facebooku, kalendarzy klubów i miejskiego kalendarza kultury. Szczegóły zawsze potwierdzaj u organizatora.",
     pageTitle: "Kulturalna Karczma – LARP, impro, RPG i planszówki w Poznaniu",
@@ -136,6 +137,19 @@ const pl = {
     notFoundTitle: "Nie znaleziono wydarzenia",
     notFoundBack: "Wróć do listy wydarzeń",
     notFoundPageTitle: "Nie znaleziono",
+  },
+
+  about: {
+    title: "O autorze",
+    pageTitle: "O autorze – Kulturalna Karczma",
+    description: "Kto prowadzi Kulturalną Karczmę i jak się z nim skontaktować.",
+    hello: "Cześć! Jestem Krzysztof, lokalny nerd, który lubi impro.",
+    code: "Kod źródłowy",
+    codeHint: "Karczma jest otwartym projektem na GitHubie.",
+    contact: "Kontakt",
+    email: "E-mail",
+    whatsapp: "WhatsApp",
+    github: "GitHub",
   },
 
   submit: {

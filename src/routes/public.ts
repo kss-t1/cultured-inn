@@ -7,6 +7,7 @@ import { buildIcs } from "../lib/ics.ts";
 import { error, escapeHtml, handleError, json } from "../lib/http.ts";
 import { parseFilters } from "../shared/filters.ts";
 import { t } from "../shared/i18n/index.ts";
+import { AboutPage } from "./AboutPage.tsx";
 import { EventPage, eventJsonLd, safeJson } from "./EventPage.tsx";
 import { SiteHeader } from "../shared/ui.tsx";
 import siteCss from "../site/styles.css" with { type: "text" };
@@ -105,7 +106,15 @@ async function eventPage(req: BunRequest<"/events/:slug">) {
   }
 }
 
+function aboutPage() {
+  const head =
+    `<meta name="description" content="${escapeHtml(t.about.description)}">` +
+    `<link rel="canonical" href="${escapeHtml(`${baseUrl()}/about`)}">`;
+  return htmlPage(t.about.pageTitle, head, renderToString(createElement(AboutPage)));
+}
+
 export const publicRoutes = {
+  "/about": { GET: aboutPage },
   "/api/events": { GET: apiEvents },
   "/api/*": () => error(404, "not_found"),
   "/events/:slug": { GET: eventPage },

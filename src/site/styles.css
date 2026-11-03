@@ -168,8 +168,9 @@ body { margin: 0; }
 .brand__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .brand__name { font-family: var(--font-display); font-weight: 650; font-size: 22px; line-height: 1.05; letter-spacing: -.01em; font-variation-settings: "SOFT" 80, "opsz" 72; }
 .brand__tag { font-family: var(--font-display); font-style: italic; font-size: 14px; line-height: 1.2; color: var(--sign-gold); font-variation-settings: "SOFT" 100; }
-.kk .sign a.sign__link { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: var(--tap); padding: 0 4px; color: var(--sign-ink); font-size: var(--t-sm); font-weight: 600; text-decoration: none; white-space: nowrap; }
-.kk .sign a.sign__link:hover { text-decoration: underline; }
+.sign__nav { margin-left: auto; display: flex; align-items: center; gap: 4px 16px; }
+.kk .sign a.sign__link { display: inline-flex; align-items: center; gap: 6px; min-height: var(--tap); padding: 0 4px; color: var(--sign-ink); font-size: var(--t-sm); font-weight: 600; text-decoration: none; white-space: nowrap; }
+.kk .sign a.sign__link:hover, .kk .sign a.sign__link[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--sign-gold); text-underline-offset: 4px; }
 /* Phones: icon only, so the brand keeps its two lines; the label stays for screen readers. */
 @media (max-width: 479.98px) {
   .kk .sign a.sign__link { position: relative; min-width: var(--tap); justify-content: center; }
@@ -597,3 +598,11 @@ body { margin: 0; }
   .field-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .submit-form > .btn { justify-self: start; }
 }
+
+/* ---------- 21. About page ---------- */
+.about { max-width: 680px; padding-block: 24px 48px; display: grid; gap: 24px; }
+.about__title { font-family: var(--font-display); font-size: var(--t-3xl); line-height: var(--lh-3xl); font-weight: 650; font-variation-settings: "SOFT" 70; }
+.about__lead { font-size: var(--t-lg); line-height: var(--lh-lg); }
+.about__section { display: grid; gap: 10px; }
+.about__section h2 { font-family: var(--font-display); font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 600; }
+.about .fact__v { overflow-wrap: anywhere; }

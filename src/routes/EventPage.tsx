@@ -114,7 +114,7 @@ export function EventPage({ e, url, now = new Date() }: { e: EventDetail; url: s
 
   return (
     <>
-      <SiteHeader aside={<a className="sign__link" href="/submit"><Icon name="plus" /><span className="sign__label">{t.submit.headerLink}</span></a>} />
+      <SiteHeader />
       <main className="wrap">
         <article className={`ev cat-${cat.slug}${cancelled ? " is-cancelled" : ""}${past ? " is-past" : ""}`}>
           <a className="linkbtn ev__back" href="/"><Icon name="back" />{t.event.back}</a>
