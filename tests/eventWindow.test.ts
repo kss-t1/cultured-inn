@@ -49,6 +49,17 @@ describe("event_window", () => {
     });
   });
 
+  test("month: now until the first day of next month", async () => {
+    expect(await win("month", "2026-11-03T13:00:00Z")).toEqual({
+      start: "2026-11-03T13:00:00.000Z", end: "2026-11-30T23:00:00.000Z",
+    });
+  });
+
+  test("month in December ends at New Year, in summer time ends at CEST midnight", async () => {
+    expect((await win("month", "2026-12-31T20:00:00Z")).end).toBe("2026-12-31T23:00:00.000Z");
+    expect((await win("month", "2026-07-10T10:00:00Z")).end).toBe("2026-07-31T22:00:00.000Z");
+  });
+
   test("autumn DST day is 25 hours long", async () => {
     const w = await win("range", "2026-10-01T00:00:00Z", "2026-10-25");
     expect(w).toEqual({ start: "2026-10-24T22:00:00.000Z", end: "2026-10-25T23:00:00.000Z" });

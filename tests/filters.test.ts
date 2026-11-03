@@ -4,7 +4,7 @@ import { DEFAULT_FILTERS, isValidDate, parseFilters, serializeFilters } from "..
 const parse = (qs: string) => parseFilters(new URLSearchParams(qs));
 
 describe("parseFilters", () => {
-  test("empty query gives defaults (today)", () => {
+  test("empty query gives defaults (this month)", () => {
     expect(parse("")).toEqual(DEFAULT_FILTERS);
   });
 
@@ -21,13 +21,19 @@ describe("parseFilters", () => {
 
   test("drops invalid values instead of failing", () => {
     const f = parse("when=yesterday&cat=chess,impro,impro&time=night&priceMax=-5&bbox=1,2,3&from=2026-02-30&lang=de");
-    expect(f.when).toBe("today");
+    expect(f.when).toBe("month");
     expect(f.cats).toEqual(["IMPRO"]);
     expect(f.time).toBeNull();
     expect(f.priceMax).toBeNull();
     expect(f.bbox).toBeNull();
     expect(f.from).toBeNull();
     expect(f.english).toBe(false);
+  });
+
+  test("when=month and today are accepted", () => {
+    expect(parse("when=today").when).toBe("today");
+    expect(parse("when=month").when).toBe("month");
+    expect(serializeFilters(parse("when=today")).toString()).toBe("when=today");
   });
 
   test("date range: `to` before `from` is ignored", () => {

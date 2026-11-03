@@ -27,7 +27,11 @@ const pl = {
     tomorrow: "Jutro",
     weekend: "Ten weekend",
     week: "Ten tydzień",
-    pickDay: "Wybierz dzień",
+    month: "Ten miesiąc",
+    from: "Od",
+    to: "Do",
+    fromLabel: "Od dnia",
+    toLabel: "Do dnia (puste: tylko jeden dzień)",
   },
 
   filters: {
@@ -59,7 +63,7 @@ const pl = {
     loading: "Ładowanie…",
     loadError: "Nie udało się pobrać wydarzeń. Spróbuj odświeżyć stronę.",
     empty: "Brak wydarzeń dla wybranych filtrów.",
-    emptyHint: "Spróbuj szerszego zakresu, np. „Ten tydzień”.",
+    emptyHint: "Spróbuj szerszego zakresu, np. „Ten miesiąc” albo daty w polach „Od” i „Do”.",
     count: (n: number) => `${n} ${plural(n, "wydarzenie", "wydarzenia", "wydarzeń")}`,
     venueTbd: "Miejsce do potwierdzenia",
   },

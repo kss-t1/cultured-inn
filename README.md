@@ -99,8 +99,8 @@ Recurring ICS events are expanded 60 days ahead (`rrule`), keyed by local date, 
 
 | Param | Values |
 |---|---|
-| `when` | `today` (default, from now) · `tomorrow` · `weekend` (Fri 17:00 to Sun) · `week` (until Sunday) |
-| `from`, `to` | `YYYY-MM-DD`, inclusive, Europe/Warsaw; overrides `when` |
+| `when` | `month` (default, from now until the end of the month) · `today` (from now) · `tomorrow` · `weekend` (Fri 17:00 to Sun) · `week` (until Sunday) |
+| `from`, `to` | `YYYY-MM-DD`, inclusive, Europe/Warsaw; overrides `when`. `from` alone is a single day |
 | `cat` | comma list of `larp,impro,rpg,boardgames` |
 | `tags` | comma list; an event must have all of them |
 | `free`, `beginner`, `multiday` | `1` |
