@@ -1,6 +1,6 @@
 // Adapter parsers against small synthetic inputs and trimmed real pages (tests/fixtures).
 import { describe, expect, test } from "bun:test";
-import { expandEvents, parseIcs } from "../src/importers/adapters/ics.ts";
+import { calendarPage, expandEvents, parseIcs } from "../src/importers/adapters/ics.ts";
 import { apifyToCandidates, facebookEventId, pageEventsUrl, parseFacebookEvent, parsePageEventIds } from "../src/importers/adapters/facebook.ts";
 import { extractJsonLdEvents, jsonLdToCandidate } from "../src/importers/adapters/jsonld.ts";
 import { poznanPlToCandidate } from "../src/importers/adapters/poznanPl.ts";
@@ -101,6 +101,18 @@ END:VEVENT`));
     expect(c[0]!.title).toBe("Monopoly Night");
     expect(local(c[0]!.start)).toBe("2026-11-14 19:00");
     expect(c[0]!.url).toBe("https://www.meetup.com/play-connect-pozna%C5%84/events/317201271/");
+  });
+  test("source links: description URL without trailing punctuation, Google Calendar page", () => {
+    const [e] = parseIcs(ics(`BEGIN:VEVENT
+UID:link@test
+DTSTART:20261105T170000Z
+SUMMARY:Drugi Smok
+DESCRIPTION:Grupa (https://www.facebook.com/groups/drugamacka).
+END:VEVENT`));
+    expect(expandEvents([e!], { from, to })[0]!.url).toBe("https://www.facebook.com/groups/drugamacka");
+    expect(calendarPage("https://calendar.google.com/calendar/ical/abc%40group.calendar.google.com/public/basic.ics"))
+      .toBe("https://calendar.google.com/calendar/embed?src=abc%40group.calendar.google.com&ctz=Europe%2FWarsaw");
+    expect(calendarPage("https://www.meetup.com/play-connect-pozna%C5%84/events/ical/")).toBeNull();
   });
 });
 

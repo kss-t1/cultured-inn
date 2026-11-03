@@ -99,7 +99,7 @@ const pl = {
     linkCopied: "Skopiowano link",
     bigMap: "Otwórz większą mapę",
     mapTitle: (venue: string) => `Mapa: ${venue}`,
-    source: "Źródło",
+    sourceLink: (site: string) => `Więcej na ${site}`,
     updated: "Ostatnia aktualizacja",
     back: "← Wszystkie wydarzenia",
     notFoundTitle: "Nie znaleziono wydarzenia",

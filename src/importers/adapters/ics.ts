@@ -244,7 +244,7 @@ function toCandidate(
   const rawDescription = text(e, "DESCRIPTION");
   // Google Calendar descriptions are often HTML.
   const description = /<[a-z][\s\S]*>/i.test(rawDescription) ? htmlToText(rawDescription) : decodeEntities(rawDescription);
-  const url = text(e, "URL") || description.match(/https?:\/\/\S+/)?.[0] || null;
+  const url = text(e, "URL") || description.match(/https?:\/\/\S+/)?.[0].replace(/[).,;:!?\]]+$/, "") || null;
   const location = text(e, "LOCATION");
   const status = text(e, "STATUS").toUpperCase();
   const geo = text(e, "GEO").match(/^(-?[\d.]+)[;,](-?[\d.]+)$/);
@@ -267,6 +267,12 @@ function toCandidate(
   };
 }
 
+/** A public Google Calendar feed's web view, the link for events that carry none of their own. */
+export function calendarPage(feedUrl: string): string | null {
+  const id = feedUrl.match(/^https:\/\/calendar\.google\.com\/calendar\/ical\/([^/]+)\/public\//)?.[1];
+  return id ? `https://calendar.google.com/calendar/embed?src=${id}&ctz=Europe%2FWarsaw` : null;
+}
+
 export const icsAdapter: Adapter = async (source) => {
   if (!source.url) throw new Error("ICS source has no URL");
   const res = await politeFetch(source.url, { headers: { Accept: "text/calendar, */*" } });
@@ -276,5 +282,7 @@ export const icsAdapter: Adapter = async (source) => {
   const horizon = new Date(now.getTime() + (source.config.horizonDays ?? 60) * 86_400_000);
   // Include events that started up to 12 hours ago so ongoing ones keep updating.
   const from = new Date(now.getTime() - 12 * 3_600_000);
-  return { candidates: expandEvents(parseIcs(body), { from, to: horizon }), complete: true, horizon };
+  const page = calendarPage(source.url);
+  const candidates = expandEvents(parseIcs(body), { from, to: horizon }).map((c) => ({ ...c, url: c.url ?? page }));
+  return { candidates, complete: true, horizon };
 };
