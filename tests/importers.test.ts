@@ -1,10 +1,11 @@
 // Adapter parsers against small synthetic inputs and trimmed real pages (tests/fixtures).
 import { describe, expect, test } from "bun:test";
 import { expandEvents, parseIcs } from "../src/importers/adapters/ics.ts";
-import { apifyToCandidate, facebookEventId, parseFacebookEvent, parsePageEventIds } from "../src/importers/adapters/facebook.ts";
+import { apifyToCandidates, facebookEventId, pageEventsUrl, parseFacebookEvent, parsePageEventIds } from "../src/importers/adapters/facebook.ts";
 import { extractJsonLdEvents, jsonLdToCandidate } from "../src/importers/adapters/jsonld.ts";
 import { poznanPlToCandidate } from "../src/importers/adapters/poznanPl.ts";
 import { htmlToText, isLocal, parsePrice, zonedToUtc } from "../src/importers/util.ts";
+import type { EventCandidate } from "../src/importers/types.ts";
 
 const fixture = (name: string) => Bun.file(new URL(`./fixtures/${name}`, import.meta.url)).text();
 const warsawFmt = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Warsaw", dateStyle: "short", timeStyle: "short" });
@@ -141,16 +142,40 @@ describe("Facebook", () => {
   });
 
   test("Apify dataset item", () => {
-    const c = apifyToCandidate({
+    const [c] = apifyToCandidates({
       id: "1269179411830316", name: "Comedy Night", utcStartDate: "2026-04-24T22:30:00.000Z",
       isCanceled: false, address: "ul. Rybaki 22, Poznań", description: "Opis",
       location: { name: "Podziemie", latitude: 52.40185, longitude: 16.9302 },
       ticketsInfo: { buyUrl: "https://bilety.example/1" },
-    })!;
+    }) as [EventCandidate];
     expect(c.externalId).toBe("1269179411830316");
     expect(c.url).toBe("https://www.facebook.com/events/1269179411830316/");
     expect(c.ticketUrl).toBe("https://bilety.example/1");
     expect(c.lat).toBe(52.40185);
+  });
+
+  test("Page events URLs for handles and numeric profile ids", () => {
+    expect(pageEventsUrl("https://www.facebook.com/DPRimpro")).toBe("https://www.facebook.com/DPRimpro/upcoming_hosted_events");
+    expect(pageEventsUrl("https://www.facebook.com/profile.php?id=61582069984035"))
+      .toBe("https://www.facebook.com/profile.php?id=61582069984035&sk=upcoming_hosted_events");
+    expect(pageEventsUrl("https://www.facebook.com/profile.php?id=61582069984035", "events"))
+      .toBe("https://www.facebook.com/profile.php?id=61582069984035&sk=events");
+    expect(() => pageEventsUrl("https://www.facebook.com/profile.php")).toThrow();
+  });
+
+  test("Apify recurring event: one candidate per occurrence", () => {
+    const cs = apifyToCandidates({
+      id: "1602578478228882", name: "Trench Crusade w Wargamerze", eventFrequency: "WEEKLY",
+      utcStartDate: "2026-10-27T16:00:00.000Z", location: { name: "Święty Marcin 47", latitude: 52.40653, longitude: 16.9235 },
+      childEvents: [
+        { id: "1602578478228882", utcStartDate: "2026-10-27T16:00:00.000Z", utcEndDate: "2026-10-27T20:00:00.000Z" },
+        { id: "1602578471562216", utcStartDate: "2026-11-03T16:00:00.000Z", utcEndDate: "2026-11-03T20:00:00.000Z" },
+      ],
+    });
+    expect(cs.map((c) => c.externalId)).toEqual(["1602578478228882", "1602578471562216"]);
+    expect(cs[1]!.end!.toISOString()).toBe("2026-11-03T20:00:00.000Z");
+    expect(cs[1]!.url).toBe("https://www.facebook.com/events/1602578471562216/");
+    expect(cs[1]!.title).toBe("Trench Crusade w Wargamerze");
   });
 });
 

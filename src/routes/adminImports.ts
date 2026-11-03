@@ -29,9 +29,10 @@ const listReview = admin<"/api/admin/review">(async () =>
     LEFT JOIN LATERAL (
       SELECT location_text FROM imported_items WHERE event_id = e.id ORDER BY id LIMIT 1
     ) i ON true
-    WHERE ((e.status = 'DRAFT' AND e.origin = 'IMPORTED') OR e.review_flags <> '{}')
+    WHERE ((e.origin = 'IMPORTED' AND e.status IN ('DRAFT', 'PUBLISHED') AND e.created_at > now() - interval '7 days')
+           OR (e.status = 'DRAFT' AND e.origin = 'IMPORTED') OR e.review_flags <> '{}')
       AND coalesce(e.end_at, e.start_at) > now() - interval '1 day'
-    ORDER BY e.start_at
+    ORDER BY (e.review_flags <> '{}' OR e.status = 'DRAFT') DESC, e.start_at
     LIMIT 300`),
 );
 

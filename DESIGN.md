@@ -146,7 +146,7 @@ A small React app at `/admin`, served by the same Bun server and talking to a JS
 5. **Dedupe:**
    - same `(source, external_id)` means an update
    - otherwise, the same venue plus a start time within ±90 min plus a title similarity of 0.6 or more (Postgres `pg_trgm` `similarity()`, threshold to be tuned) means a probable duplicate, which is merged with a reference to the first source
-6. **Publish policy.** `AUTO_PUBLISH` is for trusted, single-purpose sources such as an organizer's own calendar. `REVIEW` is for everything else, including all broad and Facebook sources.
+6. **Publish policy.** Decided 2026-11-03: every source is `AUTO_PUBLISH` by default, and the review page is used to fix mistakes after publishing (it lists the last 7 days of imports, flagged ones first). `REVIEW` remains available per source.
 7. **Disappearance.** If an event vanishes from its source before it starts, flag it for review. Do not delete it automatically, because it may have been cancelled.
 
 ### Adapter types (most of the work is reusable generic code)

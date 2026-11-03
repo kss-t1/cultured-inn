@@ -27,7 +27,7 @@ createdb karczma && createdb karczma_test
 cp .env.example .env            # adjust DATABASE_URL if your role/password differ
 bun install
 bun run db:migrate
-bun run db:seed --demo          # venues, organizers, import sources + a few [DEMO] events
+bun run db:seed                 # venues, organizers, import sources
 bun run jobs:imports --all      # import real events now (poznan.pl takes ~7 min)
 bun run admin:create you@example.com
 bun run dev                     # http://localhost:3000, admin at /admin
@@ -41,7 +41,7 @@ bun run dev                     # http://localhost:3000, admin at /admin
 | `bun test` | Tests against `TEST_DATABASE_URL`, which must be a `*_test` database because tests wipe it |
 | `bun run typecheck` | `tsc --noEmit` |
 | `bun run db:migrate` | Apply `db/migrations/*.sql` in order |
-| `bun run db:seed [--demo]` | Seed venues, organizers and import sources (and demo events). Existing rows are left alone |
+| `bun run db:seed` | Seed venues, organizers and import sources. Existing rows are left alone |
 | `bun run jobs:imports [--all \| <key>…]` | Run import sources: the due ones, all of them, or the named ones (e.g. `druga-era-ics`) |
 | `bun run admin:create <email>` | Create an admin, or reset their password. The password comes from `ADMIN_PASSWORD` or a prompt |
 | `bun run build` | Compile a single executable to `dist/karczma` |
@@ -65,13 +65,14 @@ tests/                 bun test
 
 Sources live in the `sources` table and are managed at **/admin/sources**. `bun run db:seed` adds the initial set:
 
-| Source | Kind | Publishing |
-|---|---|---|
-| Klub Fantastyki Druga Era (public Google Calendar) | ICS | automatic |
-| poznan.pl city culture calendar | `poznan_pl` adapter, keyword-filtered | review |
-| Meetup "PlayZone Poznań" | ICS | review |
-| Biletyna Poznań: comedy, theatre, stand-up | JSON-LD, keyword-filtered | review |
-| Facebook Pages: Larpunk, La Vida Impro, Larpowy Ogród, Wargamer Poznań, Cooliozum | FB_PAGE | review |
+| Source | Kind |
+|---|---|
+| Klub Fantastyki Druga Era (public Google Calendar) | ICS |
+| poznan.pl city culture calendar | `poznan_pl` adapter, keyword-filtered |
+| Meetup "PlayZone Poznań" | ICS |
+| Biletyna Poznań: comedy, theatre, stand-up | JSON-LD, keyword-filtered |
+| Facebook Pages: Larpunk, La Vida Impro, Larpowy Ogród, Wargamer Poznań, Cooliozum, Podziemie | FB_PAGE |
+| Facebook Pages of Poznań impro groups: DPR, Improsi, Leniwe Raz, Czwórka na Szynach, Improłaki, Rymparzyści | FB_PAGE |
 
 Each run goes through the same pipeline (`src/importers/pipeline.ts`):
 
@@ -80,7 +81,7 @@ Each run goes through the same pipeline (`src/importers/pipeline.ts`):
 3. **Match the venue:** by name, alias or street address in the location text, then by coordinates within 75 m. Places with coordinates become new venues automatically. Otherwise the event gets the `needs_venue` flag. When an admin picks a venue for it, the source's location text is saved as an alias.
 4. **Dedupe:** `(source, external_id)` identifies an item across runs. A new item that starts within ±90 min of an existing event at the same venue, with a title similarity of 0.6 or more (`pg_trgm`), is linked to that event instead of creating a new one.
 5. **Upsert:** only the source that created an event updates it. Once an admin edits an imported event, imports stop overwriting it and flag `changed_at_source` instead.
-6. **Publish:** `AUTO_PUBLISH` sources publish events that have a venue. Everything else waits as `DRAFT` in **/admin/review**.
+6. **Publish:** imported events are published right away (`AUTO_PUBLISH`, the default for every source). **/admin/review** lists what was imported in the last 7 days, problems first (no venue, guessed category, changed or gone at the source), so mistakes can be fixed, merged or hidden. A source set to `REVIEW` keeps its new events as `DRAFT` there instead.
 7. **Disappearance:** sources that return a complete listing (ICS, poznan.pl) flag upcoming events that vanished with `missing_from_source`. Nothing is deleted.
 
 Recurring ICS events are expanded 60 days ahead (`rrule`), keyed by local date, so moving one session to a different hour updates it instead of duplicating it.
@@ -88,7 +89,7 @@ Recurring ICS events are expanded 60 days ahead (`rrule`), keyed by local date, 
 **Facebook.** Meta's API no longer exposes public events, so the importer reads public pages without logging in:
 
 - **Event pages** (`facebook.com/events/<id>`) embed the event as JSON. Admins can paste such a link in **/admin/review → Import from URL**, and imported Facebook events are re-checked on every run, which picks up time changes and cancellations.
-- **A Page's `upcoming_hosted_events` tab** lists the first few events for many Pages. Others show a login wall, and for those the importer can fall back to the paid [Apify Facebook Events Scraper](https://apify.com/apify/facebook-events-scraper) when `APIFY_TOKEN` is set. Set `"provider": "apify"` or `"direct"` in a source's config to force one method.
+- **A Page's `upcoming_hosted_events` tab** lists the first few events for many Pages. Others show a login wall, and for those the importer can fall back to the paid [Apify Facebook Events Scraper](https://apify.com/apify/facebook-events-scraper) when `APIFY_TOKEN` is set. Set `"provider": "apify"` or `"direct"` in a source's config to force one method. Apify bills per event (about $0.007) and also returns past events, so it fetches 10 per run by default (`"maxEvents"` in the config changes that) and the seeded login-wall Pages run every 3 days.
 - Requests are limited to one every 4 seconds.
 
 **Scheduler.** In production the server checks every 10 minutes for sources whose interval has passed. Each source run holds a Postgres advisory lock, so the scheduler, **Run now** and the CLI never run the same source twice. poznan.pl asks for 10 seconds between requests (robots.txt), so a 30-day sync takes about 7 minutes and runs daily.
