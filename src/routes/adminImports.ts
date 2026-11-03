@@ -121,7 +121,7 @@ const listSources = admin<"/api/admin/sources">(async () => {
   return json({
     sources: rows.map((r: { id: number }) => ({ ...r, running: running.has(r.id) })),
     adapters: HTML_ADAPTER_NAMES,
-    apify: Boolean(process.env.APIFY_TOKEN),
+    facebookLogin: Boolean(process.env.FB_COOKIES?.trim()),
   });
 });
 

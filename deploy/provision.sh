@@ -4,7 +4,8 @@
 # nightly database dumps and a DuckDNS updater. See DEPLOY.md.
 #
 # Usage, as root on the VM:
-#   DOMAIN=karczma.duckdns.org DUCKDNS_TOKEN=… [APIFY_TOKEN=…] bash provision.sh
+#   DOMAIN=karczma.duckdns.org DUCKDNS_TOKEN=… bash provision.sh
+# FB_COOKIES (README, Facebook) is added to .env by hand afterwards; it contains ";" and spaces.
 # Re-running is safe: an existing .env (with its secrets) and the database are kept.
 set -euo pipefail
 
@@ -54,7 +55,7 @@ PUBLIC_BASE_URL=https://$DOMAIN
 PORT=3000
 SESSION_SECRET=$(openssl rand -hex 32)
 TRUST_PROXY=1
-APIFY_TOKEN=${APIFY_TOKEN:-}
+FB_COOKIES=
 EOF
 fi
 

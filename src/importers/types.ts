@@ -69,10 +69,6 @@ export const SourceConfig = z.looseObject({
   horizonDays: z.number().int().positive().max(365).optional(),
   /** JSONLD: pages to read (sources.url is used when absent). */
   urls: z.array(z.string().url()).optional(),
-  /** FB_PAGE: "direct" (free, logged-out fetch), "apify" (needs APIFY_TOKEN), or "auto". */
-  provider: z.enum(["direct", "apify", "auto"]).optional(),
-  /** FB_PAGE via Apify: events to fetch per run (billed per event; default 10). */
-  maxEvents: z.number().int().positive().max(100).optional(),
   /** poznan_pl: number of days ahead to read. */
   days: z.number().int().positive().max(120).optional(),
 });

@@ -5,7 +5,7 @@ The public site runs on one free Oracle Cloud VM (Always Free, Ampere ARM, Ubunt
 | Piece | Where |
 |---|---|
 | App (web server and import scheduler) | systemd unit `karczma`, running `bun src/server.ts` from `/home/karczma/app` as user `karczma` |
-| Secrets (`DATABASE_URL`, `SESSION_SECRET`, `APIFY_TOKEN`) | `/home/karczma/app/.env`, mode 600 |
+| Secrets (`DATABASE_URL`, `SESSION_SECRET`, `FB_COOKIES`) | `/home/karczma/app/.env`, mode 600 |
 | Database | Postgres 16 on localhost, database and role `karczma` |
 | HTTPS | Caddy (`/etc/caddy/Caddyfile`), Let's Encrypt certificate obtained automatically |
 | Backups | `pg_dump` every night at 03:15 to `/var/backups/karczma`, kept 14 days (`/etc/cron.d/karczma-backup`) |
@@ -33,9 +33,11 @@ From a checkout on your machine:
 
 ```sh
 scp deploy/provision.sh ubuntu@<ip>:
-ssh ubuntu@<ip> "sudo DOMAIN=<sub>.duckdns.org DUCKDNS_TOKEN=<token> APIFY_TOKEN=<optional> bash provision.sh"
+ssh ubuntu@<ip> "sudo DOMAIN=<sub>.duckdns.org DUCKDNS_TOKEN=<token> bash provision.sh"
 ssh ubuntu@<ip> "sudo -u karczma bash -c 'cd ~/app && ADMIN_PASSWORD=<12+ chars> ~/.bun/bin/bun run admin:create you@example.com'"
 ```
+
+Then set `FB_COOKIES` in `/home/karczma/app/.env` (README, "Facebook") and `sudo systemctl restart karczma`; without it, Facebook Pages behind a login wall are skipped with an error on the Sources page.
 
 The script installs Postgres, Bun, Caddy and the app, opens ports 80/443 in the VM's own iptables (Oracle's images block them), creates the database and `.env` with fresh secrets, migrates, seeds and starts everything. The first imports start about 30 seconds after the app starts. poznan.pl alone takes about 7 minutes.
 

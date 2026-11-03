@@ -34,7 +34,7 @@ Two environments: **local** (the dev machine) and **prod** (the public site). Se
 | Host | Oracle Cloud Always Free VM `cultural-inn`, Frankfurt, VM.Standard.A1.Flex (1 OCPU, 6 GB, ARM), Ubuntu 24.04 |
 | SSH | `ssh ubuntu@130.61.31.206` (key-only; `ubuntu` has sudo) |
 | App | systemd unit `karczma`, user `karczma`, checkout `/home/karczma/app`, Bun at `/home/karczma/.bun/bin/bun` |
-| Secrets/config | `/home/karczma/app/.env` (mode 600): `DATABASE_URL`, `SESSION_SECRET`, `APIFY_TOKEN`, `PUBLIC_BASE_URL` |
+| Secrets/config | `/home/karczma/app/.env` (mode 600): `DATABASE_URL`, `SESSION_SECRET`, `FB_COOKIES`, `PUBLIC_BASE_URL` |
 | Proxy/TLS | Caddy, `/etc/caddy/Caddyfile`; port 3000 is firewalled, so only Caddy reaches the app |
 | Database | Postgres 16, database and role `karczma`; `sudo -u postgres psql karczma` |
 | Backups | `/var/backups/karczma/karczma-<date>.dump`, nightly at 03:15 UTC, kept 14 days |
@@ -54,7 +54,7 @@ ssh ubuntu@130.61.31.206 "sudo -u postgres pg_dump -Fc karczma > /tmp/karczma-pr
 
 Known prod-only behaviour:
 - **Biletyna returns 403** to the VM's IP (datacenter block), so `biletyna-poznan` fails on prod while it works locally.
-- **Facebook shows a login wall** to the VM for most Pages, so those sources use the paid Apify fallback ("direct fetch blocked; used Apify" in `last_error`).
+- **Facebook shows a login wall** for some Pages (the same ones as locally); their event lists are read with the account in `FB_COOKIES`. "FB_COOKIES no longer log in" in `last_error` means fresh cookies are needed (README, Facebook).
 
 ## APIs (both environments)
 
