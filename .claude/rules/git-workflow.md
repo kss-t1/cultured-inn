@@ -6,6 +6,14 @@
 - Never rebase or force-push a branch that has a PR. To pick up `main`, `git merge origin/main`.
 - Never push to a merged PR's branch: check `gh pr view <n> --json state` first. Follow-ups go on a new branch off `main`.
 
+## Worktrees
+- Several sessions share the main checkout, so work for a PR goes in its own worktree: `git worktree add ../cultured-inn-<topic> -b <branch> origin/main`, then `ln -s ../cultured-inn/.env .env` and `bun install` inside it.
+- **Once the PR is merged, remove its worktree and branch in the same session:**
+  1. `gh pr view <n> --json state` says `MERGED`, and `git log origin/<branch>..<branch>` is empty (nothing unpushed).
+  2. Stop any dev server started from the worktree.
+  3. From the main checkout: `git worktree remove ../cultured-inn-<topic>`, then `git branch -d <branch>`.
+- No `--force` or `-D`: if either refuses, there is uncommitted or unmerged work, so find out what it is first. Only remove worktrees you created; the others belong to other sessions.
+
 ## Pushing
 - Push explicitly: `git push -u origin <branch>`, never a bare `git push`.
 - `bun run verify` must pass first (the pre-push hook enforces it; `--no-verify` only with a stated reason).
