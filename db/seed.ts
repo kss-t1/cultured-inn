@@ -100,7 +100,7 @@ const SOURCES: SourceSeed[] = [
     name: "poznan.pl – kalendarz kulturalny",
     kind: "HTML_ADAPTER",
     adapter: "poznan_pl",
-    config: { requireMatch: true, days: 30, exclude: "jazz|koncert|recital|orkiestr|muzyk[ai] improwiz|improwizacj[ae] (muzyczn|organow|fortepian)" },
+    config: { requireMatch: true, matchOn: ["title"], days: 30, exclude: "jazz|koncert|recital|orkiestr|muzyk[ai] improwiz|improwizacj[ae] (muzyczn|organow|fortepian)" },
     hours: 24,
   },
   {

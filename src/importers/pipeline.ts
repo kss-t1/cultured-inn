@@ -53,7 +53,9 @@ export function decide(source: SourceRow, c: EventCandidate, manual = false): De
     const category = rule.category ?? classify(text)[0] ?? source.default_category;
     if (category) return { keep: true, category, tags: [...baseTags, ...(rule.tags ?? [])], guessed: false };
   }
-  const byKeyword = classify(text)[0];
+  // Keywords in the title beat ones in the description ("board game night ... one-shot RPG corner").
+  const byKeyword = classify(`${fields.includes("title") ? c.title : ""}\n${c.classifyHint ?? ""}`)[0]
+    ?? (fields.includes("description") ? classify(c.description)[0] : undefined);
   if (byKeyword) return { keep: true, category: byKeyword, tags: baseTags, guessed: false };
   if (source.default_category && !cfg.requireMatch) {
     return { keep: true, category: source.default_category, tags: baseTags, guessed: false };

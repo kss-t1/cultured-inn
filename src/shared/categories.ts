@@ -21,8 +21,8 @@ export function categoryFromSlug(slug: string): Category | null {
 export const CATEGORY_KEYWORDS: [Category, RegExp][] = [
   ["LARP", /\blarp|larpow/i],
   ["RPG", /\brpg\b|\bttrpg\b|d&d|\bdnd\b|dungeons (&|and) dragons|one-shot|gry? fabularn|warhammer fantasy roleplay|zew cthulhu|call of cthulhu|pathfinder|\bsesj[aię] rpg/i],
-  ["IMPRO", /\bimpro\b|\bimpro[ -]|teatr(u)? improwizacji|improwizacj[aię] teatraln|komedi[ai] improwizowan|\bimprov\b|impro ?jam/i],
-  ["BOARDGAMES", /planszów|planszow|board ?games?|gry? bitewn|wargam|gier karcianych|gry karciane/i],
+  ["IMPRO", /\bimpro\b|\bimpro[ -]|improwizacj|improwizowan|\bimprov\b|impro ?jam/i],
+  ["BOARDGAMES", /planszów|planszow|board ?games?|gry? bitewn|wargam|gier karcianych|gry karciane|kooperacyjn/i],
 ];
 
 export function classify(text: string): Category[] {

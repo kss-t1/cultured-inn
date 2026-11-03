@@ -193,3 +193,10 @@ describe("processCandidates", () => {
     expect(e.review_flags).toEqual(["check_category"]);
   });
 });
+
+test("title keywords beat description keywords", async () => {
+  const s = await makeSource({ category: null, config: { requireMatch: true } });
+  expect(decide(s, cand({ title: "Wieczór Gier Planszowych", description: "Będzie też kącik RPG i one-shot" }))).toMatchObject({ category: "BOARDGAMES" });
+  const titleOnly = await makeSource({ category: null, config: { requireMatch: true, matchOn: ["title"] } });
+  expect(decide(titleOnly, cand({ title: "Rocznica wjazdu generała", description: "gry planszowe dla dzieci" }))).toEqual({ keep: false, reason: "no_match" });
+});
