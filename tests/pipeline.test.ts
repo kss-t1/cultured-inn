@@ -2,7 +2,7 @@
 // admin locks, disappearance and publish policy.
 import { beforeEach, describe, expect, test } from "bun:test";
 import { sql } from "../src/db.ts";
-import { decide, matchVenue, processCandidates } from "../src/importers/pipeline.ts";
+import { decide, matchVenue, processCandidates, priceOf } from "../src/importers/pipeline.ts";
 import { loadSource } from "../src/importers/run.ts";
 import type { EventCandidate, SourceRow } from "../src/importers/types.ts";
 import { resetDb } from "./helpers.ts";
@@ -191,6 +191,34 @@ describe("processCandidates", () => {
     expect(eventIds.get("ext-1")).toBe(e.id);
     expect(e.status).toBe("DRAFT");
     expect(e.review_flags).toEqual(["check_category"]);
+  });
+});
+
+describe("priceOf", () => {
+  test("no price anywhere means free, unless there is a ticket link", () => {
+    expect(priceOf(cand({ description: "Gramy w planszówki, zapraszamy!" }))).toEqual({ isFree: true, priceMin: null, priceMax: null });
+    expect(priceOf(cand({ ticketUrl: "https://bilety.example/1" }))).toEqual({ isFree: false, priceMin: null, priceMax: null });
+  });
+
+  test("a price in the description wins over the free default", () => {
+    expect(priceOf(cand({ description: "Cena: 165zł, jest w to wliczona sala" }))).toEqual({ isFree: false, priceMin: 165, priceMax: 165 });
+    expect(priceOf(cand({ title: "Turniej", description: "Wpisowe: 31pln od osoby" }))).toMatchObject({ isFree: false, priceMin: 31 });
+  });
+
+  test("free in the title beats a price from the description", () => {
+    expect(priceOf(cand({ title: "Otwarte darmowe spotkanie improwizacji", description: "Kurs: 600 zł", priceMin: 600, priceMax: 600 })))
+      .toEqual({ isFree: true, priceMin: null, priceMax: null });
+  });
+
+  test("the adapter's own price or free flag is kept", () => {
+    expect(priceOf(cand({ priceMin: 40, priceMax: 60 }))).toEqual({ isFree: false, priceMin: 40, priceMax: 60 });
+    expect(priceOf(cand({ isFree: true, description: "Cena 20 zł" }))).toEqual({ isFree: true, priceMin: null, priceMax: null });
+  });
+
+  test("imported events without a price are stored as free", async () => {
+    const s = await makeSource();
+    await run(s, [cand()]);
+    expect((await events())[0]).toMatchObject({ is_free: true, price_min: null });
   });
 });
 
