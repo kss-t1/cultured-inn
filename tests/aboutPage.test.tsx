@@ -7,7 +7,9 @@ import { SiteHeader } from "../src/shared/ui.tsx";
 
 test("about page: intro, repository and contact links", () => {
   const html = renderToString(<AboutPage />);
-  expect(html).toContain(t.about.hello);
+  expect(html).toContain(t.about.greeting);
+  expect(html).toContain(t.about.lead);
+  expect(html).toContain(`<img src="/author.jpg" alt="${t.about.photoAlt}"`);
   expect(html).toContain('href="https://github.com/kss-t1/cultured-inn"');
   expect(html).toContain('href="mailto:krzysztof.spisak.spisacki@gmail.com"');
   expect(html).toContain('href="https://wa.me/48739272287"');
@@ -29,5 +31,5 @@ test("GET /about serves the page with its title and canonical link", async () =>
   const html = await res.text();
   expect(html).toContain(`<title>${t.about.pageTitle}</title>`);
   expect(html).toContain('<link rel="canonical" href="https://karczma.test/about">');
-  expect(html).toContain(t.about.hello);
+  expect(html).toContain(t.about.greeting);
 });
