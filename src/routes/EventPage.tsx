@@ -100,6 +100,8 @@ export function EventPage({ e, url, now = new Date() }: { e: EventDetail; url: s
     : null;
   const osmLink = geo ? `https://www.openstreetmap.org/?mlat=${geo.lat}&mlon=${geo.lon}#map=17/${geo.lat}/${geo.lon}` : null;
   const routeLink = geo ? `https://www.google.com/maps/dir/?api=1&destination=${geo.lat},${geo.lon}` : null;
+  const placeQuery = geo ? `${geo.lat},${geo.lon}` : v?.address ? `${v.name}, ${v.address}` : null;
+  const placeLink = placeQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeQuery)}` : null;
 
   const cancelled = e.status === "CANCELLED";
   const endMs = e.end_at ? Date.parse(e.end_at) : Date.parse(e.start_at) + 3 * 3600_000;
@@ -155,7 +157,8 @@ export function EventPage({ e, url, now = new Date() }: { e: EventDetail; url: s
             <div className="ticket">
               <ul className="ticket__facts">
                 <Fact icon="cal" label={t.event.when} value={fmtLongDate(e.start_at)} sub={hours} />
-                <Fact icon="pin" label={t.event.where} value={v ? v.name : t.list.venueTbd}
+                <Fact icon="pin" label={t.event.where}
+                  value={v ? (placeLink ? <a href={placeLink} rel="noopener">{v.name}</a> : v.name) : t.list.venueTbd}
                   sub={v?.address ? [v.address, v.district].filter(Boolean).join(", ") : null} />
                 {e.organizer && (
                   <Fact icon="user" label={t.event.organizer}
