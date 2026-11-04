@@ -11,13 +11,12 @@ export function Icon({ name, size, className }: { name: IconName; size?: "sm" | 
   );
 }
 
-const NAV: { page: "about" | "submit"; href: string; icon: IconName; label: string }[] = [
-  { page: "about", href: "/about", icon: "user", label: t.about.title },
+const NAV: { page: "submit"; href: string; icon: IconName; label: string }[] = [
   { page: "submit", href: "/submit", icon: "plus", label: t.submit.headerLink },
 ];
 
 /** The dark "sign" header: logo on the left, then the city badge and site links (`current` marks one). */
-export function SiteHeader({ current }: { current?: "about" | "submit" }) {
+export function SiteHeader({ current }: { current?: "submit" }) {
   return (
     <header className="sign">
       <div className="wrap sign__in">
@@ -52,6 +51,7 @@ export function SiteFooter({ note }: { note: string }) {
     <footer className="wrap foot">
       <p><strong>{t.brand.name}</strong> {t.brand.about}</p>
       <p>{note}</p>
+      <a className="linkbtn foot__about" href="/about"><Icon name="user" />{t.about.title}</a>
     </footer>
   );
 }

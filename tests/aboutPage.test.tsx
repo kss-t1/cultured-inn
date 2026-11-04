@@ -3,7 +3,7 @@ import { renderToString } from "react-dom/server";
 import { AboutPage } from "../src/routes/AboutPage.tsx";
 import { publicRoutes } from "../src/routes/public.ts";
 import { t } from "../src/shared/i18n/index.ts";
-import { SiteHeader } from "../src/shared/ui.tsx";
+import { SiteFooter, SiteHeader } from "../src/shared/ui.tsx";
 
 test("about page: intro, repository and contact links", () => {
   const html = renderToString(<AboutPage />);
@@ -12,17 +12,17 @@ test("about page: intro, repository and contact links", () => {
   expect(html).toContain(`<img src="/author.jpg" alt="${t.about.photoAlt}"`);
   expect(html).toContain('href="https://github.com/kss-t1/cultured-inn"');
   expect(html).toContain('href="mailto:krzysztof.spisak.spisacki@gmail.com"');
-  expect(html).toContain('href="https://wa.me/48739272287"');
+  expect(html).not.toContain("wa.me");
   expect(html).toContain('href="https://github.com/kss-t1"');
-  expect(html).toMatch(/href="\/about" aria-current="page"/);
   for (const slug of ["larp", "impro", "rpg", "boardgames"]) expect(html).toContain(`badge--lg cat-${slug}`);
 });
 
-test("the header links to the about and submit pages on every page", () => {
-  const html = renderToString(<SiteHeader />);
-  expect(html).toContain('href="/about"');
-  expect(html).toContain('href="/submit"');
-  expect(html).not.toContain("aria-current");
+test("the header links to the submit page; the about page is linked from the footer", () => {
+  const header = renderToString(<SiteHeader />);
+  expect(header).toContain('href="/submit"');
+  expect(header).not.toContain('href="/about"');
+  expect(header).not.toContain("aria-current");
+  expect(renderToString(<SiteFooter note="" />)).toContain('href="/about"');
 });
 
 test("GET /about serves the page with its title and canonical link", async () => {

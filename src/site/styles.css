@@ -558,6 +558,7 @@ html { scroll-padding-top: var(--sign-h); }
 /* ---------- 18. Footer ---------- */
 .foot { border-top: 1px solid var(--line); padding-block: 24px 40px; display: grid; gap: 6px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--ink-3); }
 .foot strong { color: var(--ink-2); }
+.foot__about { justify-self: start; margin-left: -6px; }
 
 /* ---------- 19. Event page ---------- */
 .ev { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; padding-block: 12px 48px; grid-template-areas: "back" "cover" "title" "aside" "desc"; }
