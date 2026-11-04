@@ -2,6 +2,7 @@
 import { sql, TZ } from "../db.ts";
 import { uniqueSlug } from "../lib/slugs.ts";
 import { classify, type Category } from "../shared/categories.ts";
+import { splitSessions } from "./split.ts";
 import type { AdapterResult, EventCandidate, SourceRow } from "./types.ts";
 import { distanceKm, isLocal, parsePrice, utcToZoned } from "./util.ts";
 
@@ -53,12 +54,15 @@ export function decide(source: SourceRow, c: EventCandidate, manual = false): De
     const category = rule.category ?? classify(text)[0] ?? source.default_category;
     if (category) return { keep: true, category, tags: [...baseTags, ...(rule.tags ?? [])], guessed: false };
   }
+  // Once an item is kept, a split session's own paragraph picks its category over the title it
+  // shares with the other sessions ("…przy grach kooperacyjnych i RPG").
+  const bySession = c.sessionText ? classify(c.sessionText)[0] : undefined;
   // Keywords in the title beat ones in the description ("board game night ... one-shot RPG corner").
   const byKeyword = classify(`${fields.includes("title") ? c.title : ""}\n${c.classifyHint ?? ""}`)[0]
     ?? (fields.includes("description") ? classify(c.description)[0] : undefined);
-  if (byKeyword) return { keep: true, category: byKeyword, tags: baseTags, guessed: false };
+  if (byKeyword) return { keep: true, category: bySession ?? byKeyword, tags: baseTags, guessed: false };
   if (source.default_category && !cfg.requireMatch) {
-    return { keep: true, category: source.default_category, tags: baseTags, guessed: false };
+    return { keep: true, category: bySession ?? source.default_category, tags: baseTags, guessed: false };
   }
   return manual ? fallback() : { keep: false, reason: "no_match" };
 
@@ -225,14 +229,19 @@ export async function processCandidates(
 ): Promise<{ stats: ProcessStats; eventIds: Map<string, number> }> {
   const now = opts.now ?? new Date();
   const runStart = new Date();
-  const stats: ProcessStats = { received: result.candidates.length, created: 0, updated: 0, unchanged: 0, linked: 0, missing: 0, skipped: {} };
+  const candidates = result.candidates.flatMap(splitSessions);
+  const stats: ProcessStats = { received: candidates.length, created: 0, updated: 0, unchanged: 0, linked: 0, missing: 0, skipped: {} };
   const skip = (r: SkipReason) => (stats.skipped[r] = (stats.skipped[r] ?? 0) + 1);
   const eventIds = new Map<string, number>();
   const [city] = await sql`SELECT id FROM cities WHERE slug = 'poznan'`;
   const venues = await loadVenues();
   const recentPast = new Date(now.getTime() - 12 * 3_600_000);
 
-  for (const c of result.candidates) {
+  for (const parent of new Set(candidates.map((c) => c.splitFrom).filter((x) => x !== undefined))) {
+    await retireSplitItem(source, parent);
+  }
+
+  for (const c of candidates) {
     c.title = c.title.replace(/\s+/g, " ").trim();
     if (!c.title) {
       skip("no_title");
@@ -354,6 +363,7 @@ export async function processCandidates(
       stats.created++;
     }
     eventIds.set(c.externalId, eventId);
+    if (c.splitFrom && !eventIds.has(c.splitFrom)) eventIds.set(c.splitFrom, eventId);
     await sql`
       INSERT INTO imported_items (source_id, external_id, content_hash, raw, event_id, url, location_text)
       VALUES (${source.id}, ${c.externalId}, ${hash}, ${c.raw as object}::jsonb, ${eventId}, ${c.url ?? null}, ${locationText})`;
@@ -361,6 +371,27 @@ export async function processCandidates(
 
   if (result.complete) stats.missing = await flagMissing(source, runStart, now, result.horizon ?? null);
   return { stats, eventIds };
+}
+
+/**
+ * An item now split into sessions may already have created one event spanning all of them: hide
+ * it so it doesn't sit over the sessions. An event an admin edited is left alone and flagged
+ * instead. The item stays (and stays seen), so the next run doesn't recreate or flag it.
+ */
+async function retireSplitItem(source: SourceRow, externalId: string): Promise<void> {
+  const [item] = await sql`
+    UPDATE imported_items SET last_seen_at = now(), missing_since = NULL
+    WHERE source_id = ${source.id} AND external_id = ${externalId}
+    RETURNING event_id`;
+  if (!item?.event_id) return;
+  await sql`
+    UPDATE events SET
+      status = CASE WHEN import_locked THEN status ELSE 'HIDDEN'::event_status END,
+      review_flags = CASE WHEN import_locked
+        THEN array_append(array_remove(review_flags, 'changed_at_source'), 'changed_at_source') ELSE review_flags END,
+      updated_at = now()
+    WHERE id = ${item.event_id} AND source_id = ${source.id} AND origin = 'IMPORTED'
+      AND status IN ('PUBLISHED', 'DRAFT')`;
 }
 
 async function matchOrganizer(name: string | null | undefined): Promise<number | null> {
