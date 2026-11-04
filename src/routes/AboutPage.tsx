@@ -37,7 +37,7 @@ export function AboutPage() {
           <h2>{A.code}</h2>
           <p className="muted">{A.codeHint}</p>
           <ul className="ticket ticket__facts">
-            <Contact icon="code" label={A.github} href={`https://github.com/${AUTHOR.repo}`} text={`github.com/${AUTHOR.repo}`} />
+            <Contact icon="code" label={A.repo} href={`https://github.com/${AUTHOR.repo}`} text={`github.com/${AUTHOR.repo}`} />
           </ul>
         </section>
 

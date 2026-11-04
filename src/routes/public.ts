@@ -1,4 +1,4 @@
-// Public routes: GET /api/events, /events/:slug (server-rendered) and /events/:slug.ics
+// Public routes: GET /api/events, /events/:slug (server-rendered), /events/:slug.ics and /about
 import type { BunRequest } from "bun";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";

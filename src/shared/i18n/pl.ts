@@ -145,6 +145,7 @@ const pl = {
     description: "Kto prowadzi Kulturalną Karczmę i jak się z nim skontaktować.",
     hello: "Cześć! Jestem Krzysztof, lokalny nerd, który lubi impro.",
     code: "Kod źródłowy",
+    repo: "Repozytorium",
     codeHint: "Karczma jest otwartym projektem na GitHubie.",
     contact: "Kontakt",
     email: "E-mail",
