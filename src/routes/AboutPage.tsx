@@ -1,11 +1,12 @@
 // "O autorze" (/about): who runs the site and how to reach them. Server-rendered, no JS.
+import type { ReactNode } from "react";
 import { t } from "../shared/i18n/index.ts";
 import type { IconName } from "../shared/icons.ts";
 import { Icon, SiteFooter, SiteHeader } from "../shared/ui.tsx";
 
 const A = t.about;
 
-export const AUTHOR = {
+const AUTHOR = {
   email: "krzysztof.spisak.spisacki@gmail.com",
   whatsapp: "48739272287",
   whatsappDisplay: "+48 739 272 287",
@@ -13,7 +14,7 @@ export const AUTHOR = {
   repo: "kss-t1/cultured-inn",
 };
 
-function Contact({ icon, label, href, text }: { icon: IconName; label: string; href: string; text: string }) {
+function Contact({ icon, label, href, text }: { icon: IconName; label: string; href: string; text: ReactNode }) {
   return (
     <li className="fact">
       <Icon name={icon} />
@@ -44,7 +45,7 @@ export function AboutPage() {
         <section className="about__section">
           <h2>{A.contact}</h2>
           <ul className="ticket ticket__facts">
-            <Contact icon="mail" label={A.email} href={`mailto:${AUTHOR.email}`} text={AUTHOR.email} />
+            <Contact icon="mail" label={A.email} href={`mailto:${AUTHOR.email}`} text={<>{AUTHOR.email.replace(/@.*/, "@")}<wbr />{AUTHOR.email.replace(/.*@/, "")}</>} />
             <Contact icon="chat" label={A.whatsapp} href={`https://wa.me/${AUTHOR.whatsapp}`} text={AUTHOR.whatsappDisplay} />
             <Contact icon="user" label={A.github} href={`https://github.com/${AUTHOR.github}`} text={AUTHOR.github} />
           </ul>
