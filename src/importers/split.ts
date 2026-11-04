@@ -81,6 +81,9 @@ export function splitSessions(c: EventCandidate): EventCandidate[] {
     }
   }
   if (new Set(sessions.map((s) => s.key)).size !== sessions.length || sessions.length < 2) return [c];
+  // Dates on consecutive days are a festival or convention programme, not a cycle of meetings.
+  const days = sessions.map((s) => Date.parse(s.key) / 86_400_000).sort((a, b) => a - b);
+  if (days.every((d, i) => i === 0 || d - days[i - 1]! === 1)) return [c];
 
   return sessions
     .sort((a, b) => a.start.getTime() - b.start.getTime())

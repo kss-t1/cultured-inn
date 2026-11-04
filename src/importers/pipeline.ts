@@ -244,7 +244,7 @@ export async function processCandidates(
   const venues = await loadVenues();
   const recentPast = new Date(now.getTime() - 12 * 3_600_000);
 
-  // Items whose event an admin deleted before they were split: their new sessions stay out too.
+  // Items whose event an admin deleted or hid before they were split: their new sessions stay out too.
   const rejectedItems = new Set<string>();
   for (const parent of new Set(candidates.map((c) => c.splitFrom).filter((x) => x !== undefined))) {
     if ((await retireSplitItem(source, parent)) === "rejected" && !opts.manual) rejectedItems.add(parent);
@@ -392,31 +392,30 @@ const SPLIT_HASH = "split";
 
 /**
  * An item now split into sessions may already have created one event spanning all of them: hide
- * it so it doesn't sit over the sessions. An event an admin edited is left alone and flagged
- * instead. This happens once: the item is marked, stays seen (so the next run doesn't recreate
- * or flag it), and later admin changes to that event stick. Returns "rejected" when an admin
- * deleted the item's event before it was split (it then stays unmarked, and so stays rejected).
+ * it so it doesn't sit over the sessions. An event an admin edited, or one that belongs to another
+ * source (a linked duplicate), is left alone and flagged instead. This happens once: the item is
+ * marked, stays seen (so the next run doesn't recreate or flag it), and later admin changes stick.
+ * Returns "rejected" when an admin deleted or hid the item's event before it was split; the item
+ * then stays unmarked, and so stays rejected.
  */
 async function retireSplitItem(source: SourceRow, externalId: string): Promise<"rejected" | void> {
   const [item] = await sql`
-    WITH old AS (
-      SELECT id, event_id, content_hash FROM imported_items
-      WHERE source_id = ${source.id} AND external_id = ${externalId}
-    )
-    UPDATE imported_items i SET last_seen_at = now(), missing_since = NULL,
-      content_hash = CASE WHEN old.event_id IS NULL THEN old.content_hash ELSE ${SPLIT_HASH} END
-    FROM old WHERE i.id = old.id
-    RETURNING old.event_id, old.content_hash`;
-  if (item && !item.event_id && item.content_hash !== SPLIT_HASH) return "rejected";
-  if (!item?.event_id || item.content_hash === SPLIT_HASH) return;
-  await sql`
-    UPDATE events SET
-      status = CASE WHEN import_locked THEN status ELSE 'HIDDEN'::event_status END,
-      review_flags = CASE WHEN import_locked
-        THEN array_append(array_remove(review_flags, 'changed_at_source'), 'changed_at_source') ELSE review_flags END,
-      updated_at = now()
-    WHERE id = ${item.event_id} AND source_id = ${source.id} AND origin = 'IMPORTED'
-      AND status IN ('PUBLISHED', 'DRAFT')`;
+    SELECT i.id, i.event_id, i.content_hash, e.status, e.import_locked,
+           (e.source_id = ${source.id} AND e.origin = 'IMPORTED') AS owned
+    FROM imported_items i LEFT JOIN events e ON e.id = i.event_id
+    WHERE i.source_id = ${source.id} AND i.external_id = ${externalId}`;
+  if (!item) return;
+  await sql`UPDATE imported_items SET last_seen_at = now(), missing_since = NULL WHERE id = ${item.id}`;
+  if (item.content_hash === SPLIT_HASH) return;
+  if (!item.event_id || item.status === "HIDDEN") return "rejected";
+  await sql`UPDATE imported_items SET content_hash = ${SPLIT_HASH} WHERE id = ${item.id}`;
+  if (item.status === "CANCELLED") return;
+  if (item.owned && !item.import_locked) {
+    await sql`UPDATE events SET status = 'HIDDEN', updated_at = now() WHERE id = ${item.event_id}`;
+  } else {
+    await sql`UPDATE events SET review_flags = array_append(array_remove(review_flags, 'changed_at_source'), 'changed_at_source'),
+                updated_at = now() WHERE id = ${item.event_id}`;
+  }
 }
 
 async function matchOrganizer(name: string | null | undefined): Promise<number | null> {

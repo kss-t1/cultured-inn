@@ -103,6 +103,11 @@ describe("splitSessions", () => {
     whole({ end: null });
     whole({ description: "Konwent od piątku do niedzieli." });
     whole({ end: new Date("2026-12-05T17:00:00Z"), description: "4 i 31 listopada, g. 17:00\nSesja RPG" }); // no 31 November
+    // A weekend convention's programme, day by day.
+    whole({
+      start: new Date("2026-11-06T17:00:00Z"), end: new Date("2026-11-08T15:00:00Z"),
+      description: "piątek 6 listopada, 18:00 – otwarcie\nsobota 7 listopada, 10:00 – larp\nniedziela 8 listopada, 10:00 – planszówki",
+    });
   });
 });
 
@@ -179,12 +184,27 @@ describe("processCandidates with a split item", () => {
     expect((await events()).find((e) => e.id === old.id)!.review_flags).toEqual([]);
   });
 
-  test("an item whose event an admin deleted doesn't come back as sessions, unless imported by hand", async () => {
+  test("an item whose event an admin deleted or hid doesn't come back as sessions, unless imported by hand", async () => {
     await run(cycle({ description: "Cykl spotkań z planszówkami." }));
-    await sql`DELETE FROM events`;
+    await sql`UPDATE events SET status = 'HIDDEN'`;
     for (let i = 0; i < 2; i++) expect((await run(cycle())).stats).toMatchObject({ created: 0, skipped: { rejected: 4 } });
+    await sql`DELETE FROM events`;
+    expect((await run(cycle())).stats).toMatchObject({ created: 0, skipped: { rejected: 4 } });
     const manual = await processCandidates(source, { candidates: [cycle()], complete: false }, { now, manual: true });
     expect(manual.stats.created).toBe(4);
+  });
+
+  test("a whole-cycle item linked to another source's event flags that event instead of hiding it", async () => {
+    const [other] = await sql`
+      INSERT INTO sources (key, name, kind, trust, default_category) VALUES ('fb-test', 'FB', 'FB_PAGE', 'AUTO_PUBLISH', 'BOARDGAMES')
+      RETURNING id`;
+    await processCandidates((await loadSource(other.id))!, { candidates: [cycle({ externalId: "fb-1", description: "Cykl." })], complete: false }, { now });
+    await run(cycle({ description: "Cykl spotkań z planszówkami." })); // linked as a duplicate of the FB event
+    expect(await events()).toHaveLength(1);
+    await run(cycle());
+    const fb = (await events()).find((e) => e.review_flags.includes("changed_at_source"))!;
+    expect(fb.status).toBe("PUBLISHED");
+    expect(await events()).toHaveLength(5);
   });
 
   test("a session's text picks the category but can't keep an item its title wouldn't", async () => {
