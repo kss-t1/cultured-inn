@@ -215,6 +215,8 @@ html { scroll-padding-top: var(--sign-h); }
 
 /* ---------- 5. Filters ---------- */
 .filters { display: grid; gap: 14px; padding-block: 18px 6px; }
+.filters__body { display: grid; grid-template-columns: minmax(0, 1fr); gap: inherit; }
+.filters__toggle { justify-self: start; }
 .fgroup { display: grid; gap: 8px; min-width: 0; }
 .fgroup__row { display: grid; gap: 10px; min-width: 0; }
 .scroller {

@@ -90,7 +90,7 @@ export function App() {
       <SiteHeader />
 
       <main className="wrap">
-        <FilterBar filters={filters} onChange={setFilters} />
+        <FilterBar filters={filters} onChange={setFilters} collapsible={!isDesktop} />
 
         <div className="toolbar">
           <div className={isDesktop ? "tabs tabs--d" : "tabs tabs--m"} role="tablist" aria-label={t.views.label}>
