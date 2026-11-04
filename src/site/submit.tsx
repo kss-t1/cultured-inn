@@ -64,7 +64,7 @@ function SubmitPage() {
 
   return (
     <>
-      <SiteHeader aside={<a className="sign__link" href="/"><Icon name="back" /><span className="sign__label">{t.event.back}</span></a>} />
+      <SiteHeader current="submit" />
       <main className="wrap submit-page">
         <h1>{S.title}</h1>
         {done ? (

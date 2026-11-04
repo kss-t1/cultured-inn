@@ -87,10 +87,7 @@ export function App() {
 
   return (
     <>
-      <SiteHeader aside={
-        <a className="sign__link" href="/submit"><Icon name="plus" />
-        <span className="sign__label">{t.submit.headerLink}</span></a>
-      } />
+      <SiteHeader />
 
       <main className="wrap">
         <FilterBar filters={filters} onChange={setFilters} />

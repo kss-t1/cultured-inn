@@ -51,7 +51,7 @@ bun run dev                     # http://localhost:3000, admin at /admin
 
 ```
 src/server.ts          Bun.serve routes (SPAs via HTML imports, APIs, SSR event pages)
-src/routes/            public.ts (/api/events, /events/:slug[.ics]), submit.ts (/api/submit), admin.ts (/api/admin/*)
+src/routes/            public.ts (/api/events, /events/:slug[.ics], /about), submit.ts (/api/submit), admin.ts (/api/admin/*)
 src/lib/               events queries, auth, ICS export, geocoding, HTTP helpers
 src/importers/         import pipeline (pipeline.ts), runner (run.ts) and adapters/ (ics, jsonld, poznanPl, facebook)
 src/jobs/              in-process scheduler

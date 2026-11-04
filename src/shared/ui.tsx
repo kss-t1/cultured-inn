@@ -1,5 +1,4 @@
 // Markup shared by the public SPA pages and the server-rendered event page.
-import type { ReactNode } from "react";
 import { t } from "./i18n/index.ts";
 import { ICONS, LOGO_PATHS, type IconName } from "./icons.ts";
 
@@ -12,8 +11,13 @@ export function Icon({ name, size, className }: { name: IconName; size?: "sm" | 
   );
 }
 
-/** The dark "sign" header with the logo; `aside` sits at the right end. */
-export function SiteHeader({ aside }: { aside?: ReactNode }) {
+const NAV: { page: "about" | "submit"; href: string; icon: IconName; label: string }[] = [
+  { page: "about", href: "/about", icon: "user", label: t.about.title },
+  { page: "submit", href: "/submit", icon: "plus", label: t.submit.headerLink },
+];
+
+/** The dark "sign" header: logo on the left, site links on the right (`current` marks one). */
+export function SiteHeader({ current }: { current?: "about" | "submit" }) {
   return (
     <header className="sign">
       <div className="wrap sign__in">
@@ -24,7 +28,13 @@ export function SiteHeader({ aside }: { aside?: ReactNode }) {
             <span className="brand__tag">{t.brand.tagline}</span>
           </span>
         </a>
-        {aside}
+        <nav className="sign__nav" aria-label={t.brand.navLabel}>
+          {NAV.map((n) => (
+            <a key={n.page} className="sign__link" href={n.href} aria-current={current === n.page ? "page" : undefined}>
+              <Icon name={n.icon} /><span className="sign__label">{n.label}</span>
+            </a>
+          ))}
+        </nav>
       </div>
     </header>
   );
