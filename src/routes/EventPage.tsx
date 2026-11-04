@@ -1,5 +1,6 @@
 // Server-rendered event detail page (/events/:slug) with schema.org Event JSON-LD.
 import type { ReactNode } from "react";
+import { googleCalendarUrl, toIcsEvent } from "../lib/ics.ts";
 import { CATEGORY_INFO } from "../shared/categories.ts";
 import { fmtDate, fmtLongDate, fmtPrice, fmtRange, isAllDay, spansDays } from "../shared/format.ts";
 import { t } from "../shared/i18n/index.ts";
@@ -180,10 +181,15 @@ export function EventPage({ e, url, now = new Date() }: { e: EventDetail; url: s
                 )}
                 <div className="ticket__row">
                   {!cancelled && !past && (
-                    <a className="btn btn--secondary" href={`/events/${e.slug}.ics`} download><Icon name="calplus" />{t.event.addToCalendar}</a>
+                    <a className="btn btn--secondary" href={googleCalendarUrl(toIcsEvent(e, url), isAllDay(e))} rel="noopener">
+                      <Icon name="calplus" />{t.event.addToCalendar}
+                    </a>
                   )}
                   {share}
                 </div>
+                {!cancelled && !past && (
+                  <p className="ticket__src"><a href={`/events/${e.slug}.ics`} download>{t.event.icsFile}</a></p>
+                )}
                 <p className="ticket__src">
                   {e.source_url && (
                     <span>{t.event.source} <a href={e.source_url} rel="noopener nofollow">{hostname(e.source_url)}</a></span>

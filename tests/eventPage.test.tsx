@@ -22,6 +22,7 @@ describe("EventPage", () => {
     const html = render({}, before);
     expect(html).toContain(t.event.tickets);
     expect(html).toContain(`href="/events/${base.slug}.ics"`);
+    expect(html).toContain("https://calendar.google.com/calendar/render?action=TEMPLATE");
     expect(html).toContain(t.event.share);
     expect(html).not.toContain(t.event.pastTitle);
     expect(html).toContain("120 zł");
@@ -33,6 +34,7 @@ describe("EventPage", () => {
     expect(html).toContain(t.event.closed);
     expect(html).not.toContain(t.event.tickets);
     expect(html).not.toContain(".ics");
+    expect(html).not.toContain("calendar.google.com");
   });
 
   test("past: notice, Minione badge and a link to upcoming events", () => {

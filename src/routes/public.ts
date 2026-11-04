@@ -3,7 +3,7 @@ import type { BunRequest } from "bun";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { getEventBySlug, queryEvents } from "../lib/events.ts";
-import { buildIcs } from "../lib/ics.ts";
+import { buildIcs, toIcsEvent } from "../lib/ics.ts";
 import { error, escapeHtml, handleError, json } from "../lib/http.ts";
 import { parseFilters } from "../shared/filters.ts";
 import { t } from "../shared/i18n/index.ts";
@@ -65,21 +65,7 @@ async function eventPage(req: BunRequest<"/events/:slug">) {
     const url = `${baseUrl()}/events/${e.slug}`;
 
     if (wantsIcs) {
-      const location = e.venue ? [e.venue.name, e.venue.address, "Poznań"].filter(Boolean).join(", ") : null;
-      const ics = buildIcs(
-        [{
-          uid: `event-${e.id}@cultured-inn`,
-          title: e.title,
-          description: [e.description.slice(0, 1000), url].filter(Boolean).join("\n\n"),
-          location,
-          url,
-          start: new Date(e.start_at),
-          end: e.end_at ? new Date(e.end_at) : null,
-          cancelled: e.status === "CANCELLED",
-          updated: new Date(e.updated_at),
-        }],
-        e.title,
-      );
+      const ics = buildIcs([toIcsEvent(e, url)], e.title);
       return new Response(ics, {
         headers: {
           "Content-Type": "text/calendar; charset=utf-8",

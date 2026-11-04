@@ -1,4 +1,7 @@
 // Minimal RFC 5545 export (hand-written; parsing external ICS uses node-ical in M2).
+import { localDateKey } from "../shared/format.ts";
+import type { EventDetail } from "../shared/types.ts";
+
 export interface IcsEvent {
   uid: string;
   title: string;
@@ -10,6 +13,23 @@ export interface IcsEvent {
   cancelled?: boolean;
   updated?: Date;
 }
+
+/** The calendar entry for one event page; `url` is the page's absolute address. */
+export function toIcsEvent(e: EventDetail, url: string): IcsEvent {
+  return {
+    uid: `event-${e.id}@cultured-inn`,
+    title: e.title,
+    description: [e.description.slice(0, 1000), url].filter(Boolean).join("\n\n"),
+    location: e.venue ? [e.venue.name, e.venue.address, "Poznań"].filter(Boolean).join(", ") : null,
+    url,
+    start: new Date(e.start_at),
+    end: e.end_at ? new Date(e.end_at) : null,
+    cancelled: e.status === "CANCELLED",
+    updated: new Date(e.updated_at),
+  };
+}
+
+const defaultEnd = (e: IcsEvent) => e.end ?? new Date(e.start.getTime() + 3 * 3600_000);
 
 const stamp = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 
@@ -50,7 +70,7 @@ export function buildIcs(events: IcsEvent[], calName = "Kulturalna Karczma"): st
   ];
   const now = new Date();
   for (const e of events) {
-    const end = e.end ?? new Date(e.start.getTime() + 3 * 3600_000);
+    const end = defaultEnd(e);
     lines.push(
       "BEGIN:VEVENT",
       `UID:${e.uid}`,
@@ -66,4 +86,21 @@ export function buildIcs(events: IcsEvent[], calName = "Kulturalna Karczma"): st
   }
   lines.push("END:VCALENDAR");
   return lines.map(foldLine).join("\r\n") + "\r\n";
+}
+
+/**
+ * Google Calendar's "create event" link: on the web Google can't open a clicked .ics file.
+ * An all-day event goes as Warsaw dates (end exclusive), anything else as UTC times.
+ */
+export function googleCalendarUrl(e: IcsEvent, allDay = false): string {
+  const end = defaultEnd(e);
+  const dates = allDay
+    ? `${localDateKey(e.start).replace(/-/g, "")}/${localDateKey(end).replace(/-/g, "")}`
+    : `${stamp(e.start)}/${stamp(end)}`;
+  // The URL carries the whole description, so keep it short enough for any browser.
+  const details = e.description && e.description.length > 600 ? `${e.description.slice(0, 500)}…\n\n${e.url ?? ""}` : e.description;
+  const q = new URLSearchParams({ action: "TEMPLATE", text: e.title, dates });
+  if (details) q.set("details", details);
+  if (e.location) q.set("location", e.location);
+  return `https://calendar.google.com/calendar/render?${q}`;
 }
