@@ -2,6 +2,7 @@
 import { sql, TZ } from "../db.ts";
 import { uniqueSlug } from "../lib/slugs.ts";
 import { classify, type Category } from "../shared/categories.ts";
+import type { Language } from "../shared/schemas.ts";
 import { splitSessions } from "./split.ts";
 import type { AdapterResult, EventCandidate, SourceRow } from "./types.ts";
 import { distanceKm, isLocal, parsePrice, utcToZoned } from "./util.ts";
@@ -146,7 +147,7 @@ async function createVenue(c: EventCandidate, cityId: number): Promise<VenueRow 
 
 /** Content fingerprint: an unchanged item skips all writes except last_seen_at. */
 /** Bump when the mapping from candidate to event fields changes, so unchanged items are re-applied. */
-const PIPELINE_VERSION = 3;
+const PIPELINE_VERSION = 4;
 
 function contentHash(c: EventCandidate, d: Decision): string {
   const { raw: _raw, ...rest } = c;
@@ -167,6 +168,29 @@ export function priceOf(c: EventCandidate): { isFree: boolean; priceMin: number 
   const p = parsePrice(`${c.title}\n${c.description}`);
   if (p.priceMin !== null) return p;
   return { isFree: p.isFree || !c.ticketUrl, priceMin: null, priceMax: null };
+}
+
+// Common words that exist in only one of the two languages ("to", "a" and "i" are in both or ambiguous).
+const EN_WORDS = new Set(["the", "and", "you", "your", "is", "are", "with", "for", "of", "this", "will", "be", "we", "our", "it", "on", "at"]);
+const PL_WORDS = new Set(["się", "nie", "jest", "na", "dla", "oraz", "że", "jak", "w", "z", "do", "od", "po", "przez", "będzie", "czy", "też"]);
+const SAYS_ENGLISH = /\benglish\b|po angielsku|w języku angielskim|anglojęzyczn|\[en\]|\(en\)/i;
+const SAYS_BILINGUAL = /po polsku i (po )?angielsku|po angielsku i (po )?polsku|polish and english|english and polish|bilingual|dwujęzyczn|\bpl\s*[/&]\s*en\b|\ben\s*[/&]\s*pl\b/i;
+
+/**
+ * "en" when the event says it is held in English or its text is written in English, "both" when
+ * it is bilingual or its text is half Polish, half English; "pl" otherwise.
+ */
+export function languageOf(c: Pick<EventCandidate, "title" | "description">): Language {
+  const text = `${c.title}\n${c.description}`;
+  if (SAYS_BILINGUAL.test(text)) return "both";
+  let en = 0, pl = 0;
+  for (const w of text.toLowerCase().split(/[^\p{L}]+/u)) {
+    if (EN_WORDS.has(w)) en++;
+    else if (PL_WORDS.has(w)) pl++;
+  }
+  if (en >= 5 && pl >= 5 && Math.min(en, pl) >= Math.max(en, pl) / 3) return "both";
+  if (SAYS_ENGLISH.test(text) || (en >= 5 && en > pl)) return "en";
+  return "pl";
 }
 
 const localDate = (d: Date) => {
@@ -213,6 +237,7 @@ function eventFields(c: EventCandidate, d: Extract<Decision, { keep: true }>) {
     priceMin: price.priceMin,
     priceMax: price.priceMax,
     isFree: price.isFree,
+    language: languageOf(c),
     ticketUrl: c.ticketUrl ?? null,
     sourceUrl: c.url ?? null,
     imageUrl: c.imageUrl ?? null,
@@ -317,7 +342,7 @@ export async function processCandidates(
         UPDATE events SET
           title = ${f.title}, description = ${f.description}, category = ${f.category}::category,
           tags = ${sql.array(f.tags, "TEXT")}, start_at = ${f.start}, end_at = ${f.end},
-          price_min = ${f.priceMin}, price_max = ${f.priceMax}, is_free = ${f.isFree},
+          price_min = ${f.priceMin}, price_max = ${f.priceMax}, is_free = ${f.isFree}, language = ${f.language}::event_language,
           ticket_url = ${f.ticketUrl}, source_url = ${f.sourceUrl}, image_url = ${f.imageUrl},
           venue_id = coalesce(${venueId}, venue_id), series_id = coalesce(${seriesId}, series_id),
           review_flags = CASE WHEN ${venueId}::int IS NOT NULL THEN array_remove(review_flags, 'needs_venue') ELSE review_flags END,
@@ -364,12 +389,12 @@ export async function processCandidates(
       const seriesId = await upsertSeries(source, c);
       const [row] = await sql`
         INSERT INTO events (city_id, title, slug, description, category, tags, start_at, end_at,
-                            venue_id, organizer_id, price_min, price_max, is_free, ticket_url, source_url,
+                            venue_id, organizer_id, price_min, price_max, is_free, language, ticket_url, source_url,
                             image_url, status, origin, source_id, series_id, review_flags, last_seen_at)
         VALUES (${city.id}, ${f.title}, ${slug}, ${f.description}, ${f.category}::category,
                 ${sql.array(f.tags, "TEXT")}, ${f.start}, ${f.end}, ${venueId},
                 ${source.default_organizer_id ?? (await matchOrganizer(c.organizerName))},
-                ${f.priceMin}, ${f.priceMax}, ${f.isFree}, ${f.ticketUrl}, ${f.sourceUrl}, ${f.imageUrl},
+                ${f.priceMin}, ${f.priceMax}, ${f.isFree}, ${f.language}::event_language, ${f.ticketUrl}, ${f.sourceUrl}, ${f.imageUrl},
                 ${c.cancelled ? "CANCELLED" : publish ? "PUBLISHED" : "DRAFT"}::event_status, 'IMPORTED',
                 ${source.id}, ${seriesId}, ${sql.array(flags, "TEXT")}, now())
         RETURNING id`;
