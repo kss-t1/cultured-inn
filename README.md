@@ -2,6 +2,8 @@
 
 **Kulturalna Karczma** (*The Cultured Inn*): every LARP, improv, tabletop RPG and board game event in Poznań on one map and one calendar.
 
+**Live site:** https://kulturalnakarczma.duckdns.org (deployment: [DEPLOY.md](DEPLOY.md))
+
 The product spec is in [DESIGN.md](DESIGN.md), and the planning decisions are in [HANDOFF.md](HANDOFF.md).
 
 ## Stack
