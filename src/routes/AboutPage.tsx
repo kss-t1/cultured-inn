@@ -1,5 +1,6 @@
 // "O autorze" (/about): who runs the site and how to reach them. Server-rendered, no JS.
 import type { ReactNode } from "react";
+import { CATEGORIES, CATEGORY_INFO } from "../shared/categories.ts";
 import { t } from "../shared/i18n/index.ts";
 import type { IconName } from "../shared/icons.ts";
 import { Icon, SiteFooter, SiteHeader } from "../shared/ui.tsx";
@@ -43,7 +44,11 @@ export function AboutPage() {
             <h1 className="about__title">{A.greeting}</h1>
             <p className="about__lead">{A.lead}</p>
             <p className="about__badges">
-              <span className="badge badge--cat badge--lg"><Icon name="impro" />{t.categories.IMPRO}</span>
+              {CATEGORIES.map((c) => (
+                <span key={c} className={`badge badge--cat badge--lg cat-${CATEGORY_INFO[c].slug}`}>
+                  <Icon name={CATEGORY_INFO[c].icon} />{t.categories[c]}
+                </span>
+              ))}
               <span className="badge badge--lg"><Icon name="pin" />{A.city}</span>
             </p>
           </div>
