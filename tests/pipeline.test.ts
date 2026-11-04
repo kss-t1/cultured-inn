@@ -2,7 +2,7 @@
 // admin locks, disappearance and publish policy.
 import { beforeEach, describe, expect, test } from "bun:test";
 import { sql } from "../src/db.ts";
-import { decide, matchVenue, processCandidates, priceOf } from "../src/importers/pipeline.ts";
+import { decide, languageOf, matchVenue, processCandidates, priceOf } from "../src/importers/pipeline.ts";
 import { loadSource } from "../src/importers/run.ts";
 import type { EventCandidate, SourceRow } from "../src/importers/types.ts";
 import { resetDb } from "./helpers.ts";
@@ -219,6 +219,39 @@ describe("priceOf", () => {
     const s = await makeSource();
     await run(s, [cand()]);
     expect((await events())[0]).toMatchObject({ is_free: true, price_min: null });
+  });
+});
+
+describe("languageOf", () => {
+  const STANDUP = "CSK is back with another English Stand-Up Comedy Open Mic in Poznań! Whether you're a comedy enthusiast, " +
+    "an aspiring comedian, or simply someone who enjoys a good laugh, you're very welcome.";
+  test("English text or an English event announced in Polish", () => {
+    expect(languageOf({ title: "Stand-Up Open Mic", description: STANDUP })).toBe("en");
+    expect(languageOf({ title: "English Stand-Up Comedy Open Mic", description: "" })).toBe("en");
+    expect(languageOf({ title: "Sesja RPG", description: "Sesja jest prowadzona po angielsku, zapraszamy." })).toBe("en");
+  });
+
+  test("bilingual events and descriptions", () => {
+    expect(languageOf({ title: "Impro jam", description: "Gramy po polsku i angielsku." })).toBe("both");
+    expect(languageOf({ title: "Planszówki PL/EN", description: "" })).toBe("both");
+    expect(languageOf({
+      title: "Planszówki",
+      description: "Spotkanie dla graczy, nie trzeba się zapisywać, jest herbata i ciastka na stole.\n\n" +
+        "A meetup for players: you don't need to sign up, the tea is on us and we will teach you the rules of every game.",
+    })).toBe("both");
+  });
+
+  test("Polish text with a few English words stays Polish", () => {
+    expect(languageOf({ title: "Monopoly Night", description: "Gramy w Monopoly. Who's ready to win? Zapisy na miejscu." })).toBe("pl");
+    expect(languageOf({ title: "Druga Tura", description: "Gry planszowe i karciane w klubie, wstęp wolny dla wszystkich." })).toBe("pl");
+  });
+
+  test("imports store the language and update it", async () => {
+    const s = await makeSource();
+    await run(s, [cand({ title: "Board game night", description: STANDUP })]);
+    expect((await events())[0].language).toBe("en");
+    await run(s, [cand({ title: "Wieczór planszówkowy", description: "Gramy w planszówki, zapraszamy!" })]);
+    expect((await events())[0].language).toBe("pl");
   });
 });
 

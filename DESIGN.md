@@ -134,7 +134,7 @@ A small React app at `/admin`, served by the same Bun server and talking to a JS
 ```
 
 1. **Fetch.** Each source has an adapter that returns `EventCandidate` objects (title, start, end, location text, url, price, raw).
-2. **Normalize.** Convert to Europe/Warsaw time, clean up HTML, and parse prices such as "25 zł" or "wstęp wolny" (free entry).
+2. **Normalize.** Convert to Europe/Warsaw time, clean up HTML, and parse prices such as "25 zł" or "wstęp wolny" (free entry). Detect the language: English when the event says so ("in English", "po angielsku") or its description is written in English, both for bilingual ones, Polish otherwise.
 3. **Classify.** Use the source's default category if it has one. Otherwise apply keyword rules, for example:
    - `larp|larpow` → LARP
    - `impro|improwiz` → IMPRO
