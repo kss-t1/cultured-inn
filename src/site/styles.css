@@ -559,7 +559,7 @@ html { scroll-padding-top: var(--sign-h); }
 .cover__seal { position: relative; width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; background: var(--cat); color: var(--on-cat); box-shadow: 0 0 0 8px color-mix(in oklab, var(--cat) 12%, var(--surface)); }
 .cover__seal .ico { width: 42px; height: 42px; stroke-width: 1.5; }
 .ticket { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--sh-2); }
-.ticket__facts { display: grid; padding: 4px 18px; }
+.kk .ticket__facts { display: grid; padding: 4px 18px; } /* .kk: beats the .kk ul reset */
 .fact { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
 .fact:last-child { border-bottom: 0; }
 .fact > .ico { color: var(--ink-2); margin-top: 2px; }
@@ -611,9 +611,57 @@ html { scroll-padding-top: var(--sign-h); }
 }
 
 /* ---------- 21. About page ---------- */
-.about { max-width: 680px; padding-block: 24px 48px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
-.about__title { font-family: var(--font-display); font-size: var(--t-2xl); line-height: var(--lh-2xl); font-weight: 650; font-variation-settings: "SOFT" 70; }
-.about__lead { font-size: var(--t-lg); line-height: var(--lh-lg); }
-.about__section { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
-.about__section h2 { font-family: var(--font-display); font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 600; }
-.kk .about a.fact__v { display: flex; align-items: center; min-height: var(--tap); overflow-wrap: anywhere; }
+.about { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-5); padding-block: var(--s-5) var(--s-7); }
+.about__hero {
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: var(--s-4);
+  padding: var(--s-6) var(--s-5) var(--s-5); text-align: center; overflow: hidden;
+  background: color-mix(in oklab, var(--cat) 12%, var(--surface));
+  border: 1px solid color-mix(in oklab, var(--cat) 30%, var(--surface)); border-radius: var(--r-xl);
+}
+/* the dashed "ticket" line through the seal, as on an event without a cover */
+.about__hero::before { content: ""; position: absolute; left: 0; right: 0; top: calc(var(--s-6) + 64px); border-top: 2px dashed color-mix(in oklab, var(--cat) 40%, var(--surface)); }
+.about__avatar { position: relative; width: 128px; height: 128px; flex: none; }
+.about__avatar img {
+  display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: var(--sign-bg);
+  box-shadow: 0 0 0 4px var(--surface), 0 0 0 7px var(--cat), var(--sh-2);
+}
+.about__avatar-seal {
+  position: absolute; right: -4px; bottom: -2px; width: 44px; height: 44px; display: grid; place-items: center;
+  border-radius: 50%; background: var(--cat); color: var(--on-cat); box-shadow: 0 0 0 3px var(--surface);
+}
+.about__avatar-seal .ico { width: 24px; height: 24px; }
+.about__intro { display: grid; gap: var(--s-2); justify-items: center; min-width: 0; }
+.about__title { font-family: var(--font-display); font-size: var(--t-3xl); line-height: var(--lh-3xl); font-weight: 650; letter-spacing: -.015em; font-variation-settings: "SOFT" 70, "opsz" 96; text-wrap: balance; }
+.about__lead { font-size: var(--t-lg); line-height: var(--lh-lg); color: var(--ink-2); }
+.about__badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: var(--s-1); }
+.about__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-5); align-items: start; }
+.about h2 { font-family: var(--font-display); font-size: var(--t-xl); line-height: var(--lh-xl); font-weight: 600; }
+.about__contact-head { display: grid; gap: var(--s-1); padding: 18px 18px 0; }
+.about__contact .fact__v { overflow-wrap: anywhere; }
+.about__project { display: grid; gap: var(--s-3); align-content: start; }
+.kk a.repo {
+  display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: 14px;
+  padding: 14px var(--s-4); background: var(--surface); color: var(--ink); text-decoration: none;
+  border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--sh-1);
+  transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.kk a.repo:hover { box-shadow: var(--sh-2); border-color: var(--line-strong); transform: translateY(-1px); }
+.repo__ico { width: 48px; height: 48px; display: grid; place-items: center; border-radius: var(--r-md); background: var(--sign-bg); color: var(--sign-gold); }
+.repo__ico .ico { width: 24px; height: 24px; }
+.repo__text { display: grid; gap: 2px; min-width: 0; }
+.repo__name { font-family: var(--font-display); font-size: var(--t-lg); line-height: 23px; font-weight: 600; overflow-wrap: anywhere; }
+.repo__sub { font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--ink-3); }
+.kk a.repo > .ico { color: var(--ink-3); }
+@media (min-width: 760px) {
+  .about__hero { grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; gap: var(--s-5); padding: var(--s-6) 40px; text-align: left; }
+  .about__hero::before { display: none; }
+  .about__intro { justify-items: start; }
+  .about__badges { justify-content: flex-start; }
+  .about__title { font-size: var(--t-4xl); line-height: var(--lh-4xl); }
+  .about__avatar { width: 160px; height: 160px; }
+}
+@media (min-width: 1000px) {
+  .about__grid { grid-template-columns: minmax(0, 1fr) 380px; grid-template-areas: "project contact"; column-gap: 48px; }
+  .about__project { grid-area: project; }
+  .about__contact { grid-area: contact; }
+}
