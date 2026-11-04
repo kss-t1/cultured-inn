@@ -49,6 +49,15 @@ describe("EventPage", () => {
     expect(html).toContain(t.list.venueTbd);
   });
 
+  test("the venue name links to Google Maps: coordinates when known, else name and address", () => {
+    const venue = { id: 1, name: "Pod Lipami", address: "ul. Lipowa 1", district: null, lat: 52.4, lon: 16.9 };
+    expect(render({ venue }, before)).toContain(
+      `href="https://www.google.com/maps/search/?api=1&amp;query=52.4%2C16.9" rel="noopener">Pod Lipami</a>`);
+    expect(render({ venue: { ...venue, lat: null, lon: null } }, before)).toContain(
+      `href="https://www.google.com/maps/search/?api=1&amp;query=Pod%20Lipami%2C%20ul.%20Lipowa%201"`);
+    expect(render({ venue: { ...venue, address: null, lat: null, lon: null } }, before)).not.toContain("maps/search");
+  });
+
   test("an all-day event reads 'cały dzień', not 00:00 – 00:00", () => {
     const html = render({ start_at: "2026-11-04T23:00:00Z", end_at: "2026-11-05T23:00:00Z" }, before);
     expect(html).toContain(t.list.allDay);
