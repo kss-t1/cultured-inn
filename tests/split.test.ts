@@ -184,14 +184,27 @@ describe("processCandidates with a split item", () => {
     expect((await events()).find((e) => e.id === old.id)!.review_flags).toEqual([]);
   });
 
-  test("an item whose event an admin deleted or hid doesn't come back as sessions, unless imported by hand", async () => {
+  test("an item whose event an admin deleted, hid or cancelled doesn't come back as sessions, unless imported by hand", async () => {
     await run(cycle({ description: "Cykl spotkań z planszówkami." }));
+    await sql`UPDATE events SET status = 'CANCELLED'`;
+    expect((await run(cycle())).stats).toMatchObject({ created: 0, skipped: { rejected: 4 } });
     await sql`UPDATE events SET status = 'HIDDEN'`;
     for (let i = 0; i < 2; i++) expect((await run(cycle())).stats).toMatchObject({ created: 0, skipped: { rejected: 4 } });
     await sql`DELETE FROM events`;
     expect((await run(cycle())).stats).toMatchObject({ created: 0, skipped: { rejected: 4 } });
     const manual = await processCandidates(source, { candidates: [cycle()], complete: false }, { now, manual: true });
     expect(manual.stats.created).toBe(4);
+  });
+
+  test("an item that stops splitting for a run and then splits again still gets its new sessions", async () => {
+    await run(cycle({ description: "Cykl spotkań z planszówkami." }));
+    await run(cycle()); // splits: the whole-cycle event is hidden
+    await run(cycle({ description: "Cykl spotkań z planszówkami." })); // the list is gone for a run
+    const longer = cycle({
+      end: new Date("2026-12-05T15:00:00Z"),
+      description: `${CYCLE_DESCRIPTION}\n\n5 grudnia, g. 15:00\nFinałowe spotkanie z planszówkami.`,
+    });
+    expect((await run(longer)).stats).toMatchObject({ created: 1 });
   });
 
   test("a whole-cycle item linked to another source's event flags that event instead of hiding it", async () => {

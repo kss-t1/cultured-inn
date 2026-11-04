@@ -244,7 +244,7 @@ export async function processCandidates(
   const venues = await loadVenues();
   const recentPast = new Date(now.getTime() - 12 * 3_600_000);
 
-  // Items whose event an admin deleted or hid before they were split: their new sessions stay out too.
+  // Items whose event an admin deleted, hid or cancelled before they were split: their sessions stay out too.
   const rejectedItems = new Set<string>();
   for (const parent of new Set(candidates.map((c) => c.splitFrom).filter((x) => x !== undefined))) {
     if ((await retireSplitItem(source, parent)) === "rejected" && !opts.manual) rejectedItems.add(parent);
@@ -395,21 +395,23 @@ const SPLIT_HASH = "split";
  * it so it doesn't sit over the sessions. An event an admin edited, or one that belongs to another
  * source (a linked duplicate), is left alone and flagged instead. This happens once: the item is
  * marked, stays seen (so the next run doesn't recreate or flag it), and later admin changes stick.
- * Returns "rejected" when an admin deleted or hid the item's event before it was split; the item
- * then stays unmarked, and so stays rejected.
+ * Returns "rejected" when an admin deleted, hid or cancelled the item's event before it ever had
+ * sessions; the item then stays unmarked, and so stays rejected.
  */
 async function retireSplitItem(source: SourceRow, externalId: string): Promise<"rejected" | void> {
   const [item] = await sql`
     SELECT i.id, i.event_id, i.content_hash, e.status, e.import_locked,
-           (e.source_id = ${source.id} AND e.origin = 'IMPORTED') AS owned
+           (e.source_id = ${source.id} AND e.origin = 'IMPORTED') AS owned,
+           EXISTS (SELECT 1 FROM imported_items s WHERE s.source_id = i.source_id
+                     AND left(s.external_id, length(i.external_id) + 1) = i.external_id || '#') AS has_sessions
     FROM imported_items i LEFT JOIN events e ON e.id = i.event_id
     WHERE i.source_id = ${source.id} AND i.external_id = ${externalId}`;
   if (!item) return;
   await sql`UPDATE imported_items SET last_seen_at = now(), missing_since = NULL WHERE id = ${item.id}`;
   if (item.content_hash === SPLIT_HASH) return;
-  if (!item.event_id || item.status === "HIDDEN") return "rejected";
+  if (!item.has_sessions && (!item.event_id || item.status === "HIDDEN" || item.status === "CANCELLED")) return "rejected";
   await sql`UPDATE imported_items SET content_hash = ${SPLIT_HASH} WHERE id = ${item.id}`;
-  if (item.status === "CANCELLED") return;
+  if (!item.event_id || item.status === "HIDDEN" || item.status === "CANCELLED") return;
   if (item.owned && !item.import_locked) {
     await sql`UPDATE events SET status = 'HIDDEN', updated_at = now() WHERE id = ${item.event_id}`;
   } else {
