@@ -71,6 +71,7 @@ const ORGANIZERS = [
   { name: "Improłaki", website: null, facebook_url: "https://www.facebook.com/profile.php?id=61589955491168" },
   { name: "Rymparzyści – teatr improwizacji", website: null, facebook_url: "https://www.facebook.com/profile.php?id=61572191894828" },
   { name: "Centrum Sztuk Komediowych", website: null, facebook_url: "https://www.facebook.com/centrumsztukkomediowych" },
+  { name: "Kriegsspiel", website: null, facebook_url: "https://www.facebook.com/DasKriegsspiel" },
 ];
 
 type Rule = { match: string; category?: string; tags?: string[]; skip?: boolean };
@@ -153,6 +154,7 @@ const SOURCES: SourceSeed[] = [
   { key: "fb-improlaki", name: "Facebook – Improłaki", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61589955491168", category: "IMPRO", organizer: "Improłaki", hours: 24 },
   { key: "fb-rymparzysci", name: "Facebook – Rymparzyści – teatr improwizacji", kind: "FB_PAGE", url: "https://www.facebook.com/profile.php?id=61572191894828", category: "IMPRO", organizer: "Rymparzyści – teatr improwizacji", hours: 24 },
   { key: "fb-centrum-sztuk-komediowych", name: "Facebook – Centrum Sztuk Komediowych", kind: "FB_PAGE", url: "https://www.facebook.com/centrumsztukkomediowych", category: "IMPRO", organizer: "Centrum Sztuk Komediowych", hours: 24 },
+  { key: "fb-kriegsspiel", name: "Facebook – Kriegsspiel", kind: "FB_PAGE", url: "https://www.facebook.com/DasKriegsspiel", category: "LARP", organizer: "Kriegsspiel", hours: 24 },
 ];
 
 export async function seedOrganizers() {

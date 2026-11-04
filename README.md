@@ -74,7 +74,7 @@ Sources live in the `sources` table and are managed at **/admin/sources**. `bun 
 | poznan.pl city culture calendar | `poznan_pl` adapter, keyword-filtered |
 | Meetup "PlayZone Poznań" | ICS |
 | Biletyna Poznań: comedy, theatre, stand-up | JSON-LD, keyword-filtered |
-| Facebook Pages: Larpunk, La Vida Impro, Larpowy Ogród, Wargamer Poznań, Cooliozum, Podziemie | FB_PAGE |
+| Facebook Pages: Larpunk, La Vida Impro, Larpowy Ogród, Wargamer Poznań, Cooliozum, Podziemie, Kriegsspiel | FB_PAGE |
 | Facebook Pages of Poznań impro groups: DPR, Improsi, Leniwe Raz, Czwórka na Szynach, Improłaki, Rymparzyści | FB_PAGE |
 
 Each run goes through the same pipeline (`src/importers/pipeline.ts`):
