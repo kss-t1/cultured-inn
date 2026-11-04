@@ -31,7 +31,7 @@ export function parseDateLine(line: string): DateLine | null {
       if (days.length === 0) return null;
       dates.push(...days.map((d) => ({ mo: MONTHS.indexOf(tok) + 1, d })));
       days = [];
-    } else if (!FILLER.has(tok) && !/^[-–]$/.test(tok)) return null;
+    } else if (!FILLER.has(tok) && !/^([-–]|\d{4}|r\.?)$/.test(tok)) return null; // "2026 r." adds nothing: the item's range sets the year
   }
   if (days.length > 0 || dates.length === 0) return null;
   return { dates, h, mi, rest: line.slice(tm.index + tm[0].length).replace(/^[\s,.–-]+/, "") };

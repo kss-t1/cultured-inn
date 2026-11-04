@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { sql } from "../src/db.ts";
 import { processCandidates } from "../src/importers/pipeline.ts";
-import { loadSource } from "../src/importers/run.ts";
+import { flagGone, knownUpcoming, loadSource } from "../src/importers/run.ts";
 import { parseDateLine, splitSessions } from "../src/importers/split.ts";
 import type { EventCandidate, SourceRow } from "../src/importers/types.ts";
 import { resetDb } from "./helpers.ts";
@@ -39,6 +39,7 @@ describe("parseDateLine", () => {
       dates: [{ mo: 10, d: 28 }, { mo: 11, d: 4 }], h: 17, mi: 0,
     });
     expect(parseDateLine("7 i 21 listopada, g. 15:00")?.dates).toEqual([{ mo: 11, d: 7 }, { mo: 11, d: 21 }]);
+    expect(parseDateLine("28 października 2026 r., godz. 17:00")?.dates).toEqual([{ mo: 10, d: 28 }]);
     expect(parseDateLine("środa 3, 10 oraz 17 grudnia godz. 18.30 – sesja RPG")).toEqual({
       dates: [{ mo: 12, d: 3 }, { mo: 12, d: 10 }, { mo: 12, d: 17 }], h: 18, mi: 30, rest: "sesja RPG",
     });
@@ -124,7 +125,19 @@ describe("processCandidates with a split item", () => {
       ["2026-11-21T14:00:00.000Z", "BOARDGAMES", "PUBLISHED"],
     ]);
     expect(eventIds.get("188550@2026-10-28")).toBe(rows[0]!.id); // a URL import finds the first session
-    expect((await run(cycle())).stats).toMatchObject({ created: 0, unchanged: 4, missing: 0 });
+    const again = await run(cycle());
+    expect(again.stats).toMatchObject({ received: 1, created: 0, unchanged: 4, missing: 0 });
+    expect(again.eventIds.get("188550@2026-10-28")).toBe(rows[0]!.id); // also when importing the same link again
+  });
+
+  test("refreshes see the split item once, by its own id, and a gone page flags all its sessions", async () => {
+    // Far-future dates: knownUpcoming compares with the database clock.
+    const far = cycle({ start: new Date("2036-10-28T16:00:00Z"), end: new Date("2036-11-21T17:00:00Z"), url: "https://example.org/cykl" });
+    await run(far, new Date("2036-10-20T10:00:00Z"));
+    expect(await knownUpcoming(source.id)).toEqual([{ external_id: "188550@2026-10-28", url: "https://example.org/cykl" }]);
+    await flagGone(source.id, ["188550@2026-10-28"]);
+    const flagged = await sql`SELECT count(*)::int AS n FROM events WHERE 'missing_from_source' = ANY(review_flags)`;
+    expect(flagged[0].n).toBe(4);
   });
 
   test("the whole-cycle event imported before splitting existed is hidden, not left over the sessions", async () => {
@@ -138,6 +151,10 @@ describe("processCandidates with a split item", () => {
     expect(rows.filter((e) => e.status === "PUBLISHED")).toHaveLength(4);
     // Seen on every run, so a complete listing never flags it as missing.
     expect((await run(cycle())).stats.missing).toBe(0);
+    // Retired once: an admin who publishes it again keeps it published.
+    await sql`UPDATE events SET status = 'PUBLISHED' WHERE id = ${old!.id}`;
+    await run(cycle());
+    expect((await events()).find((e) => e.id === old!.id)!.status).toBe("PUBLISHED");
   });
 
   test("an admin-edited whole-cycle event stays, flagged for review", async () => {
@@ -147,6 +164,10 @@ describe("processCandidates with a split item", () => {
     const old = (await events()).find((e) => e.import_locked)!;
     expect(old.status).toBe("PUBLISHED");
     expect(old.review_flags).toContain("changed_at_source");
+    // Flagged once: dismissing the flag sticks.
+    await sql`UPDATE events SET review_flags = '{}' WHERE id = ${old.id}`;
+    await run(cycle());
+    expect((await events()).find((e) => e.id === old.id)!.review_flags).toEqual([]);
   });
 
   test("a session's text picks the category but can't keep an item its title wouldn't", async () => {

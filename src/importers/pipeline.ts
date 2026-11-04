@@ -230,7 +230,7 @@ export async function processCandidates(
   const now = opts.now ?? new Date();
   const runStart = new Date();
   const candidates = result.candidates.flatMap(splitSessions);
-  const stats: ProcessStats = { received: candidates.length, created: 0, updated: 0, unchanged: 0, linked: 0, missing: 0, skipped: {} };
+  const stats: ProcessStats = { received: result.candidates.length, created: 0, updated: 0, unchanged: 0, linked: 0, missing: 0, skipped: {} };
   const skip = (r: SkipReason) => (stats.skipped[r] = (stats.skipped[r] ?? 0) + 1);
   const eventIds = new Map<string, number>();
   const [city] = await sql`SELECT id FROM cities WHERE slug = 'poznan'`;
@@ -283,6 +283,7 @@ export async function processCandidates(
         continue;
       }
       eventIds.set(c.externalId, item.event_id);
+      if (c.splitFrom && !eventIds.has(c.splitFrom)) eventIds.set(c.splitFrom, item.event_id);
       await sql`UPDATE events SET last_seen_at = now(), review_flags = array_remove(review_flags, 'missing_from_source')
                 WHERE id = ${item.event_id} AND 'missing_from_source' = ANY(review_flags)`;
       if (item.content_hash === hash) {
@@ -373,17 +374,25 @@ export async function processCandidates(
   return { stats, eventIds };
 }
 
+/** content_hash of an item whose sessions replaced it; its own event was retired once. */
+const SPLIT_HASH = "split";
+
 /**
  * An item now split into sessions may already have created one event spanning all of them: hide
  * it so it doesn't sit over the sessions. An event an admin edited is left alone and flagged
- * instead. The item stays (and stays seen), so the next run doesn't recreate or flag it.
+ * instead. This happens once: the item is marked, stays seen (so the next run doesn't recreate
+ * or flag it), and later admin changes to that event stick.
  */
 async function retireSplitItem(source: SourceRow, externalId: string): Promise<void> {
   const [item] = await sql`
-    UPDATE imported_items SET last_seen_at = now(), missing_since = NULL
-    WHERE source_id = ${source.id} AND external_id = ${externalId}
-    RETURNING event_id`;
-  if (!item?.event_id) return;
+    WITH old AS (
+      SELECT id, event_id, content_hash FROM imported_items
+      WHERE source_id = ${source.id} AND external_id = ${externalId}
+    )
+    UPDATE imported_items i SET last_seen_at = now(), missing_since = NULL, content_hash = ${SPLIT_HASH}
+    FROM old WHERE i.id = old.id
+    RETURNING old.event_id, old.content_hash`;
+  if (!item?.event_id || item.content_hash === SPLIT_HASH) return;
   await sql`
     UPDATE events SET
       status = CASE WHEN import_locked THEN status ELSE 'HIDDEN'::event_status END,
