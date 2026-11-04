@@ -41,14 +41,17 @@ describe("parseDateLine", () => {
     expect(parseDateLine("7 i 21 listopada, g. 15:00")?.dates).toEqual([{ mo: 11, d: 7 }, { mo: 11, d: 21 }]);
     expect(parseDateLine("28 października 2026 r., godz. 17:00")?.dates).toEqual([{ mo: 10, d: 28 }]);
     expect(parseDateLine("środa 3, 10 oraz 17 grudnia godz. 18.30 – sesja RPG")).toEqual({
-      dates: [{ mo: 12, d: 3 }, { mo: 12, d: 10 }, { mo: 12, d: 17 }], h: 18, mi: 30, rest: "sesja RPG",
+      dates: [{ mo: 12, d: 3 }, { mo: 12, d: 10 }, { mo: 12, d: 17 }], h: 18, mi: 30, end: null, rest: "sesja RPG",
     });
+    expect(parseDateLine("5 i 6 grudnia, 16:00–22:00, festiwal")).toMatchObject({ h: 16, end: { h: 22, mi: 0 }, rest: "festiwal" });
+    expect(parseDateLine("5 i 6 grudnia, 22:00–02:00")?.end).toBeNull(); // past midnight: left unknown
   });
 
   test("anything else is not a date line", () => {
     for (const line of [
       "Spotykamy się 28 października o 17:00 w klubie", // prose before the dates
       "7-9 listopada, g. 10:00", // a range is one multi-day event, not sessions
+      "7 – 9 listopada, g. 10:00",
       "28, g. 17:00", // a day without a month
       "Start 17:00",
       "28 października i 4 listopada",
@@ -69,6 +72,11 @@ describe("splitSessions", () => {
     expect(parts[0]!.sessionText).toStartWith("RPG - ");
     expect(parts[2]!.sessionText).toStartWith("Otwarte spotkania integracyjne z grami planszowymi");
     expect(parts[2]!.sessionText).not.toContain("nieodpłatne"); // stops at the blank line
+  });
+
+  test("a time range gives each session its end", () => {
+    const parts = splitSessions(cycle({ description: "28 października i 4 listopada, g. 17:00-20:30\nSesja RPG" }));
+    expect(parts.map((p) => p.end?.toISOString())).toEqual(["2026-10-28T19:30:00.000Z", "2026-11-04T19:30:00.000Z"]);
   });
 
   test("a session before the October DST change keeps its wall-clock time", () => {
@@ -173,6 +181,13 @@ describe("processCandidates with a split item", () => {
   test("a session's text picks the category but can't keep an item its title wouldn't", async () => {
     const { stats } = await run(cycle({ title: "Otwarte warsztaty w Pracowni" }));
     expect(stats).toMatchObject({ created: 0, skipped: { no_match: 4 } });
+  });
+
+  test("a URL import of a cycle already under way opens its first upcoming session", async () => {
+    const { eventIds } = await processCandidates(source, { candidates: [cycle()], complete: false },
+      { now: new Date("2026-11-05T10:00:00Z"), manual: true });
+    const nov7 = (await events()).find((e) => e.start_at.toISOString() === "2026-11-07T14:00:00.000Z")!;
+    expect(eventIds.get("188550@2026-10-28")).toBe(nov7.id);
   });
 
   test("past sessions are skipped like any past event", async () => {

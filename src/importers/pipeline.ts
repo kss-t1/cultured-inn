@@ -233,6 +233,13 @@ export async function processCandidates(
   const stats: ProcessStats = { received: result.candidates.length, created: 0, updated: 0, unchanged: 0, linked: 0, missing: 0, skipped: {} };
   const skip = (r: SkipReason) => (stats.skipped[r] = (stats.skipped[r] ?? 0) + 1);
   const eventIds = new Map<string, number>();
+  // A split item maps to its first session that hasn't ended (URL import opens that one).
+  const pickedUpcoming = new Set<string>();
+  const mapSplitItem = (c: EventCandidate, eventId: number) => {
+    if (!c.splitFrom || pickedUpcoming.has(c.splitFrom)) return;
+    eventIds.set(c.splitFrom, eventId);
+    if ((c.end ?? c.start) >= now) pickedUpcoming.add(c.splitFrom);
+  };
   const [city] = await sql`SELECT id FROM cities WHERE slug = 'poznan'`;
   const venues = await loadVenues();
   const recentPast = new Date(now.getTime() - 12 * 3_600_000);
@@ -283,7 +290,7 @@ export async function processCandidates(
         continue;
       }
       eventIds.set(c.externalId, item.event_id);
-      if (c.splitFrom && !eventIds.has(c.splitFrom)) eventIds.set(c.splitFrom, item.event_id);
+      mapSplitItem(c, item.event_id);
       await sql`UPDATE events SET last_seen_at = now(), review_flags = array_remove(review_flags, 'missing_from_source')
                 WHERE id = ${item.event_id} AND 'missing_from_source' = ANY(review_flags)`;
       if (item.content_hash === hash) {
@@ -364,7 +371,7 @@ export async function processCandidates(
       stats.created++;
     }
     eventIds.set(c.externalId, eventId);
-    if (c.splitFrom && !eventIds.has(c.splitFrom)) eventIds.set(c.splitFrom, eventId);
+    mapSplitItem(c, eventId);
     await sql`
       INSERT INTO imported_items (source_id, external_id, content_hash, raw, event_id, url, location_text)
       VALUES (${source.id}, ${c.externalId}, ${hash}, ${c.raw as object}::jsonb, ${eventId}, ${c.url ?? null}, ${locationText})`;

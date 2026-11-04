@@ -11,9 +11,11 @@ const MONTHS = ["stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "l
   "października", "listopada", "grudnia"];
 // Weekday names and joining words that may appear among the dates ("środa 28 października i …").
 const FILLER = new Set(["i", "oraz", "&", "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota", "niedziela"]);
-const TIME = /\b(?:g|godz|godzina)?\.?\s*(\d{1,2})[:.](\d{2})\b/;
+// A start time, optionally followed by an end time ("g. 16:00–22:00").
+const TIME = /\b(?:g|godz|godzina)?\.?\s*(\d{1,2})[:.](\d{2})\b(?:\s*[-–]\s*(\d{1,2})[:.](\d{2})\b)?/;
 
-interface DateLine { dates: { mo: number; d: number }[]; h: number; mi: number; rest: string }
+type Clock = { h: number; mi: number };
+interface DateLine { dates: { mo: number; d: number }[]; h: number; mi: number; end: Clock | null; rest: string }
 
 /** "28 października i 4 listopada, g. 17:00 …" → its dates and time; null for any other line. */
 export function parseDateLine(line: string): DateLine | null {
@@ -22,10 +24,15 @@ export function parseDateLine(line: string): DateLine | null {
   if (!tm) return null;
   const h = +tm[1]!, mi = +tm[2]!;
   if (h > 23 || mi > 59) return null;
+  const eh = tm[3] === undefined ? NaN : +tm[3], emi = +(tm[4] ?? NaN);
+  // An end at or before the start (past midnight) is left unknown rather than guessed.
+  const end = eh <= 23 && emi <= 59 && eh * 60 + emi > h * 60 + mi ? { h: eh, mi: emi } : null;
   const tokens = lower.slice(0, tm.index).replace(/[(),]/g, " ").split(/\s+/).filter(Boolean);
   const dates: { mo: number; d: number }[] = [];
   let days: number[] = [];
-  for (const tok of tokens) {
+  for (const [i, tok] of tokens.entries()) {
+    // "7 – 9 listopada" is one multi-day event, not two sessions.
+    if (/^[-–]$/.test(tok) && /^\d/.test(tokens[i + 1] ?? "")) return null;
     if (/^\d{1,2}$/.test(tok)) days.push(+tok);
     else if (MONTHS.includes(tok)) {
       if (days.length === 0) return null;
@@ -34,7 +41,7 @@ export function parseDateLine(line: string): DateLine | null {
     } else if (!FILLER.has(tok) && !/^([-–]|\d{4}|r\.?)$/.test(tok)) return null; // "2026 r." adds nothing: the item's range sets the year
   }
   if (days.length > 0 || dates.length === 0) return null;
-  return { dates, h, mi, rest: line.slice(tm.index + tm[0].length).replace(/^[\s,.–-]+/, "") };
+  return { dates, h, mi, end, rest: line.slice(tm.index + tm[0].length).replace(/^[\s,.–-]+/, "") };
 }
 
 const dateKey = (y: number, mo: number, d: number) =>
@@ -53,7 +60,7 @@ export function splitSessions(c: EventCandidate): EventCandidate[] {
   if (first === last) return [c];
 
   const lines = c.description.split("\n").map((l) => l.trim());
-  const sessions: { key: string; start: Date; text: string }[] = [];
+  const sessions: { key: string; start: Date; end: Date | null; text: string }[] = [];
   for (let i = 0; i < lines.length; i++) {
     const dl = parseDateLine(lines[i]!);
     if (!dl) continue;
@@ -64,7 +71,12 @@ export function splitSessions(c: EventCandidate): EventCandidate[] {
       const y = mo < from.mo ? from.y + 1 : from.y;
       const key = dateKey(y, mo, d);
       if (key < first || key > last) return [c]; // a date outside the item's range: not its schedule
-      sessions.push({ key, start: zonedToUtc(y, mo, d, dl.h, dl.mi, 0, TZ), text: text.join("\n").trim() });
+      sessions.push({
+        key,
+        start: zonedToUtc(y, mo, d, dl.h, dl.mi, 0, TZ),
+        end: dl.end && zonedToUtc(y, mo, d, dl.end.h, dl.end.mi, 0, TZ),
+        text: text.join("\n").trim(),
+      });
     }
   }
   if (new Set(sessions.map((s) => s.key)).size !== sessions.length || sessions.length < 2) return [c];
@@ -75,7 +87,7 @@ export function splitSessions(c: EventCandidate): EventCandidate[] {
       ...c,
       externalId: `${c.externalId}#${s.key}`,
       start: s.start,
-      end: null,
+      end: s.end,
       allDay: false,
       splitFrom: c.externalId,
       sessionText: s.text,
