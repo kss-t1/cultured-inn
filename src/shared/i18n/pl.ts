@@ -145,7 +145,7 @@ const pl = {
     description: "Kto prowadzi Kulturalną Karczmę i jak się z nim skontaktować.",
     greeting: "Cześć, jestem Krzysztof",
     photoAlt: "Krzysztof, autor Kulturalnej Karczmy",
-    lead: "Lokalny nerd, który lubi impro.",
+    lead: "Lokalny nerd, który lubi impro, LARP-y, sesje RPG i planszówki.",
     city: "Poznań",
     code: "Kod źródłowy",
     codeHint: "Karczma jest otwartym projektem: kod, pomysły i zgłoszenia błędów są na GitHubie.",

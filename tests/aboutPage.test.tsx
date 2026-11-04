@@ -15,6 +15,7 @@ test("about page: intro, repository and contact links", () => {
   expect(html).toContain('href="https://wa.me/48739272287"');
   expect(html).toContain('href="https://github.com/kss-t1"');
   expect(html).toMatch(/href="\/about" aria-current="page"/);
+  for (const slug of ["larp", "impro", "rpg", "boardgames"]) expect(html).toContain(`badge--lg cat-${slug}`);
 });
 
 test("the header links to the about and submit pages on every page", () => {
