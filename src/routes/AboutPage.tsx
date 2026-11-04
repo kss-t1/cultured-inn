@@ -9,13 +9,10 @@ const A = t.about;
 
 const AUTHOR = {
   email: "krzysztof.spisak.spisacki@gmail.com",
-  whatsapp: "48739272287",
-  whatsappDisplay: "+48 739 272 287",
   github: "kss-t1",
   repo: "kss-t1/cultured-inn",
 };
 const MAILTO = `mailto:${AUTHOR.email}`;
-const WHATSAPP = `https://wa.me/${AUTHOR.whatsapp}`;
 const GITHUB = `https://github.com/${AUTHOR.github}`;
 const REPO = `https://github.com/${AUTHOR.repo}`;
 
@@ -32,7 +29,7 @@ export function AboutPage() {
   const [user, domain] = AUTHOR.email.split("@");
   return (
     <>
-      <SiteHeader current="about" />
+      <SiteHeader />
       <main className="wrap about">
         <section className="about__hero cat-impro">
           <span className="about__avatar">
@@ -62,15 +59,11 @@ export function AboutPage() {
             </div>
             <ul className="ticket__facts">
               <Fact icon="mail" label={A.email}>{user}@<wbr />{domain}</Fact>
-              <Fact icon="chat" label={A.whatsapp}>{AUTHOR.whatsappDisplay}</Fact>
               <Fact icon="user" label={A.github}>{AUTHOR.github}</Fact>
             </ul>
             <div className="ticket__actions">
               <a className="btn btn--primary btn--lg btn--block" href={MAILTO}><Icon name="mail" />{A.emailCta}</a>
-              <div className="ticket__row">
-                <a className="btn btn--secondary" href={WHATSAPP} rel="noopener"><Icon name="chat" />{A.whatsapp}</a>
-                <a className="btn btn--secondary" href={GITHUB} rel="noopener"><Icon name="user" />{A.github}</a>
-              </div>
+              <a className="btn btn--secondary" href={GITHUB} rel="noopener"><Icon name="user" />{A.github}</a>
             </div>
           </aside>
 

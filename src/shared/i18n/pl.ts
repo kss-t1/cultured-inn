@@ -157,7 +157,6 @@ const pl = {
     contactHint: "Masz wydarzenie, pomysł albo widzisz błąd? Napisz.",
     email: "E-mail",
     emailCta: "Napisz e-mail",
-    whatsapp: "WhatsApp",
     github: "GitHub",
   },
 
