@@ -36,7 +36,8 @@ export function SiteHeader({ current }: { current?: "submit" }) {
         </p>
         <nav className="sign__nav" aria-label={t.brand.navLabel}>
           {NAV.map((n) => (
-            <a key={n.page} className="sign__link" href={n.href} aria-current={current === n.page ? "page" : undefined}>
+            <a key={n.page} className="sign__link" href={n.href} aria-label={n.label}
+              aria-current={current === n.page ? "page" : undefined}>
               <Icon name={n.icon} /><span className="sign__label">{n.label}</span><span className="sign__short">{n.short}</span>
             </a>
           ))}
