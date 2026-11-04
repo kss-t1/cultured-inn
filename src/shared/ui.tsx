@@ -16,7 +16,7 @@ const NAV: { page: "about" | "submit"; href: string; icon: IconName; label: stri
   { page: "submit", href: "/submit", icon: "plus", label: t.submit.headerLink },
 ];
 
-/** The dark "sign" header: logo on the left, site links on the right (`current` marks one). */
+/** The dark "sign" header: logo on the left, then the city badge and site links (`current` marks one). */
 export function SiteHeader({ current }: { current?: "about" | "submit" }) {
   return (
     <header className="sign">
@@ -28,6 +28,13 @@ export function SiteHeader({ current }: { current?: "about" | "submit" }) {
             <span className="brand__tag">{t.brand.tagline}</span>
           </span>
         </a>
+        <p className="sign__aside">
+          <span className="sign__about">{t.brand.guide}</span>
+          <span className="city">
+            <Icon name="pin" size="sm" />
+            {t.brand.city}
+          </span>
+        </p>
         <nav className="sign__nav" aria-label={t.brand.navLabel}>
           {NAV.map((n) => (
             <a key={n.page} className="sign__link" href={n.href} aria-current={current === n.page ? "page" : undefined}>

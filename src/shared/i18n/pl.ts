@@ -9,6 +9,8 @@ const pl = {
   brand: {
     name: "Kulturalna Karczma",
     tagline: "gdzie gra się kulturalnie",
+    guide: "Przewodnik po LARP-ach, impro, RPG i planszówkach",
+    city: "Poznań",
     homeLabel: "Kulturalna Karczma — strona główna",
     navLabel: "Strony serwisu",
     about: "— darmowy, niekomercyjny przewodnik po wydarzeniach hobbystycznych w Poznaniu.",
