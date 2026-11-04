@@ -244,8 +244,10 @@ export async function processCandidates(
   const venues = await loadVenues();
   const recentPast = new Date(now.getTime() - 12 * 3_600_000);
 
+  // Items whose event an admin deleted before they were split: their new sessions stay out too.
+  const rejectedItems = new Set<string>();
   for (const parent of new Set(candidates.map((c) => c.splitFrom).filter((x) => x !== undefined))) {
-    await retireSplitItem(source, parent);
+    if ((await retireSplitItem(source, parent)) === "rejected" && !opts.manual) rejectedItems.add(parent);
   }
 
   for (const c of candidates) {
@@ -327,6 +329,10 @@ export async function processCandidates(
     }
 
     // New item.
+    if (c.splitFrom && rejectedItems.has(c.splitFrom)) {
+      skip("rejected");
+      continue;
+    }
     if (c.cancelled && !opts.manual) {
       skip("cancelled");
       continue;
@@ -388,17 +394,20 @@ const SPLIT_HASH = "split";
  * An item now split into sessions may already have created one event spanning all of them: hide
  * it so it doesn't sit over the sessions. An event an admin edited is left alone and flagged
  * instead. This happens once: the item is marked, stays seen (so the next run doesn't recreate
- * or flag it), and later admin changes to that event stick.
+ * or flag it), and later admin changes to that event stick. Returns "rejected" when an admin
+ * deleted the item's event before it was split (it then stays unmarked, and so stays rejected).
  */
-async function retireSplitItem(source: SourceRow, externalId: string): Promise<void> {
+async function retireSplitItem(source: SourceRow, externalId: string): Promise<"rejected" | void> {
   const [item] = await sql`
     WITH old AS (
       SELECT id, event_id, content_hash FROM imported_items
       WHERE source_id = ${source.id} AND external_id = ${externalId}
     )
-    UPDATE imported_items i SET last_seen_at = now(), missing_since = NULL, content_hash = ${SPLIT_HASH}
+    UPDATE imported_items i SET last_seen_at = now(), missing_since = NULL,
+      content_hash = CASE WHEN old.event_id IS NULL THEN old.content_hash ELSE ${SPLIT_HASH} END
     FROM old WHERE i.id = old.id
     RETURNING old.event_id, old.content_hash`;
+  if (item && !item.event_id && item.content_hash !== SPLIT_HASH) return "rejected";
   if (!item?.event_id || item.content_hash === SPLIT_HASH) return;
   await sql`
     UPDATE events SET

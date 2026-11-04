@@ -69,6 +69,7 @@ export function splitSessions(c: EventCandidate): EventCandidate[] {
     for (let j = i + 1; j < lines.length && lines[j] && !parseDateLine(lines[j]!); j++) text.push(lines[j]!);
     for (const { mo, d } of dl.dates) {
       const y = mo < from.mo ? from.y + 1 : from.y;
+      if (d < 1 || d > new Date(Date.UTC(y, mo, 0)).getUTCDate()) return [c]; // "31 listopada" is a typo
       const key = dateKey(y, mo, d);
       if (key < first || key > last) return [c]; // a date outside the item's range: not its schedule
       sessions.push({

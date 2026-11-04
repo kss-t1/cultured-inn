@@ -102,6 +102,7 @@ describe("splitSessions", () => {
     whole({ description: "28 października i 5 grudnia, g. 17:00\nSesja RPG" });
     whole({ end: null });
     whole({ description: "Konwent od piątku do niedzieli." });
+    whole({ end: new Date("2026-12-05T17:00:00Z"), description: "4 i 31 listopada, g. 17:00\nSesja RPG" }); // no 31 November
   });
 });
 
@@ -176,6 +177,14 @@ describe("processCandidates with a split item", () => {
     await sql`UPDATE events SET review_flags = '{}' WHERE id = ${old.id}`;
     await run(cycle());
     expect((await events()).find((e) => e.id === old.id)!.review_flags).toEqual([]);
+  });
+
+  test("an item whose event an admin deleted doesn't come back as sessions, unless imported by hand", async () => {
+    await run(cycle({ description: "Cykl spotkań z planszówkami." }));
+    await sql`DELETE FROM events`;
+    for (let i = 0; i < 2; i++) expect((await run(cycle())).stats).toMatchObject({ created: 0, skipped: { rejected: 4 } });
+    const manual = await processCandidates(source, { candidates: [cycle()], complete: false }, { now, manual: true });
+    expect(manual.stats.created).toBe(4);
   });
 
   test("a session's text picks the category but can't keep an item its title wouldn't", async () => {
