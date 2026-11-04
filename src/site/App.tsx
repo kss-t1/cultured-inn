@@ -16,6 +16,24 @@ type View = "list" | "map" | "calendar";
 const VIEWS: View[] = ["list", "map", "calendar"];
 const VIEW_ICONS: Record<View, IconName> = { list: "list", map: "map", calendar: "cal" };
 
+/** Floating "back to top" button, shown once the page is scrolled more than a screen down. */
+function ToTop() {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShown(window.scrollY > window.innerHeight);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  if (!shown) return null;
+  const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return (
+    <button type="button" className="btn btn--secondary btn--icon totop" aria-label={t.list.toTop}
+      onClick={() => window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" })}>
+      <Icon name="chev" />
+    </button>
+  );
+}
+
 function readUrl(): { filters: Filters; view: View } {
   const params = new URLSearchParams(location.search);
   const v = params.get("view");
@@ -124,6 +142,7 @@ export function App() {
       </main>
 
       <SiteFooter note={t.brand.sources} />
+      <ToTop />
     </>
   );
 }

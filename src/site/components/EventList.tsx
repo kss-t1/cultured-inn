@@ -30,7 +30,8 @@ export function EventCard({ e }: { e: PublicEvent }) {
   return (
     <a className={`card cat-${cat.slug}${multi ? " card--multi" : ""}`} href={`/events/${e.slug}`}>
       <span className="card__stub">
-        {multi ? (<><span className="card__time">{dayCount(e)}</span><span className="card__end">{t.list.days}</span></>)
+        {multi ? (<>{fmtTime(e.start_at) !== "00:00" && <span className="card__time">{fmtTime(e.start_at)}</span>}
+            <span className="card__end">{t.list.days(dayCount(e))}</span></>)
           : allDay ? <span className="card__end">{t.list.allDay}</span>
           : (<><span className="card__time">{fmtTime(e.start_at)}</span>
             {sameDayEnd && <span className="card__end">–{fmtTime(e.end_at!)}</span>}</>)}

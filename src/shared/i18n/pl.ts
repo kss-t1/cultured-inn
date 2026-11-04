@@ -36,6 +36,7 @@ const pl = {
     to: "Do",
     fromLabel: "Od dnia",
     toLabel: "Do dnia (puste: tylko jeden dzień)",
+    clear: "Wyczyść daty",
   },
 
   filters: {
@@ -67,13 +68,14 @@ const pl = {
   },
 
   list: {
+    toTop: "Wróć na górę",
     loading: "Rozstawiamy pionki… wczytujemy wydarzenia",
     counting: "Wczytywanie…",
     loadError: "Nie udało się pobrać wydarzeń. Spróbuj odświeżyć stronę.",
     empty: "Brak wydarzeń dla wybranych filtrów.",
     emptyHint: "Spróbuj szerszego zakresu, np. „Ten miesiąc”, albo wyczyść filtry — w karczmie zawsze coś się dzieje.",
     showMonth: "Pokaż cały miesiąc",
-    days: "dni",
+    days: (n: number) => `${n} dni`,
     allDay: "cały dzień",
     count: (n: number) => `${n} ${plural(n, "wydarzenie", "wydarzenia", "wydarzeń")}`,
     venueTbd: "Miejsce do potwierdzenia",
@@ -162,6 +164,7 @@ const pl = {
 
   submit: {
     headerLink: "Zgłoś wydarzenie",
+    headerShort: "Zgłoś",
     title: "Zgłoś wydarzenie",
     intro: "Organizujesz LARP, impro, sesję RPG albo spotkanie planszówkowe w Poznaniu? Wypełnij formularz. Sprawdzimy zgłoszenie i dodamy je do kalendarza.",
     fields: {

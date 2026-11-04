@@ -81,6 +81,7 @@
 
   /* the pinned header: stacking order and height (≈95 px from 360 px up; sticky offsets below it) */
   --z-sign: 10;
+  --z-fab: 20;
   --sign-h: 96px;
 
   --ease: cubic-bezier(.2, .7, .2, 1);
@@ -197,14 +198,18 @@ html { scroll-padding-top: var(--sign-h); }
 }
 @media (min-width: 760px) and (max-width: 859.98px) { :root { --sign-h: 140px; } .sign .sign__aside { padding-left: 60px; } }
 .sign__nav { display: flex; align-items: center; gap: 4px 16px; }
-.kk .sign a.sign__link { display: inline-flex; align-items: center; gap: 6px; min-height: var(--tap); padding: 0 4px; color: var(--sign-ink); font-size: var(--t-sm); font-weight: 600; text-decoration: none; white-space: nowrap; }
-.kk .sign a.sign__link:hover { text-decoration: underline; text-decoration-color: var(--sign-gold); text-underline-offset: 4px; }
-.kk .sign a.sign__link[aria-current="page"] { box-shadow: inset 0 -2px 0 var(--sign-gold); }
-/* Phones: icon only, so the brand keeps its two lines; the label stays for screen readers. */
+.kk .sign a.sign__link {
+  display: inline-flex; align-items: center; gap: 6px; min-height: var(--tap); padding: 0 14px 0 10px;
+  border-radius: 10px; background: var(--sign-gold); color: var(--sign-bg);
+  font-size: var(--t-sm); font-weight: 700; text-decoration: none; white-space: nowrap;
+}
+.kk .sign a.sign__link:hover { background: var(--sign-ink); }
+.kk .sign a.sign__link[aria-current="page"] { background: transparent; color: var(--sign-ink); box-shadow: inset 0 0 0 1px var(--sign-gold); }
+.sign__short { display: none; }
+/* Phones: the short label, so the brand keeps its two lines. */
 @media (max-width: 559.98px) {
-  .sign__nav { gap: 0; }
-  .kk .sign a.sign__link { position: relative; min-width: var(--tap); justify-content: center; }
-  .sign__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .sign__label { display: none; }
+  .sign__short { display: inline; }
 }
 @media (min-width: 760px) {
   .sign__in { padding-block: 18px 24px; gap: var(--s-4); }
@@ -215,8 +220,6 @@ html { scroll-padding-top: var(--sign-h); }
 
 /* ---------- 5. Filters ---------- */
 .filters { display: grid; gap: 14px; padding-block: 18px 6px; }
-.filters__body { display: grid; grid-template-columns: minmax(0, 1fr); gap: inherit; }
-.filters__toggle { justify-self: start; }
 .fgroup { display: grid; gap: 8px; min-width: 0; }
 .fgroup__row { display: grid; gap: 10px; min-width: 0; }
 .scroller {
@@ -228,10 +231,15 @@ html { scroll-padding-top: var(--sign-h); }
 }
 .scroller::-webkit-scrollbar { display: none; }
 .dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.dates .input { min-width: 0; padding-inline: 8px; } /* native date inputs keep a wide minimum otherwise */
+/* iOS Safari sizes a native date input to its content and ignores min-width: 0 unless the native look is off. */
+.dates .input { min-width: 0; padding-inline: 8px; -webkit-appearance: none; appearance: none; }
+.dates .input::-webkit-date-and-time-value { text-align: left; }
+.dates__clear { grid-column: 1 / -1; justify-self: start; margin-left: -6px; }
+.filters__more { display: grid; grid-template-columns: minmax(0, 1fr); gap: inherit; }
 .searchrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .searchrow .input-icon { flex: 1 1 100%; }
-.searchrow__actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex: 1 1 100%; }
+.searchrow__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; flex: 1 1 100%; }
+.searchrow__actions .linkbtn { white-space: nowrap; }
 @media (min-width: 760px) {
   .filters { gap: 12px; padding-block: 24px 8px; }
   .fgroup { grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 12px; }
@@ -415,7 +423,6 @@ html { scroll-padding-top: var(--sign-h); }
 .card__venue.is-unknown { font-style: italic; color: var(--ink-3); }
 .card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 3px; }
 .price { font-weight: 700; font-size: 15px; line-height: 24px; margin-right: 4px; font-variant-numeric: tabular-nums; }
-.card--multi .card__time { font-size: 26px; }
 @media (min-width: 760px) {
   .card { grid-template-columns: 84px minmax(0, 1fr); }
   .card::before, .card::after { left: 75px; }
@@ -556,6 +563,12 @@ html { scroll-padding-top: var(--sign-h); }
 @keyframes kk-shimmer { from { background-position: 120% 0; } to { background-position: -120% 0; } }
 @keyframes kk-roll { 0% { transform: rotate(0); } 60%, 100% { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .sk, .loading-line .ico { animation: none; } }
+
+.totop {
+  position: fixed; z-index: var(--z-fab); border-radius: var(--r-pill); box-shadow: var(--sh-pop);
+  right: calc(var(--gutter) + env(safe-area-inset-right)); bottom: calc(var(--gutter) + env(safe-area-inset-bottom));
+}
+.totop .ico { transform: rotate(180deg); }
 
 /* ---------- 18. Footer ---------- */
 .foot { border-top: 1px solid var(--line); padding-block: 24px 40px; display: grid; gap: 6px; font-size: var(--t-sm); line-height: var(--lh-sm); color: var(--ink-3); }
