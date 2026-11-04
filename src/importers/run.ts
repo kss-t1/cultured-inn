@@ -42,12 +42,20 @@ export async function loadSource(idOrKey: number | string): Promise<SourceRow | 
   return { ...row, config: SourceConfig.parse(row.config ?? {}) } as SourceRow;
 }
 
-/** Upcoming events this source already knows, with the URL they were imported from. */
-async function knownUpcoming(sourceId: number): Promise<{ external_id: string; url: string | null }[]> {
+/** A split session's id is its item's id plus `#YYYY-MM-DD` (splitSessions). */
+const SESSION_SUFFIX = "#[0-9]{4}-[0-9]{2}-[0-9]{2}$";
+
+/**
+ * Upcoming items this source already knows, with the URL they were imported from. Sessions split
+ * from one item come back as that item, once, so it is re-read and split again rather than split
+ * per session.
+ */
+export async function knownUpcoming(sourceId: number): Promise<{ external_id: string; url: string | null }[]> {
   return (await sql`
-    SELECT i.external_id, i.url FROM imported_items i JOIN events e ON e.id = i.event_id
+    SELECT regexp_replace(i.external_id, ${SESSION_SUFFIX}, '') AS external_id, min(i.url) AS url
+    FROM imported_items i JOIN events e ON e.id = i.event_id
     WHERE i.source_id = ${sourceId} AND coalesce(e.end_at, e.start_at) > now()
-    ORDER BY e.start_at LIMIT 100`) as { external_id: string; url: string | null }[];
+    GROUP BY 1 ORDER BY min(e.start_at) LIMIT 100`) as { external_id: string; url: string | null }[];
 }
 
 /**
@@ -70,12 +78,14 @@ async function refetch(item: { external_id: string; url: string | null }): Promi
   }
 }
 
-async function flagGone(sourceId: number, externalIds: string[]) {
+/** Flags the items (and the sessions split from them) whose pages no longer show the event. */
+export async function flagGone(sourceId: number, externalIds: string[]) {
   if (!externalIds.length) return;
   await sql`
     WITH gone AS (
       UPDATE imported_items SET missing_since = coalesce(missing_since, now())
-      WHERE source_id = ${sourceId} AND external_id = ANY(${sql.array(externalIds, "TEXT")})
+      WHERE source_id = ${sourceId}
+        AND regexp_replace(external_id, ${SESSION_SUFFIX}, '') = ANY(${sql.array(externalIds, "TEXT")})
       RETURNING event_id
     )
     UPDATE events SET review_flags = array_append(array_remove(review_flags, 'missing_from_source'), 'missing_from_source')

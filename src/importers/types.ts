@@ -29,6 +29,9 @@ export interface EventCandidate {
   seriesRule?: string | null;
   /** Extra text used only for classification (e.g. source categories). */
   classifyHint?: string;
+  /** Set by splitSessions: the item this session was split from, and the text about this session alone. */
+  splitFrom?: string;
+  sessionText?: string;
   raw: unknown;
 }
 

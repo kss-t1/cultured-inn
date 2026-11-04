@@ -2,6 +2,7 @@
 import { sql, TZ } from "../db.ts";
 import { uniqueSlug } from "../lib/slugs.ts";
 import { classify, type Category } from "../shared/categories.ts";
+import { splitSessions } from "./split.ts";
 import type { AdapterResult, EventCandidate, SourceRow } from "./types.ts";
 import { distanceKm, isLocal, parsePrice, utcToZoned } from "./util.ts";
 
@@ -53,12 +54,15 @@ export function decide(source: SourceRow, c: EventCandidate, manual = false): De
     const category = rule.category ?? classify(text)[0] ?? source.default_category;
     if (category) return { keep: true, category, tags: [...baseTags, ...(rule.tags ?? [])], guessed: false };
   }
+  // Once an item is kept, a split session's own paragraph picks its category over the title it
+  // shares with the other sessions ("…przy grach kooperacyjnych i RPG").
+  const bySession = c.sessionText ? classify(c.sessionText)[0] : undefined;
   // Keywords in the title beat ones in the description ("board game night ... one-shot RPG corner").
   const byKeyword = classify(`${fields.includes("title") ? c.title : ""}\n${c.classifyHint ?? ""}`)[0]
     ?? (fields.includes("description") ? classify(c.description)[0] : undefined);
-  if (byKeyword) return { keep: true, category: byKeyword, tags: baseTags, guessed: false };
+  if (byKeyword) return { keep: true, category: bySession ?? byKeyword, tags: baseTags, guessed: false };
   if (source.default_category && !cfg.requireMatch) {
-    return { keep: true, category: source.default_category, tags: baseTags, guessed: false };
+    return { keep: true, category: bySession ?? source.default_category, tags: baseTags, guessed: false };
   }
   return manual ? fallback() : { keep: false, reason: "no_match" };
 
@@ -225,14 +229,28 @@ export async function processCandidates(
 ): Promise<{ stats: ProcessStats; eventIds: Map<string, number> }> {
   const now = opts.now ?? new Date();
   const runStart = new Date();
+  const candidates = result.candidates.flatMap(splitSessions);
   const stats: ProcessStats = { received: result.candidates.length, created: 0, updated: 0, unchanged: 0, linked: 0, missing: 0, skipped: {} };
   const skip = (r: SkipReason) => (stats.skipped[r] = (stats.skipped[r] ?? 0) + 1);
   const eventIds = new Map<string, number>();
+  // A split item maps to its first session that hasn't ended (URL import opens that one).
+  const pickedUpcoming = new Set<string>();
+  const mapSplitItem = (c: EventCandidate, eventId: number) => {
+    if (!c.splitFrom || pickedUpcoming.has(c.splitFrom)) return;
+    eventIds.set(c.splitFrom, eventId);
+    if ((c.end ?? c.start) >= now) pickedUpcoming.add(c.splitFrom);
+  };
   const [city] = await sql`SELECT id FROM cities WHERE slug = 'poznan'`;
   const venues = await loadVenues();
   const recentPast = new Date(now.getTime() - 12 * 3_600_000);
 
-  for (const c of result.candidates) {
+  // Items whose event an admin deleted, hid or cancelled before they were split: their sessions stay out too.
+  const rejectedItems = new Set<string>();
+  for (const parent of new Set(candidates.map((c) => c.splitFrom).filter((x) => x !== undefined))) {
+    if ((await retireSplitItem(source, parent)) === "rejected" && !opts.manual) rejectedItems.add(parent);
+  }
+
+  for (const c of candidates) {
     c.title = c.title.replace(/\s+/g, " ").trim();
     if (!c.title) {
       skip("no_title");
@@ -274,6 +292,7 @@ export async function processCandidates(
         continue;
       }
       eventIds.set(c.externalId, item.event_id);
+      mapSplitItem(c, item.event_id);
       await sql`UPDATE events SET last_seen_at = now(), review_flags = array_remove(review_flags, 'missing_from_source')
                 WHERE id = ${item.event_id} AND 'missing_from_source' = ANY(review_flags)`;
       if (item.content_hash === hash) {
@@ -310,6 +329,10 @@ export async function processCandidates(
     }
 
     // New item.
+    if (c.splitFrom && rejectedItems.has(c.splitFrom)) {
+      skip("rejected");
+      continue;
+    }
     if (c.cancelled && !opts.manual) {
       skip("cancelled");
       continue;
@@ -354,6 +377,7 @@ export async function processCandidates(
       stats.created++;
     }
     eventIds.set(c.externalId, eventId);
+    mapSplitItem(c, eventId);
     await sql`
       INSERT INTO imported_items (source_id, external_id, content_hash, raw, event_id, url, location_text)
       VALUES (${source.id}, ${c.externalId}, ${hash}, ${c.raw as object}::jsonb, ${eventId}, ${c.url ?? null}, ${locationText})`;
@@ -361,6 +385,39 @@ export async function processCandidates(
 
   if (result.complete) stats.missing = await flagMissing(source, runStart, now, result.horizon ?? null);
   return { stats, eventIds };
+}
+
+/** content_hash of an item whose sessions replaced it; its own event was retired once. */
+const SPLIT_HASH = "split";
+
+/**
+ * An item now split into sessions may already have created one event spanning all of them: hide
+ * it so it doesn't sit over the sessions. An event an admin edited, or one that belongs to another
+ * source (a linked duplicate), is left alone and flagged instead. This happens once: the item is
+ * marked, stays seen (so the next run doesn't recreate or flag it), and later admin changes stick.
+ * Returns "rejected" when an admin deleted, hid or cancelled the item's event before it ever had
+ * sessions; the item then stays unmarked, and so stays rejected.
+ */
+async function retireSplitItem(source: SourceRow, externalId: string): Promise<"rejected" | void> {
+  const [item] = await sql`
+    SELECT i.id, i.event_id, i.content_hash, e.status, e.import_locked,
+           (e.source_id = ${source.id} AND e.origin = 'IMPORTED') AS owned,
+           EXISTS (SELECT 1 FROM imported_items s WHERE s.source_id = i.source_id
+                     AND left(s.external_id, length(i.external_id) + 1) = i.external_id || '#') AS has_sessions
+    FROM imported_items i LEFT JOIN events e ON e.id = i.event_id
+    WHERE i.source_id = ${source.id} AND i.external_id = ${externalId}`;
+  if (!item) return;
+  await sql`UPDATE imported_items SET last_seen_at = now(), missing_since = NULL WHERE id = ${item.id}`;
+  if (item.content_hash === SPLIT_HASH) return;
+  if (!item.has_sessions && (!item.event_id || item.status === "HIDDEN" || item.status === "CANCELLED")) return "rejected";
+  await sql`UPDATE imported_items SET content_hash = ${SPLIT_HASH} WHERE id = ${item.id}`;
+  if (!item.event_id || item.status === "HIDDEN" || item.status === "CANCELLED") return;
+  if (item.owned && !item.import_locked) {
+    await sql`UPDATE events SET status = 'HIDDEN', updated_at = now() WHERE id = ${item.event_id}`;
+  } else {
+    await sql`UPDATE events SET review_flags = array_append(array_remove(review_flags, 'changed_at_source'), 'changed_at_source'),
+                updated_at = now() WHERE id = ${item.event_id}`;
+  }
 }
 
 async function matchOrganizer(name: string | null | undefined): Promise<number | null> {
