@@ -20,6 +20,7 @@ test("about page: intro, repository and contact links", () => {
 test("the header links to the submit page; the about page is linked from the footer", () => {
   const header = renderToString(<SiteHeader />);
   expect(header).toContain('href="/submit"');
+  expect(header).toContain(`aria-label="${t.submit.headerLink}"`);
   expect(header).not.toContain('href="/about"');
   expect(header).not.toContain("aria-current");
   expect(renderToString(<SiteFooter note="" />)).toContain('href="/about"');

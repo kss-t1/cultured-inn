@@ -8,7 +8,10 @@ import { Icon } from "../../shared/ui.tsx";
 /** The price slider's top step means "any price". */
 const PRICE_ANY = 150;
 
-export function FilterBar({ filters: f, onChange }: { filters: Filters; onChange: (f: Filters) => void }) {
+/** `collapsible` (phones): only "Kiedy" and "Co" show; dates, search and the rest open under "Więcej filtrów". */
+export function FilterBar({ filters: f, onChange, collapsible = false }: {
+  filters: Filters; onChange: (f: Filters) => void; collapsible?: boolean;
+}) {
   const set = (patch: Partial<Filters>) => onChange({ ...f, ...patch });
 
   const pickWhen = (when: When) => set({ when, from: null, to: null });
@@ -26,7 +29,9 @@ export function FilterBar({ filters: f, onChange }: { filters: Filters; onChange
 
   const isDirty = serializeFilters(f).toString() !== serializeFilters(DEFAULT_FILTERS).toString();
   const extraCount = [f.time, f.free, f.beginner, f.english, f.multiday, f.priceMax !== null].filter(Boolean).length;
-  const [moreOpen, setMoreOpen] = useState(extraCount > 0);
+  // Collapsed, the badge also counts the dates and search hidden with the extras.
+  const moreCount = extraCount + (collapsible ? [f.from !== null, f.q !== ""].filter(Boolean).length : 0);
+  const [moreOpen, setMoreOpen] = useState(!collapsible && extraCount > 0);
   const price = f.priceMax === null ? PRICE_ANY : Math.min(f.priceMax, PRICE_ANY);
   const priceLabel = f.priceMax === null ? t.filters.priceAny : `${f.priceMax} ${t.event.currencyPLN}`;
   const [scaleMin, scaleMax] = t.filters.priceScale(PRICE_ANY);
@@ -40,6 +45,65 @@ export function FilterBar({ filters: f, onChange }: { filters: Filters; onChange
     { label: t.filters.multiday, on: f.multiday, toggle: () => set({ multiday: !f.multiday }) },
   ];
 
+  // iOS's date picker "Reset" restores the input's default value, which React keeps equal to the
+  // current one, so it never clears; this button does.
+  const dates = (
+    <div className="dates">
+      <label className="field">
+        <span className="field__label">{t.when.from}</span>
+        <input className="input" type="date" value={f.from ?? ""} min={today} aria-label={t.when.fromLabel}
+          onChange={(e) => setFrom(e.target.value)} />
+      </label>
+      <label className="field">
+        <span className="field__label">{t.when.to}</span>
+        <input className="input" type="date" value={f.to ?? ""} min={f.from ?? today} aria-label={t.when.toLabel}
+          onChange={(e) => setTo(e.target.value)} />
+      </label>
+      {f.from && (
+        <button type="button" className="linkbtn dates__clear" onClick={() => pickWhen(DEFAULT_FILTERS.when)}>
+          <Icon name="x" size="sm" />{t.when.clear}
+        </button>
+      )}
+    </div>
+  );
+
+  const actions = (
+    <div className="searchrow__actions">
+      <button type="button" className="btn btn--secondary" aria-expanded={moreOpen} aria-controls="kk-more"
+        onClick={() => setMoreOpen(!moreOpen)}>
+        <Icon name="sliders" />{t.filters.more}
+        {moreCount > 0 && <span className="count-dot">{moreCount}</span>}
+        <Icon name="chev" size="sm" className="chev" />
+      </button>
+      {isDirty && <button type="button" className="linkbtn" onClick={() => onChange(DEFAULT_FILTERS)}>{t.filters.clear}</button>}
+    </div>
+  );
+
+  const extras = (
+    <div className="more" id={collapsible ? undefined : "kk-more"}>
+      <div className="more__toggles" role="group" aria-label={t.filters.moreLabel}>
+        {flags.map((x) => (
+          <button key={x.label} type="button" className="chip chip--opt" aria-pressed={x.on} onClick={x.toggle}>
+            <Icon name="check" size="sm" className="chip__check" />{x.label}
+          </button>
+        ))}
+      </div>
+      <div className="range">
+        <div className="range__head">
+          <label htmlFor="kk-price">{t.filters.priceMax}</label>
+          <span className="range__val">{priceLabel}</span>
+        </div>
+        <input id="kk-price" className="slider" type="range" min={0} max={PRICE_ANY} step={5} value={price}
+          aria-valuetext={priceLabel}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            set({ priceMax: v >= PRICE_ANY ? null : v });
+          }} />
+        <div className="range__scale"><span>{scaleMin}</span><span>{scaleMax}</span></div>
+      </div>
+    </div>
+  );
+
   return (
     <section className="filters" aria-label={t.filters.label}>
       <div className="fgroup">
@@ -52,18 +116,7 @@ export function FilterBar({ filters: f, onChange }: { filters: Filters; onChange
               </button>
             ))}
           </div>
-          <div className="dates">
-            <label className="field">
-              <span className="field__label">{t.when.from}</span>
-              <input className="input" type="date" value={f.from ?? ""} min={today} aria-label={t.when.fromLabel}
-                onChange={(e) => setFrom(e.target.value)} />
-            </label>
-            <label className="field">
-              <span className="field__label">{t.when.to}</span>
-              <input className="input" type="date" value={f.to ?? ""} min={f.from ?? today} aria-label={t.when.toLabel}
-                onChange={(e) => setTo(e.target.value)} />
-            </label>
-          </div>
+          {!collapsible && dates}
         </div>
       </div>
 
@@ -79,48 +132,22 @@ export function FilterBar({ filters: f, onChange }: { filters: Filters; onChange
         </div>
       </div>
 
-      <div className="fgroup">
-        <label className="eyebrow" htmlFor="kk-q">{t.filters.search}</label>
-        <div className="searchrow">
-          <span className="input-icon">
-            <Icon name="search" />
-            <input id="kk-q" className="input" type="search" placeholder={t.filters.searchPlaceholder}
-              value={f.q} maxLength={100} onChange={(e) => set({ q: e.target.value })} />
-          </span>
-          <div className="searchrow__actions">
-            <button type="button" className="btn btn--secondary" aria-expanded={moreOpen} aria-controls="kk-more"
-              onClick={() => setMoreOpen(!moreOpen)}>
-              <Icon name="sliders" />{t.filters.more}
-              {extraCount > 0 && <span className="count-dot">{extraCount}</span>}
-              <Icon name="chev" size="sm" className="chev" />
-            </button>
-            {isDirty && <button type="button" className="linkbtn" onClick={() => onChange(DEFAULT_FILTERS)}>{t.filters.clear}</button>}
-          </div>
-        </div>
-      </div>
-
-      {moreOpen && (
-        <div className="more" id="kk-more">
-          <div className="more__toggles" role="group" aria-label={t.filters.moreLabel}>
-            {flags.map((x) => (
-              <button key={x.label} type="button" className="chip chip--opt" aria-pressed={x.on} onClick={x.toggle}>
-                <Icon name="check" size="sm" className="chip__check" />{x.label}
-              </button>
-            ))}
-          </div>
-          <div className="range">
-            <div className="range__head">
-              <label htmlFor="kk-price">{t.filters.priceMax}</label>
-              <span className="range__val">{priceLabel}</span>
+      {collapsible && actions}
+      {(!collapsible || moreOpen) && (
+        <div className="filters__more" id={collapsible ? "kk-more" : undefined}>
+          {collapsible && dates}
+          <div className="fgroup">
+            <label className="eyebrow" htmlFor="kk-q">{t.filters.search}</label>
+            <div className="searchrow">
+              <span className="input-icon">
+                <Icon name="search" />
+                <input id="kk-q" className="input" type="search" placeholder={t.filters.searchPlaceholder}
+                  value={f.q} maxLength={100} onChange={(e) => set({ q: e.target.value })} />
+              </span>
+              {!collapsible && actions}
             </div>
-            <input id="kk-price" className="slider" type="range" min={0} max={PRICE_ANY} step={5} value={price}
-              aria-valuetext={priceLabel}
-              onChange={(e) => {
-                const v = Number(e.target.value);
-                set({ priceMax: v >= PRICE_ANY ? null : v });
-              }} />
-            <div className="range__scale"><span>{scaleMin}</span><span>{scaleMax}</span></div>
           </div>
+          {moreOpen && extras}
         </div>
       )}
     </section>
