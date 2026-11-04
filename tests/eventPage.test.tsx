@@ -49,12 +49,12 @@ describe("EventPage", () => {
     expect(html).toContain(t.list.venueTbd);
   });
 
-  test("the venue name links to Google Maps: coordinates when known, else name and address", () => {
+  test("the venue name links to Google Maps: name and address when known, else coordinates", () => {
     const venue = { id: 1, name: "Pod Lipami", address: "ul. Lipowa 1", district: null, lat: 52.4, lon: 16.9 };
     expect(render({ venue }, before)).toContain(
-      `href="https://www.google.com/maps/search/?api=1&amp;query=52.4%2C16.9" rel="noopener">Pod Lipami</a>`);
-    expect(render({ venue: { ...venue, lat: null, lon: null } }, before)).toContain(
-      `href="https://www.google.com/maps/search/?api=1&amp;query=Pod%20Lipami%2C%20ul.%20Lipowa%201"`);
+      `href="https://www.google.com/maps/search/?api=1&amp;query=Pod%20Lipami%2C%20ul.%20Lipowa%201" rel="noopener">Pod Lipami</a>`);
+    expect(render({ venue: { ...venue, address: null } }, before)).toContain(
+      `href="https://www.google.com/maps/search/?api=1&amp;query=52.4%2C16.9"`);
     expect(render({ venue: { ...venue, address: null, lat: null, lon: null } }, before)).not.toContain("maps/search");
   });
 
