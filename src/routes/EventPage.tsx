@@ -101,7 +101,7 @@ export function EventPage({ e, url, now = new Date() }: { e: EventDetail; url: s
     : null;
   const osmLink = geo ? `https://www.openstreetmap.org/?mlat=${geo.lat}&mlon=${geo.lon}#map=17/${geo.lat}/${geo.lon}` : null;
   const routeLink = geo ? `https://www.google.com/maps/dir/?api=1&destination=${geo.lat},${geo.lon}` : null;
-  const placeQuery = geo ? `${geo.lat},${geo.lon}` : v?.address ? `${v.name}, ${v.address}` : null;
+  const placeQuery = v?.address ? `${v.name}, ${v.address}` : geo ? `${geo.lat},${geo.lon}` : null;
   const placeLink = placeQuery ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeQuery)}` : null;
 
   const cancelled = e.status === "CANCELLED";
